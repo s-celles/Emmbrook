@@ -17,8 +17,9 @@
     <!-- User css -->
     <link rel="stylesheet" href="index.css" type="text/css"/>
     <!-- User script -->
-    <script src="tabs.js" type="text/javascript"></script>
+    <script src="index.js" type="text/javascript"></script>
 </head>
+
 <body id="home">
 
 <!-- Navigation bar -->
@@ -35,18 +36,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Home</a>
+            <a class="navbar-brand" href="#home">Home</a>
+            <p class="navbar-text"><a href="http://apam.columbia.edu/william-bailey" style="color: inherit"
+                                      data-toggle="tooltip" data-placement="bottom"
+                                      title="MSE/APAM, Columbia University">W.E.
+                Bailey</a></p>
+            <script>
+                $(document).tooltip({show: null});
+            </script>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="http://spin.ap.columbia.edu/dftsim/">Original page
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active"><a href="http://spin.ap.columbia.edu/dftsim/">Old page
                     <span class="sr-only">(current)</span></a>
                 </li>
-            </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://magnet.ap.columbia.edu/home">About me</a></li>
+                <li><a href="http://magnet.ap.columbia.edu/home">My page</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div>
@@ -64,43 +69,51 @@
     </div>
 </div>
 
-<!-- Figure -->
 <div class="container">
-    <figure class="figure">
-        <!-- A bootstrapy way -->
-        <img src="./images/spectrum_analyzers.png" class="img-responsive" alt="Spectral analysis.">
-    </figure>
-</div>
-
-<!-- List group -->
-<div class="container center-block">
-    <div class="list-group">
-        <a href="panel1.html" class="list-group-item active">
-            <h4 class="list-group-item-heading">Panel 1</h4>
-            <p class="list-group-item-text">Fit a sinusoid: What's the frequency?</p>
-        </a>
-        <a href="panel2.html" class="list-group-item">
-            <h4 class="list-group-item-heading">Panel 2</h4>
-            <p class="list-group-item-text">Fit a sinusoid: amplitude, frequency, phase.</p>
-        </a>
-        <a href="panel3.html" class="list-group-item">
-            <h4 class="list-group-item-heading">Panel 3</h4>
-            <p class="list-group-item-text">How to read the DFT of a single sinusoid.</p>
-        </a>
-        <a href="panel4.html" class="list-group-item">
-            <h4 class="list-group-item-heading">Panel 4</h4>
-            <p class="list-group-item-text">Effect of sampling.</p>
-        </a>
-        <a href="panel5.html" class="list-group-item">
-            <h4 class="list-group-item-heading">Panel 5</h4>
-            <p class="list-group-item-text">Reproduce a square wave with successive harmonics.</p>
-        </a>
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-lg-4">
+            <!-- Figure -->
+            <div class="container center-block">
+                <figure class="figure">
+                    <!-- A bootstrapy way -->
+                    <img src="../images/spectrum_analyzers.png" class="img-responsive" alt="Spectral analysis.">
+                </figure>
+            </div>
+        </div>
     </div>
 
+    <!-- List group -->
+    <div class="col-sm-6 col-md-8 col-lg-8" id="horz">
+        <div class="container center-block">
+            <div class="list-group">
+                <a href="panel1.html" class="list-group-item active col-xs-6">
+                    <h4 class="list-group-item-heading">Panel 1</h4>
+                    <p class="list-group-item-text">Fit a sinusoid: What's the frequency?</p>
+                </a>
+                <a href="panel2.html" class="list-group-item col-xs-6">
+                    <h4 class="list-group-item-heading">Panel 2</h4>
+                    <p class="list-group-item-text">Fit a sinusoid: amplitude, frequency, phase.</p>
+                </a>
+                <a href="panel3.html" class="list-group-item col-xs-6">
+                    <h4 class="list-group-item-heading">Panel 3</h4>
+                    <p class="list-group-item-text">How to read the DFT of a single sinusoid.</p>
+                </a>
+                <a href="panel4.html" class="list-group-item col-xs-6">
+                    <h4 class="list-group-item-heading">Panel 4</h4>
+                    <p class="list-group-item-text">Effect of sampling.</p>
+                </a>
+                <a href="panel5.html" class="list-group-item col-xs-6">
+                    <h4 class="list-group-item-heading">Panel 5</h4>
+                    <p class="list-group-item-text">Reproduce a square wave with successive harmonics.</p>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
+
 <!-- Footer -->
-<footer class="container-fluid text-center">
+<footer class="container-fluid bg-f text-center">
     <a href="#home" title="To Top">
         <span class="glyphicon glyphicon-chevron-up"></span>
     </a>
