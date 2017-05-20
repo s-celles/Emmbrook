@@ -17,83 +17,77 @@
     <!-- User css -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
           rel="stylesheet"/>
-    <link rel="stylesheet" href="panel5.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/panel5.css" type="text/css">
 
-    <!-- User script -->
+    <!-- CDN script -->
     <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        extensions: ["tex2jax.js"],
-        jax: ["input/TeX", "output/HTML-CSS"],
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
-          processEscapes: true
-        },
-        "HTML-CSS": { availableFonts: ["TeX"] }
-      });
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+
     </script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+    <script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.js"></script>
-    <script type="text/javascript" src="panel5.js"></script>
-    <script type="text/javascript" src="panel5FFT.js"></script>
 </head>
 
 <body>
 <h1>Panel 5: Reconstruct a square wave</h1>
 <p>
-    Using four frequency components $i=1,3,5,7$, approximate the square wave.<br> The approximation shows $\sum_{i=1}^4
-    b_i\sin{\omega_i t}$, $\omega_i = i 2\pi/\tau$<br> Compare your empirical values with the prediction from the DFT
-    below.
-    <br>
+    Using four frequency components $i=1,3,5,7$, approximate the square wave.<br>
+    The approximation shows $\sum_{i=1}^4 b_i\sin{\omega_i t}$, $\omega_i = i 2\pi/\tau$<br>
+    Compare your empirical values with the prediction from the DFT below.<br>
 </p>
 
 <!-- Sliders -->
 <label for="mySamples">Samples $N=2^q$</label>
-<input id="mySamples" type="text" class="span2" value="6" data-slider-id="mySamples" data-slider-min="2"
-       data-slider-max="10" data-slider-step="1" data-slider-value="6" data-value="6" oninput="samlesUpdate(value)"/>
-<p id="sampleSlider"></p>
-<script language="javascript">
-    var mySamples = new Slider('#mySamples');
-    mySamples.on('slideStop', function (value) {
-        document.getElementById('slider').innerHTML = value;
-    });
-</script>
+<input type="range" id="mySamples" min="2" max="10" value="6" step="1" oninput="samplesUpdate(value)">
+<output for="mySamples" id="samplesBox">0</output>
 
-<label for="myPhase">Phase $\phi$</label>
-<input id="myPhase" type="text" class="span2" value="6" data-slider-id="myPhase" data-slider-min="-10"
-       data-slider-max="10" data-slider-step="0.1" data-slider-value="6" data-value="6" oninput="phaseUpdate(value)"/>
-<span id="phaseSlider"></span>
-<script language="javascript">
-    var myPhase = new Slider('#myPhase');
-    myPhase.on('slideStop', function (value) {
-        document.getElementById('slider').innerHTML = value;
-    });
-</script>
+<label for="myPhase">Phase $\varphi$</label>
+<input type="range" id="myPhase" min="-4.9" max="4.9" value="0" step="0.1" oninput="phaseUpdate(value)">
+<output for="myPhase" id="phsBox">0</output>
 
-<label for="b1">Amplitude $b_1$</label>
-<input id="b1" type="text" class="span2" value="0" data-slider-id="b1" data-slider-min="0" data-slider-max="1"
-       data-slider-step="0.01" data-slider-value="0" data-value="0" oninput="b1Update(value)"/>
-<span id="b1Slider"></span>
-<script language="javascript">
-    var b1 = new Slider('#b1');
-    b1.on('slideStop', function (value) {
-        document.getElementById('slider').innerHTML = value;
-    });
-</script>
+<label for="B1">Amplitude $b_1$</label>
+<input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
+<output for="B1" id="B1Box">0</output>
 
-<label for="b3">Amplitude $b_3$</label>
-<input id="b3" type="text" class="span2" value="0" data-slider-id="b3" data-slider-min="0" data-slider-max="1"
-       data-slider-step="0.01" data-slider-value="0" data-value="0" oninput="b1Update(value)"/>
-<p id="b3Slider"></p>
-<script language="javascript">
-    var b3 = new Slider('#b3');
-    b3.on('slideStop', function (value) {
-        document.getElementById('slider').innerHTML = value;
-    });
-</script>
+<label for="B3">Amplitude $b_3$</label>
+<input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
+<output for="B3" id="B3Box">0</output>
+
+<label for="B5">Amplitude $b_5$</label>
+<input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
+<output for="B5" id="B5Box">0</output>
+
+<label for="B7">Amplitude $b_7$</label>
+<input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
+<output for="B7" id="B7Box">0</output>
+
+<p id="demo"></p>
+
+<div id="plt0" style="width:1200px;height:500px;"></div>
+<div id="plt1" style="width:1200px;height:500px;"></div>
+
+<h3> Questions </h3>
+
+<p>
+    Qa: Compare your empirical values of $b_i$ with the FT prediction $b_n=2/(\pi n)$.
+</p>
+
+<p>
+    Qb: What happens to the
+    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea that "bandwidth"
+    translates to "speed.")
+</p>
+
+<p>
+    Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
+    of samples $N$? (Adjust the samples to the maximum to see what happens when the number of samples increases.)
+</p>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -103,6 +97,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+<script type="text/javascript" src="./assets/js/panel5.js"></script>
+<script type="text/javascript" src="./assets/js/panel5FFT.js"></script>
 </body>
 
 </html>

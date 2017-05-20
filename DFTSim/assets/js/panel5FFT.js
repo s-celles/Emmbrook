@@ -28,12 +28,12 @@ function phaseUpdate(q) {   // Update slide bar
     doRecalc();
 }
 
-function b1Update(q) {
+function B1Update(q) {
     document.querySelector('#B1Box').value = q;
     doRecalc();
 }
 
-function b3Update(q) {
+function B3Update(q) {
     document.querySelector('#B3Box').value = q;
     doRecalc();
 }
@@ -53,11 +53,11 @@ function samplesUpdate(q) {
     doRecalc();
 }
 
-function xvUpdate(phs) {
+function xvUpdate() {
     xv = new Array(nsamp);  // Sample x coordinates
     yv = new Array(nsamp);
     for (var i = 0; i < nMax; i++) {   // Samples range
-        xv[i] = (i / nMax - 0.5) * xHi + phs
+        xv[i] = (i / nMax - 0.5) * xHi
     }
 }
 
@@ -71,7 +71,7 @@ function samplesUpdateCalc(q) {
 
 function doRecalc() {
     getPhase();
-    xvUpdate(phs);
+    xvUpdate();
     valsUpdate();
     plotDataUpdate();
     plotsRedraw();
@@ -103,7 +103,7 @@ function valsUpdate() {
     }
 
     for (var i = 0; i < nCont; i++) {
-        xCont[i] = i / nCont * xHi - 0.5 * xHi + phs // 1001 elements
+        xCont[i] = i / nCont * xHi - 0.5 * xHi // 1001 elements
     }
 
     for (i = 0; i < nCont; i++) {  // Analytical
@@ -122,7 +122,7 @@ function valsUpdate() {
     }
 
     for (i = 0; i < nMax; i++) {
-        fv[i] = yApprox[i];  // Real part
+        fv[i] = yv[i];  // Real part
         fv_im[i] = 0;
     }
 
