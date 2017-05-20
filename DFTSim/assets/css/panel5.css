@@ -1,4 +1,20 @@
-#ex1Slider .slider-selection {
+#mySamples .slider-selection {
   background: #BABABA; }
+
+.well {
+  border-radius: 0.5px; }
+
+#2plots {
+  margin: 0;
+  width: 100%; }
+
+#plt0 {
+  width: 50%; }
+
+#plt1 {
+  width: 50%; }
+
+h1 {
+  margin-top: 70px; }
 
 /*# sourceMappingURL=panel5.css.map */

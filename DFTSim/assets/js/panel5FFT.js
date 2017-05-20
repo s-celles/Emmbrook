@@ -180,7 +180,6 @@ function miniFFT(re, im) {
 }
 
 function createPlots() {
-
     var layout1 = {
         margin: {
             t: 0
@@ -188,13 +187,13 @@ function createPlots() {
         yaxis: {
             title: 'Height Y (m)',
             titlefont: {
-                size: 36
+                size: 24
             }
         },
         xaxis: {
             title: 'Time t (s)',
             titlefont: {
-                size: 36
+                size: 24
             }
         }
     };
@@ -206,13 +205,13 @@ function createPlots() {
         yaxis: {
             title: 'FFT',
             titlefont: {
-                size: 36
+                size: 24
             }
         },
         xaxis: {
             title: 'Frequency (hz)',
             titlefont: {
-                size: 36
+                size: 24
             },
             range: [0, 2]
         }
