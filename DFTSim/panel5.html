@@ -1,323 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <script src="plotly-latest.min.js"></script>
-    <script type="text/x-mathjax-config"> MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Panel 5</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!-- User css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
+          rel="stylesheet"/>
+    <link rel="stylesheet" href="panel5.css" type="text/css">
+
+    <!-- User script -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
     </script>
-    <script type="text/javascript" async
-            src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+    </script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.js"></script>
+    <script type="text/javascript" src="panel5.js"></script>
+    <script type="text/javascript" src="panel5FFT.js"></script>
 </head>
 
 <body>
-
-<body style="font-family:Arial">
-
-<font size=6> Panel 5: Reconstruct a square wave<br></font>
-<br>
-<font size=5>
-    Using four frequency components $n=1,3,5,7$, approximate the square wave.<br> The approximation shows $\sum_{i=1}^4
+<h1>Panel 5: Reconstruct a square wave</h1>
+<p>
+    Using four frequency components $i=1,3,5,7$, approximate the square wave.<br> The approximation shows $\sum_{i=1}^4
     b_i\sin{\omega_i t}$, $\omega_i = i 2\pi/\tau$<br> Compare your empirical values with the prediction from the DFT
-    below.<br>
-</font>
+    below.
+    <br>
+</p>
 
-
+<!-- Sliders -->
 <label for="mySamples">Samples $N=2^q$</label>
-<input type="range" id="mySamples" min="2" max="10" value="6" step="1" oninput="samplesUpdate(value)">
-<output for="mySamples" id="samplesBox">0</output>
-
-<label for="myPhase">&emsp; Phase</label>
-<input type="range" id="myPhase" min="-10" max="10" step="0.5" oninput="phaseUpdate(value)">
-<output for="myPhase" id="phsBox">5</output>
-
-<label for="B1">&emsp; Amplitude $b_1$</label>
-<input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
-<output for="B1" id="B1Box">0</output>
-
-<label for="B3">&emsp; Amplitude $b_3$</label>
-<input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
-<output for="B3" id="B3Box">0</output>
-
-<label for="B5">&emsp; Amplitude $b_5$</label>
-<input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
-<output for="B5" id="B5Box">0</output>
-
-<label for="B7">&emsp; Amplitude $b_7$</label>
-<input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
-<output for="B7" id="B7Box">0</output>
-
-<p id="demo"></p>
-
-<div id="plt0" style="width:1200px;height:500px;"></div>
-<div id="plt1" style="width:1200px;height:500px;"></div>
-
-<script>
-    var nCont = 1000;
-    var xHi = 10.;
-    var xCont = new Array(nCont);
-    var yCont = new Array(nCont);
-    var yApprox = new Array(nCont);
-    var fmin = 1.0 / xHi;
-
-    nMax = document.getElementById("mySamples").value;
-    samplesUpdateCalc(nMax);   // Initialize
-
-    fval = 1.0;
-
-    valsUpdate();
-    createPlots();   // Initial plot
-
-    function phaseUpdate(q) {   // Update slide bar
-        document.querySelector('#phsBox').value = q;
-        console.log(xv);
-        doRecalc();
-    }
-
-    function B1Update(q) {
-        document.querySelector('#B1Box').value = q;
-        doRecalc();
-    }
-
-    function B3Update(q) {
-        document.querySelector('#B3Box').value = q;
-        doRecalc();
-    }
-
-    function B5Update(q) {
-        document.querySelector('#B5Box').value = q;
-        doRecalc();
-    }
-
-    function B7Update(q) {
-        document.querySelector('#B7Box').value = q;
-        doRecalc();
-    }
-
-    function samplesUpdate(q) {
-        samplesUpdateCalc(q);
-        doRecalc();
-    }
-
-    function samplesUpdateCalc(q) {
-        document.querySelector('#samplesBox').value = Math.pow(2, q);
-        nsamp = document.querySelector('#samplesBox').value;
-        phs = Number(document.querySelector('#phsBox').value);
-        xv = new Array(nsamp);  // Sample x coordinates
-        yv = new Array(nsamp);
-        nMax = nsamp;
-        for (var i = 0; i < nMax; i++) {   // Samples range from -5 to 5
-            xv[i] = (i / nMax - 0.5) * xHi + phs
-        }
-    }
-
-    function doRecalc() {
-        valsUpdate();
-        plotDataUpdate();
-        plotsRedraw();
-    }
-
-    function valsUpdate() {
-
-        var b1 = document.querySelector('#B1Box').value;
-        var b3 = document.querySelector('#B3Box').value;
-        var b5 = document.querySelector('#B5Box').value;
-        var b7 = document.querySelector('#B7Box').value;
-
-        fv = new Array(nMax);
-        fv_im = new Array(nMax);
-        xv_half = new Array(nMax / 2 + 1);
-        fv_half = new Array(nMax / 2 + 1);
-        fv_im_half = new Array(nMax / 2 + 1);
-        fv_abs_half = new Array(nMax / 2 + 1);
-
-        for (i = 0; i < nMax; i++) {  // Sample y coordinates
-            if (xv[i] > phs) {
-                yv[i] = 0.5
-            } else {
-                yv[i] = -0.5
-            }
-            if (xv[i] === phs) {
-                yv[i] = -0.5
-            }
-        }
-
-        for (var i = 0; i < nCont; i++) {
-            xCont[i] = i / nCont * xHi - 0.5 * xHi + phs // 1001 element from -5 to 5
-        }
-
-        for (i = 0; i < nCont; i++) {  // Analytical
-            if (xCont[i] > phs) {
-                yCont[i] = 0.5
-            } else {
-                yCont[i] = -0.5
-            }
-            if (xCont[i] === phs) {
-                yCont[i] = -0.5
-            }
-            // Approximation
-            yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - phs)) + b3 * Math.sin(3. * 0.62832 * (xCont[i] - phs)) +
-                b5 * Math.sin(5. * 0.62832 * (xCont[i] - phs)) + b7 * Math.sin(7. * 0.62832 * (xCont[i] - phs))
-        }
-
-        for (i = 0; i < nMax; i++) {
-            fv[i] = yv[i];
-            fv_im[i] = 0;
-        }
-
-        miniFFT(fv, fv_im);
-
-        for (i = 0; i < nMax / 2 + 1; i++) {
-            xv_half[i] = i * fmin;
-            fv_half[i] = fv[i] * 2 / nMax;  // Real part
-            fv_im_half[i] = fv_im[i] * 2 / nMax;
-            fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5)
-        }
-
-    }
-
-    function plotDataUpdate() {
-        plt0.data[0].x = xv;
-        plt0.data[0].y = yv;
-        plt0.data[1].y = yCont;
-
-        plt1.data[0].y = fv_half;
-        plt1.data[0].x = xv_half;
-        plt1.data[1].y = fv_im_half;
-        plt1.data[1].x = xv_half;
-        plt1.data[2].x = xv_half;
-        plt1.data[2].y = fv_abs_half;
-    }
-
-    function plotsRedraw() {
-        Plotly.redraw(plt0);
-        Plotly.redraw(plt1);
-    }
-
-    function miniFFT(re, im) {
-        var N = re.length;
-        for (var i = 0; i < N; i++) {
-            for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
-                j = (j << 1) | (h & 1);
-            if (j > i) {
-                re[j] = [re[i], re[i] = re[j]][0];
-                im[j] = [im[i], im[i] = im[j]][0]
-            }
-        }
-
-        for (var hN = 1; hN * 2 <= N; hN *= 2)
-            for (i = 0; i < N; i += hN * 2)
-                for (j = i; j < i + hN; j++) {
-                    var cos = Math.cos(Math.PI * (j - i) / hN),
-                        sin = Math.sin(Math.PI * (j - i) / hN);
-                    var tre = re[j + hN] * cos + im[j + hN] * sin,
-                        tim = -re[j + hN] * sin + im[j + hN] * cos;
-                    re[j + hN] = re[j] - tre;
-                    im[j + hN] = im[j] - tim;
-                    re[j] += tre;
-                    im[j] += tim;
-                }
-    }
-
-    function createPlots() {
-
-        var layout1 = {
-            margin: {
-                t: 0
-            },
-            yaxis: {
-                title: 'Height Y (m)',
-                titlefont: {
-                    size: 36
-                }
-            },
-            xaxis: {
-                title: 'Time t (s)',
-                titlefont: {
-                    size: 36
-                }
-            }
-        };
-
-        var layout2 = {
-            margin: {
-                t: 0
-            },
-            yaxis: {
-                title: 'FFT',
-                titlefont: {
-                    size: 36
-                }
-            },
-            xaxis: {
-                title: 'Frequency (hz)',
-                titlefont: {
-                    size: 36
-                },
-                range: [0, 2]
-            }
-        };
-
-        var data0 = [{
-            x: xv,
-            y: yv,
-            type: 'scatter',
-            mode: 'markers',
-            marker: {
-                size: 10
-            },
-            name: 'samples'
-        },
-            {
-                x: xCont,
-                y: yCont,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'continuous'
-            },
-            {
-                x: xCont,
-                y: yApprox,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'approx'
-            }
-        ];
-
-        var data1 = [{
-            x: xv,
-            y: yv,
-            type: 'bar',
-            mode: 'markers',
-            name: 'Real'
-        },
-            {
-                x: xv,
-                y: yv,
-                type: 'bar',
-                mode: 'markers',
-                name: 'Imag'
-            },
-            {
-                x: xv,
-                y: yv,
-                type: 'bar',
-                mode: 'markers',
-                name: 'abs'
-            }
-        ];
-
-        plt0 = document.getElementById('plt0');
-        Plotly.newPlot(plt0, data0, layout1);
-
-        plt1 = document.getElementById('plt1');
-        Plotly.newPlot(plt1, data1, layout2);
-    }
+<input id="mySamples" type="text" class="span2" value="6" data-slider-id="mySamples" data-slider-min="2"
+       data-slider-max="10" data-slider-step="1" data-slider-value="6" data-value="6" oninput="samlesUpdate(value)"/>
+<p id="sampleSlider"></p>
+<script language="javascript">
+    var mySamples = new Slider('#mySamples');
+    mySamples.on('slideStop', function (value) {
+        document.getElementById('slider').innerHTML = value;
+    });
 </script>
-<font size=6>Questions</font><br>
-<font size=4>
-    Qa: Compare your empirical values of $b_i$ with the FT prediction $b_n=2/(\pi n)$.<br><br> Qb: What happens to the
-    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea that "bandwidth"
-    translates to "speed.")<br><br> Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
-    of samples $N$? (Adjust the samples to the maximum to see what happens when the number of samples increases.)</font>
+
+<label for="myPhase">Phase $\phi$</label>
+<input id="myPhase" type="text" class="span2" value="6" data-slider-id="myPhase" data-slider-min="-10"
+       data-slider-max="10" data-slider-step="0.1" data-slider-value="6" data-value="6" oninput="phaseUpdate(value)"/>
+<span id="phaseSlider"></span>
+<script language="javascript">
+    var myPhase = new Slider('#myPhase');
+    myPhase.on('slideStop', function (value) {
+        document.getElementById('slider').innerHTML = value;
+    });
+</script>
+
+<label for="b1">Amplitude $b_1$</label>
+<input id="b1" type="text" class="span2" value="0" data-slider-id="b1" data-slider-min="0" data-slider-max="1"
+       data-slider-step="0.01" data-slider-value="0" data-value="0" oninput="b1Update(value)"/>
+<span id="b1Slider"></span>
+<script language="javascript">
+    var b1 = new Slider('#b1');
+    b1.on('slideStop', function (value) {
+        document.getElementById('slider').innerHTML = value;
+    });
+</script>
+
+<label for="b3">Amplitude $b_3$</label>
+<input id="b3" type="text" class="span2" value="0" data-slider-id="b3" data-slider-min="0" data-slider-max="1"
+       data-slider-step="0.01" data-slider-value="0" data-value="0" oninput="b1Update(value)"/>
+<p id="b3Slider"></p>
+<script language="javascript">
+    var b3 = new Slider('#b3');
+    b3.on('slideStop', function (value) {
+        document.getElementById('slider').innerHTML = value;
+    });
+</script>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
