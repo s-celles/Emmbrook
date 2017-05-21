@@ -2,30 +2,35 @@
  * Created by Qi on 5/20/17.
  */
 
-var nCont = 1000
+var nMax = 64
+var nCont = nMax * 10
 var xHi = 10.
+var xv = new Array(nMax)
+var yv = new Array(nMax)
 var xCont = new Array(nCont)
 var yCont = new Array(nCont)
 var fmin = 1.0 / xHi
 
-nMax = document.getElementById("mySamples").value
-samplesUpdateCalc(nMax);
-
 document.querySelector('#myFreq').value = fmin
 document.querySelector('#myFreq').step = fmin
 document.querySelector('#myFreq').min = 0
-document.querySelector('#myFreq').max = 1.0 / xHi * (nMax / 4.0 + 1)
+document.querySelector('#myFreq').max = 1.0 / xHi * (nMax / 4.0)
 
 fval = document.getElementById("myFreq").value;
 
+for (var i = 0; i < nMax; i++) {
+    xv[i] = i / nMax * xHi;
+    yv[i] = Math.sin(2. * Math.pi * fval * xv[i])
+}
+
+ampRand = Math.random()
+phsRand = Math.random()
+freqRand = Math.random()
 
 for (var i = 0; i < nCont; i++) {
-    xCont[i] = i / nCont * xHi
+    xCont[i] = i / nCont * xHi;
+    yCont[i] = ampRand * Math.sin(phsRand + freqRand * 2. * 3.1415 * xCont[i])
 }
-;
-
-valsUpdate()
-createPlots()
 
 function freqUpdate(q) {
     document.querySelector('#freqBox').value = q;
@@ -39,21 +44,9 @@ function phaseUpdate(q) {
     document.querySelector('#phsBox').value = q;
     doRecalc();
 }
-function samplesUpdate(q) {
-    samplesUpdateCalc(q)
-    doRecalc()
-}
-function samplesUpdateCalc(q) {
-    document.querySelector('#samplesBox').value = Math.pow(2, q);
-    nsamp = document.querySelector('#samplesBox').value;
-    xv = new Array(nsamp)
-    yv = new Array(nsamp)
-    nMax = nsamp
-    for (var i = 0; i < nMax; i++) {
-        xv[i] = i / nMax * xHi
-    }
-    document.querySelector('#myFreq').max = 1.0 / xHi * (nMax / 4.0 + 1)
-}
+
+valsUpdate();
+createPlots();
 
 function doRecalc() {
     valsUpdate();
@@ -62,20 +55,20 @@ function doRecalc() {
 }
 
 function plotDataUpdate() {
-    plt0.data[0].x = xv
-    plt0.data[0].y = yv
-    plt0.data[1].y = yCont
-    plt1.data[0].y = fv_half
-    plt1.data[0].x = xv_half
-    plt1.data[1].y = fv_im_half
-    plt1.data[1].x = xv_half
-    plt1.data[2].x = xv_half
-    plt1.data[2].y = fv_abs_half
+    plt0.data[0].x = xv;
+    plt0.data[0].y = yv;
+    plt0.data[1].y = yCont;
+    plt1.data[0].y = fv_half;
+    plt1.data[0].x = xv_half;
+    plt1.data[1].y = fv_im_half;
+    plt1.data[1].x = xv_half;
+    plt1.data[2].x = xv_half;
+    plt1.data[2].y = fv_abs_half;
 }
 
 function plotsRedraw() {
-    Plotly.redraw(plt0)
-    Plotly.redraw(plt1)
+    Plotly.redraw(plt0);
+    Plotly.redraw(plt1);
 }
 
 function valsUpdate() {
@@ -84,35 +77,35 @@ function valsUpdate() {
     var amp = document.getElementById("myAmp").value;
     fv = new Array(nMax)
     fv_im = new Array(nMax)
-    xv_half = new Array(nMax / 2 + 1)
-    fv_half = new Array(nMax / 2 + 1)
-    fv_im_half = new Array(nMax / 2 + 1)
-    fv_abs_half = new Array(nMax / 2 + 1)
+    xv_half = new Array(nMax / 2)
+    fv_half = new Array(nMax / 2)
+    fv_im_half = new Array(nMax / 2)
+    fv_abs_half = new Array(nMax / 2)
 
     for (var i = 0; i < nMax; i++) {
         yv[i] = amp * Math.cos(1.0 * phs + 2. * 3.1415926536 * freq * xv[i])
     }
-    ;
+
     for (var i = 0; i < nCont; i++) {
         yCont[i] = amp * Math.cos(1.0 * phs + 2. * 3.1415926536 * freq * xCont[i])
     }
-    ;
+
 
     for (var i = 0; i < nMax; i++) {
         fv[i] = yv[i];
         fv_im[i] = 0;
     }
 
-    miniFFT(fv, fv_im)
+    miniFFT(fv, fv_im);
 
-    for (var i = 0; i < nMax / 2 + 1; i++) {
+    for (var i = 0; i < nMax / 2; i++) {
         xv_half[i] = i * fmin;
         fv_half[i] = fv[i] * 2 / nMax;
         fv_im_half[i] = fv_im[i] * 2 / nMax;
         fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5)
     }
-
 }
+
 
 function miniFFT(re, im) {
     var N = re.length;
@@ -155,13 +148,13 @@ function createPlots() {
     var data0 = [
         {x: xv, y: yv, type: 'scatter', mode: 'markers', marker: {size: 10}, name: 'samples'},
         {x: xCont, y: yCont, type: 'scatter', mode: 'lines', name: 'continuous'}
-    ];
+    ]
 
     var data1 = [
         {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'Real'},
         {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'Imag'},
         {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'abs'}
-    ];
+    ]
 
     plt0 = document.getElementById('plt0');
     Plotly.newPlot(plt0, data0, layout1);
