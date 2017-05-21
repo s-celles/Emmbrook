@@ -24,6 +24,12 @@
         MathJax.Hub.Config({
           tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
         });
+
+
+
+
+
+
     </script>
     <script type="text/javascript" src="assets/js/MathJax.js">
     </script>
@@ -73,7 +79,6 @@
     </div>
 </nav>
 
-
 <!-- Heading text-->
 <h1>Panel 5: Reconstruct a square wave</h1>
 <!--<div class="container">-->
@@ -90,46 +95,95 @@
 <!--</div>-->
 <!--</div>-->
 
-<!-- Sliders -->
-<label for="mySamples">Samples $N=2^q$</label>
-<input type="range" id="mySamples" min="2" max="10" value="6" step="1" oninput="samplesUpdate(value)">
-<output for="mySamples" id="samplesBox">0</output>
-
-<label for="myPhase">Phase $\phi$</label>
-<input type="range" id="myPhase" min="-4.9" max="4.9" value="0" step="0.1" oninput="phaseUpdate(value)">
-<output for="myPhase" id="phsBox">0</output>
-
-<label for="B1">Amplitude $b_1$</label>
-<input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
-<output for="B1" id="B1Box">0</output>
-
-<label for="B3">Amplitude $b_3$</label>
-<input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
-<output for="B3" id="B3Box">0</output>
-
-<label for="B5">Amplitude $b_5$</label>
-<input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
-<output for="B5" id="B5Box">0</output>
-
-<label for="B7">Amplitude $b_7$</label>
-<input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
-<output for="B7" id="B7Box">0</output>
-
-<p id="demo"></p>
-
-<!-- 2 Plots -->
-<table id="2plots">
+<table id="mainDiv">
     <tr>
-        <td>
-            <div id="plt0"></div>
+        <!-- 2 Plots -->
+        <td id="2plotsPane" style="width: 50%">
+            <table id="2plots">
+                <tr>
+                    <td>
+                        <div id="plt0"></div>
+                    </td>
+                    <td>
+                        <div id="plt1"></div>
+                    </td>
+                </tr>
+            </table>
         </td>
+
         <td>
-            <div id="plt1"></div>
+            <!-- Control Panel -->
+            <div id="controlPanel">
+                <!-- Sliders -->
+                <div>
+                    <div>
+                        <label for="mySamples" class="slideLables">Samples $N=2^q$:</label>
+                        <output for="mySamples" id="samplesBox" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="mySamples" min="2" max="10" value="6" step="1"
+                               oninput="samplesUpdate(value)">
+                    </div>
+                </div>
+
+
+                <div>
+                    <div>
+                        <label for="myPhase" class="slideLables">Phase $\phi$</label>
+                        <output for="myPhase" id="phsBox" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="myPhase" min="-4.9" max="4.9" value="0" step="0.1"
+                               oninput="phaseUpdate(value)">
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <label for="B1" class="slideLables">Amplitude $b_1$</label>
+                        <output for="B1" id="B1Box" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <label for="B3" class="slideLables">Amplitude $b_3$</label>
+                        <output for="B3" id="B3Box" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <label for="B5" class="slideLables">Amplitude $b_5$</label>
+                        <output for="B5" id="B5Box" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <label for="B7" class="slideLables">Amplitude $b_7$</label>
+                        <output for="B7" id="B7Box" class="slideOutputs">0</output>
+                    </div>
+                    <div>
+                        <input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
+                    </div>
+                </div>
+            </div>
         </td>
+
     </tr>
 </table>
 
-<h3> Questions </h3>
+<h3>Questions</h3>
 
 <p>
     Qa: Compare your empirical values of $b_i$ with the FT prediction $b_n=2/(\pi n)$.
@@ -154,7 +208,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script type="text/javascript" src="./assets/js/panel5.js"></script>
 <script type="text/javascript" src="./assets/js/panel5FFT.js"></script>
 </body>
 
