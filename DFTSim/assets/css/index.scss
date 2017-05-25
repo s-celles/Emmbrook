@@ -1,10 +1,3 @@
-.list-group {
-  height: auto;
-  max-width: 100%;
-  margin-top: 70px;
-  margin-inside: 0;
-}
-
 .jumbotron {
   //background-color: #f4511e;
   color: #000000;
@@ -13,30 +6,22 @@
   margin-top: 70px !important;
 }
 
-.navbar {
-  margin-bottom: 0;
-  //background-color: #f4511e;
-  z-index: 9999;
-  border: 0;
-  //font-size: 12px; // important
-  //line-height: 1.42857143; // important
-  //letter-spacing: 1px;
-  border-radius: 0;
-}
-
 .center-block {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  width: 80%;
 }
 
-.figure {
-  max-width: 80%;
-  margin: 0 auto; // In order to center a block level element
+#thumb-group {
+  margin-top: 30px;
 }
 
-.horz {
-  background-color: aqua;
+.thumbnail {
+  box-shadow: 1px;
+  border: 1px solid #ddd; // Gray border
+  border-radius: 4px; // Rounded border
+  padding: 5px; // Some padding
+  &:hover {
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+  }
 }
 
 .bg-f {
@@ -46,6 +31,7 @@
   margin-top: 30px;
 }
 
+// Navbar
 $bgDefault: #c9c9c9;
 $bgHighlight: #e6e6e6;
 $colDefault: #ffffff;
