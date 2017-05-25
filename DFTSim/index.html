@@ -64,74 +64,95 @@
 
 <div class="container">
     <div class="row">
-        <!-- A bootstrapy way -->
-        <img src="images/spectrum_analyzers.png" class="img-responsive center-block" alt="Spectral analysis.">
-    </div>
+        <a href="#" id="pop">
+            <!-- A bootstrapy way -->
+            <img src="images/spectrum_analyzers.png" class="img-responsive center-block" alt="Spectral analysis."
+                 id="prime-img">
+        </a>
+        <!-- The Modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="img-modal">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Spectral analysis</h4>
+                    </div>
+                    <div class="modal-body">
+                        <img src="" id="img-preview">
+                    </div>
+                    <!--<div class="modal-footer">-->
+                    <!--<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
 
-    <div class="row-fluid" id="thumb-group">
-        <!-- Content should be placed within columns, and only columns may be immediate children of rows. -->
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="thumbnail">
-                <a href="panel1.html">
-                    <img src="images/panel1.png" alt="Panel 1">
-                    <div class="caption">
-                        <p style="text-align: center">
-                            Fit a sinusoid: What's the frequency?
-                        </p>
-                    </div>
-                </a>
+        <div class="row" id="thumb-group">
+            <!-- Content should be placed within columns, and only columns may be immediate children of rows. -->
+            <div class="col-sm-6 col-md-4 col-lg-4">
+                <div class="thumbnail">
+                    <a href="panel1.html">
+                        <img src="images/panel1.png" alt="Panel 1">
+                        <div class="caption">
+                            <p style="text-align: center">
+                                Fit a sinusoid: What's the frequency?
+                            </p>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="thumbnail">
-                <a href="panel2.html">
-                    <img src="images/panel1.png" alt="Panel 1">
-                    <div class="caption">
-                        <p style="text-align: center">
-                            Fit a sinusoid: amplitude, frequency, phase.
-                        </p>
-                    </div>
-                </a>
+            <div class="col-sm-6 col-md-4 col-lg-4">
+                <div class="thumbnail">
+                    <a href="panel2.html">
+                        <img src="images/panel1.png" alt="Panel 1">
+                        <div class="caption">
+                            <p style="text-align: center">
+                                Fit a sinusoid: amplitude, frequency, phase.
+                            </p>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="thumbnail">
-                <a href="panel3.html">
-                    <img src="images/panel1.png" alt="Panel 1">
-                    <div class="caption">
-                        <p style="text-align: center">
-                            How to read the DFT of a single sinusoid.
-                        </p>
-                    </div>
-                </a>
+            <div class="col-sm-6 col-md-4 col-lg-4">
+                <div class="thumbnail">
+                    <a href="panel3.html">
+                        <img src="images/panel1.png" alt="Panel 1">
+                        <div class="caption">
+                            <p style="text-align: center">
+                                How to read the DFT of a single sinusoid.
+                            </p>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="thumbnail">
-                <a href="panel4.html">
-                    <img src="images/panel1.png" alt="Panel 1">
-                    <div class="caption">
-                        <p style="text-align: center">
-                            Effect of sampling.
-                        </p>
-                    </div>
-                </a>
+            <div class="col-sm-6 col-md-4 col-lg-4">
+                <div class="thumbnail">
+                    <a href="panel4.html">
+                        <img src="images/panel1.png" alt="Panel 1">
+                        <div class="caption">
+                            <p style="text-align: center">
+                                Effect of sampling.
+                            </p>
+                        </div>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-6 col-md-4 col-lg-4">
-            <div class="thumbnail">
-                <a href="panel5.html">
-                    <img src="images/panel1.png" alt="Panel 1">
-                    <div class="caption">
-                        <p style="text-align: center">
-                            Reproduce a square wave with successive harmonics.
-                        </p>
-                    </div>
-                </a>
+            <div class="col-sm-6 col-md-4 col-lg-4">
+                <div class="thumbnail">
+                    <a href="panel5.html">
+                        <img src="images/panel1.png" alt="Panel 1">
+                        <div class="caption">
+                            <p style="text-align: center">
+                                Reproduce a square wave with successive harmonics.
+                            </p>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 
@@ -144,14 +165,12 @@
 </footer>
 
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 <!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <!-- User script -->
 <script src="assets/js/index.js" type="text/javascript"></script>

@@ -1,9 +1,23 @@
 .jumbotron {
-  //background-color: #f4511e;
   color: #000000;
   position: relative;
   padding: 5px !important;
   margin-top: 70px !important;
+}
+
+#prime-img {
+  &:hover {
+    opacity: 0.5;
+  }
+}
+
+.modal {
+  box-shadow: #010101;
+}
+
+#img-preview {
+  width: 80%;
+  margin-left: 10%;
 }
 
 .center-block {
@@ -11,16 +25,17 @@
 }
 
 #thumb-group {
-  margin-top: 30px;
+  margin-top: 50px;
 }
 
 .thumbnail {
+  background-color: white;
   box-shadow: 1px;
   border: 1px solid #ddd; // Gray border
   border-radius: 4px; // Rounded border
   padding: 5px; // Some padding
   &:hover {
-    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 }
 
