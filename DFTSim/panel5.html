@@ -20,8 +20,11 @@
     <link rel="stylesheet" href="assets/css/panel5.css" type="text/css">
 
     <!-- CDN script -->
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+
     </script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML">
@@ -68,7 +71,7 @@
                     <a class="nav-link" href="panel4.html">Panel 4</a>
                 </li>
             </ul>
-        </div><!-- /.navbar-collapse -->
+        </div>
     </div>
 </nav>
 
@@ -83,93 +86,113 @@
     </p>
 </div>
 
-<table id="mainDiv">
-    <tr>
-        <!-- 2 Plots -->
-        <td id="2plotsPane" style="width: 50%">
-            <table id="2plots">
-                <tr>
-                    <td>
-                        <div id="plt0"></div>
-                    </td>
-                    <td>
-                        <div id="plt1"></div>
-                    </td>
-                </tr>
-            </table>
-        </td>
-
-        <td>
-            <!-- Control Panel -->
-            <div id="controlPanel">
-                <!-- Sliders -->
-                <div>
-                    <div>
-                        <label for="mySamples" class="slideLables">Samples $N=2^q$:</label>
-                        <output for="mySamples" id="samplesBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="mySamples" min="2" max="10" value="6" step="1"
-                               oninput="samplesUpdate(value)">
-                    </div>
-                </div>
-
-
-                <div>
-                    <div>
-                        <label for="myPhase" class="slideLables">Phase $\phi$</label>
-                        <output for="myPhase" id="phsBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="myPhase" min="-1" max="1" value="0" step="0.01"
-                               oninput="phaseUpdate(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="B1" class="slideLables">Amplitude $b_1$</label>
-                        <output for="B1" id="B1Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="B3" class="slideLables">Amplitude $b_3$</label>
-                        <output for="B3" id="B3Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="B5" class="slideLables">Amplitude $b_5$</label>
-                        <output for="B5" id="B5Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="B7" class="slideLables">Amplitude $b_7$</label>
-                        <output for="B7" id="B7Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
-                    </div>
-                </div>
+<div class="container">
+    <table id="mainDiv">
+        <div class="row">
+            <!-- 2 Plots -->
+            <div class="col-md-4">
+                <div id="plt0"></div>
             </div>
-        </td>
+            <div class="col-md-4">
+                <div id="plt1"></div>
+            </div>
+        </div>
+        <tr>
 
-    </tr>
-</table>
+            <!--<td id="2plotsPane" style="width: 50%">-->
+                <!--<table id="2plots">-->
+                    <!--<tr>-->
+                        <!--<td>-->
+
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--<div id="plt1"></div>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            <!--</td>-->
+
+            <td>
+                <!-- Control Panel -->
+                <div id="controlPanel">
+                    <!-- Sliders -->
+                    <div>
+                        <div>
+                            <label for="mySamples" class="slideLables">Samples $N=2^q$:</label>
+                            <output for="mySamples" id="samplesBox" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="mySamples" min="2" max="10" value="6" step="1"
+                                   oninput="samplesUpdate(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="yOffset" class="slideLables">y offset:</label>
+                            <output for="yOffset" id="yBox" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="yOffset" min="0" max="1" value="0" step="0.01"
+                                   oninput="yUpdate(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="myPhase" class="slideLables">Phase $\phi$</label>
+                            <output for="myPhase" id="phsBox" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="myPhase" min="-1" max="1" value="0" step="0.01"
+                                   oninput="phaseUpdate(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="B1" class="slideLables">Amplitude $b_1$</label>
+                            <output for="B1" id="B1Box" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="B3" class="slideLables">Amplitude $b_3$</label>
+                            <output for="B3" id="B3Box" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="B5" class="slideLables">Amplitude $b_5$</label>
+                            <output for="B5" id="B5Box" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="B7" class="slideLables">Amplitude $b_7$</label>
+                            <output for="B7" id="B7Box" class="slideOutputs">0</output>
+                        </div>
+                        <div>
+                            <input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
 
 <h3>Questions</h3>
 

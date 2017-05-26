@@ -24,7 +24,12 @@ function getPhase() {
 }
 
 function phaseUpdate(q) {   // Update slide bar
-    document.querySelector('#phsBox').value = q;
+    document.querySelector('#phsBox').value = q;  // For slide bar display
+    doRecalc();   // For plot update
+}
+
+function yUpdate(q) {
+    document.querySelector('#yBox').value = q;
     doRecalc();
 }
 
@@ -66,7 +71,7 @@ function samplesUpdateCalc(q) {
     nsamp = document.querySelector('#samplesBox').value;
     phs = Number(document.querySelector('#phsBox').value);
     nMax = nsamp;
-    xvUpdate(phs);
+    xvUpdate();
 }
 
 function doRecalc() {
@@ -83,6 +88,7 @@ function valsUpdate() {
     var b3 = document.querySelector('#B3Box').value;
     var b5 = document.querySelector('#B5Box').value;
     var b7 = document.querySelector('#B7Box').value;
+    yOff = Number(document.querySelector('#yBox').value);
 
     fv = new Array(nMax);
     fv_im = new Array(nMax);
@@ -93,12 +99,12 @@ function valsUpdate() {
 
     for (i = 0; i < nMax; i++) {  // Sample y coordinates
         if (xv[i] > phs) {
-            yv[i] = 0.5
+            yv[i] = 0.5 + yOff
         } else {
-            yv[i] = -0.5
+            yv[i] = -0.5 + yOff
         }
         if (xv[i] === phs) {
-            yv[i] = -0.5
+            yv[i] = -0.5 + yOff
         }
     }
 
@@ -108,17 +114,17 @@ function valsUpdate() {
 
     for (i = 0; i < nCont; i++) {  // Analytical
         if (xCont[i] > phs) {
-            yCont[i] = 0.5
+            yCont[i] = 0.5 + yOff
         } else {
-            yCont[i] = -0.5
+            yCont[i] = -0.5 + yOff
         }
         if (xCont[i] === phs) {
-            yCont[i] = -0.5
+            yCont[i] = -0.5 + yOff
         }
         // Approximation
         // sin \omega_i t, \omega_i = 2\pi/10*i
         yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - phs)) + b3 * Math.sin(3. * 0.62832 * (xCont[i] - phs)) +
-            b5 * Math.sin(5. * 0.62832 * (xCont[i] - phs)) + b7 * Math.sin(7. * 0.62832 * (xCont[i] - phs))
+            b5 * Math.sin(5. * 0.62832 * (xCont[i] - phs)) + b7 * Math.sin(7. * 0.62832 * (xCont[i] - phs)) + yOff
     }
 
     for (i = 0; i < nMax; i++) {
@@ -206,7 +212,8 @@ function createPlots() {
             title: 'FFT',
             titlefont: {
                 size: 24
-            }
+            },
+            range: [-0.5, 1]
         },
         xaxis: {
             title: 'Frequency (hz)',
