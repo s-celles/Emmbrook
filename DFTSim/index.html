@@ -49,44 +49,45 @@
     </div>
 </nav>
 
-
-<!-- Title -->
-<div class="container">
-    <div class="jumbotron text-center">
-        <h2>
-            Spectral analysis: learn about fourier transforms
-        </h2>
-        <p>
-            These interactive exercises will help you get a feel for what the discrete Fourier transform (DFT) does.
-        </p>
+<section id="overview">
+    <!-- Title -->
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h2>
+                Spectral analysis: learn about fourier transforms
+            </h2>
+            <p>
+                These interactive exercises will help you get a feel for what the discrete Fourier transform (DFT) does.
+            </p>
+        </div>
     </div>
-</div>
 
-<div class="container">
-    <a href="#" id="pop">
-        <!-- A bootstrapy way -->
-        <img src="images/spectrum_analyzers.png" class="img-responsive center-block" alt="Spectral analysis."
-             id="prime-img">
-    </a>
-    <!-- The Modal -->
-    <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="img-modal">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">Spectral analysis</h4>
-                </div>
-                <div class="modal-body">
-                    <img src="" id="img-preview">
+    <div class="container">
+        <a href="#" id="pop">
+            <!-- A bootstrapy way -->
+            <img src="images/spectrum_analyzers.png" class="img-responsive center-block" alt="Spectral analysis."
+                 id="prime-img">
+        </a>
+        <!-- The Modal -->
+        <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="img-modal">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel">Spectral analysis</h4>
+                    </div>
+                    <div class="modal-body">
+                        <img src="" id="img-preview">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<section class="success">
+<section id="preview">
     <div class="container">
         <div class="row-fluid" id="thumb-group">
             <!-- Content should be placed within columns, and only columns may be immediate children of rows. -->
@@ -155,7 +156,7 @@
 </section>
 
 <!-- Footer -->
-<footer class="container-fluid bg-f text-center">
+<footer class="container-fluid footer text-center">
     <a href="#home" title="To Top">
         <span class="glyphicon glyphicon-chevron-up"></span>
     </a>
