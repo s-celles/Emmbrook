@@ -2,9 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>EM propagation at oblique incidence to an interface between dissimilar dielectric media.</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/oblique.css" type="text/css">
 </head>
+
 <body>
-$END$
+<div class="container">
+    <!-- Heading text-->
+    <div class="page-header">
+        <h1>EM propagation at oblique incidence
+        </h1>
+    </div>
+    <p>
+        From EM-class we know
+        $$
+        \begin{align}
+        E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_I, \\
+        \epsilon_1 (-E_I \sin \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T,
+        \end{align}
+        $$
+        this can be simplified to
+        $$
+        \begin{align}
+        1 + r &= \alpha t, \\
+        1 - r &= \beta t,
+        \end{align}
+        $$
+        where \( \alpha \) and \( \beta \) are defined as
+        $$
+        \begin{align}
+        \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I }, \\
+        \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_2 }.
+        \end{align}
+        $$
+        From above we can derive
+        $$
+        \begin{align}
+        t &= \frac{ 2 }{ \alpha + \beta }, \\
+        r &= \frac{ \alpha - \beta }{ \alpha + \beta }.
+        \end{align}
+        $$
+        We can even delve further that
+        \[
+        \begin{align}
+        \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\
+        \beta &= \arctan \theta_B,
+        \end{align}
+        \]
+        where \( \theta_B \) is called Brewster angle.
+    </p>
+
+    <div id="appDiv">
+        <div id="controlPanel">
+            <!-- Slide bars -->
+            <div>
+                <div>
+                    <label for="thetaI" class="slideLables">\( \theta_I \):</label>
+                    <input id="thetaI" min="0" max="90" step="1" value="45" class="sliderBars">
+                </div>
+
+                <div>
+                    <label for="n1" class="slideLables">\( n_1 \):</label>
+                    <input id="n1" min="1" max="10" step="1" value="5" class="sliderBars">
+                </div>
+
+                <div>
+                    <label for="n2" class="slideLables">\( n_2 \):</label>
+                    <input id="n2" min="1" max="10" step="1" value="5" class="sliderBars">
+                </div>
+            </div>
+        </div>
+
+        <div id="canvasDiv">
+            <!-- Plot -->
+            <div id="plt"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.13.3/math.min.js"></script>
+
+<!-- User script -->
+<!--<script type="text/javascript" src="assets/js/oblique.js"></script>-->
+
+<script lang="javascript">
+    var eFieldIncident = 1;
+    var eFieldReflect;
+    var eFieldTransmit;
+    var epsilon1 = 1;  // Permittivity
+    var epsilon2 = 2;  // Permittivity
+
+    var n1Slider = $('#n1').bootstrapSlider();
+    var n2Slider = $('#n2').bootstrapSlider();
+    var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
+    var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
+
+    var thetaISlider = $('#thetaI').bootstrapSlider();
+    var thetaI = thetaISlider.bootstrapSlider('getValue');
+    // var thetaR = jQuery.extend({}, thetaIncident);  // Shallow copy thetaIncident into {}
+    var thetaT = Math.asin(Math.sin(thetaI) * n1 / n2);
+
+    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(thetaI), 2)) / Math.cos(thetaI);
+    var beta = n1 / n2 * epsilon2 / epsilon1;
+    var t = 2 / (alpha + beta);  // Transmission amplitude
+    var r = (alpha - beta) / (alpha + beta);  // Reflection amplitude
+    eFieldReflect = r * eFieldIncident;
+    eFieldTransmit = t * eFieldIncident;
+
+    // UI interaction
+    thetaISlider.bootstrapSlider({
+        formatter: function (value) {
+            return 'Current value: ' + value;  // For displaying value
+        }
+    });
+
+    n1Slider.bootstrapSlider({
+        formatter: function (value) {
+            return 'Current value: ' + value;  // For displaying value
+        }
+    });
+
+    n2Slider.bootstrapSlider({
+        formatter: function (value) {
+            return 'Current value: ' + value;  // For displaying value
+        }
+    });
+
+    var sliderBars = document.getElementsByClassName('sliderBars');
+    for (var i = 0; i < sliderBars.length; i += 1) {
+        sliderBars[i].setAttribute('orientation', 'vertical');
+    }
+
+    // Plot
+    var data = [
+        {
+            z: [[1, 20, 30], [20, 1, 60], [30, 60, 1]],
+            type: 'heatmap'
+        }
+    ];
+
+    Plotly.newPlot('plt', data)
+</script>
 </body>
 </html>
