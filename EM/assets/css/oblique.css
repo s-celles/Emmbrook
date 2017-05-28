@@ -1,8 +1,11 @@
-#controlPanel {
-  margin: 20px; }
+.sliders {
+  margin: 0 auto; }
 
 .slider {
-  margin-top: 20px; }
+  text-align: center; }
+
+.slideLables {
+  padding: 5px; }
 
 #appDiv {
   background-color: #E6E6E6;
