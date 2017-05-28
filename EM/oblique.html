@@ -57,12 +57,12 @@
         \end{align}
         $$
         We can even delve further that
-        \[
+        $$
         \begin{align}
         \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\
         \beta &= \arctan \theta_B,
         \end{align}
-        \]
+        $$
         where \( \theta_B \) is called Brewster angle.
     </p>
 
@@ -129,7 +129,6 @@
 
     var thetaISlider = $('#thetaI').bootstrapSlider();
     var thetaI = thetaISlider.bootstrapSlider('getValue');
-    // var thetaR = jQuery.extend({}, thetaIncident);  // Shallow copy thetaIncident into {}
     var thetaT = Math.asin(Math.sin(thetaI) * n1 / n2);
 
     var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(thetaI), 2)) / Math.cos(thetaI);
