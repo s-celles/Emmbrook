@@ -1,8 +1,8 @@
 #controlPanel {
   margin: 20px; }
 
-.sliderBars {
-  margin-top: 30px; }
+.slider {
+  margin-top: 20px; }
 
 #appDiv {
   background-color: #E6E6E6;
@@ -13,5 +13,9 @@
   width: 98%;
   margin-left: 1%;
   margin-bottom: 1%; }
+
+.container {
+  width: 90%;
+  margin-left: 5%; }
 
 /*# sourceMappingURL=oblique.css.map */
