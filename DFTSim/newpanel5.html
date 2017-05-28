@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Panel 5</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
+          rel="stylesheet"/>
+
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/newpanel5.css" type="text/css">
+
+</head>
+<body>
+
+<!-- Heading text-->
+<div class="page-header">
+    <h1>Panel 5: Reconstruct a square wave
+        <small>with successive harmonics.</small>
+    </h1>
+</div>
+<p>
+    Using four frequency components \( i=1,3,5,7 \), approximate the square wave.<br>
+    The approximation shows \( \sum_{i=1}^4 b_i\sin{\omega_i t} \), \( \omega_i = i 2\pi/\tau \).<br>
+    Compare your empirical values with the prediction from the DFT below.<br>
+</p>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-8 col-lg-8" id="plots">
+            <div class="row">
+                <div id="plt0" class="col-sm-6 col-md-6 col-lg-6"></div>
+                <div id="plt1" class="col-sm-6 col-md-6 col-lg-6"></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-4" id="controlPanel">
+            <div id="sliders">
+                <!-- Slide bars -->
+                <div class="slider col">
+                    <label for="mySamples" class="slideLables">Samples \( N=2^q \):</label>
+                    <input id="mySamples" min="2" max="10" value="6" step="1" class="sliderBars">
+                </div>
+
+                <div class="slider col">
+                    <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
+                    <input id="myPhase" min="-1" max="1" value="0" step="0.01" class="sliderBars">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section>
+    <h3>Questions</h3>
+    <p>
+        Qa: Compare your empirical values of \( b_i \) with the FT prediction \( b_n=2/(\pi n) \).
+    </p>
+
+    <p>
+        Qb: What happens to the
+        slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea that
+        "bandwidth" translates to "speed.")
+    </p>
+
+    <p>
+        Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
+        of samples \( N$? (Adjust the samples to the maximum to see what happens when the number of samples increases.)
+    </p>
+</section>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel5.js"></script>
+</body>
+</html>
