@@ -11,13 +11,12 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
           rel="stylesheet"/>
 
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/newpanel5.css" type="text/css">
-
 </head>
 <body>
 
@@ -53,6 +52,26 @@
                     <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
                     <input id="myPhase" min="-1" max="1" value="0" step="0.01" class="sliderBars">
                 </div>
+
+                <div class="slider col">
+                    <label for="B1" class="slideLables">Amplitude \( b_1 \)</label>
+                    <input id="B1" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                </div>
+
+                <div class="slider col">
+                    <label for="B3" class="slideLables">Amplitude \( b_3 \)</label>
+                    <input id="B3" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                </div>
+
+                <div class="slider col">
+                    <label for="B5" class="slideLables">Amplitude \( b_5 \)</label>
+                    <input id="B5" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                </div>
+
+                <div class="slider col">
+                    <label for="B7" class="slideLables">Amplitude \( b_7 \)</label>
+                    <input id="B7" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                </div>
             </div>
         </div>
     </div>
@@ -73,7 +92,7 @@
 
     <p>
         Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
-        of samples \( N$? (Adjust the samples to the maximum to see what happens when the number of samples increases.)
+        of samples \( N \)? (Adjust the samples to the maximum to see what happens when the number of samples increases.)
     </p>
 </section>
 
@@ -82,7 +101,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
