@@ -22,6 +22,8 @@ var b1 = b1Slider.bootstrapSlider('getValue');
 var b3 = b3Slider.bootstrapSlider('getValue');
 var b5 = b5Slider.bootstrapSlider('getValue');
 var b7 = b7Slider.bootstrapSlider('getValue');
+var plt0 = document.getElementById('plt0');
+var plt1 = document.getElementById('plt1');
 
 for (var i = 0; i < nCont; i++) {
     /* xCont will not change in this simulation.
@@ -29,6 +31,7 @@ for (var i = 0; i < nCont; i++) {
     xCont[i] = i / nCont * xHi - 0.5 * xHi
 }
 
+// Initialize
 xvUpdate();
 yvUpdate();
 yCountUpdate();
@@ -82,40 +85,10 @@ function yApproxUpdate() {
     }
 }
 
-// UI interaction
+// Interactive interfaces
 sampleSlider.bootstrapSlider({
     formatter: function (value) {
-        return 'Current value: ' + Math.pow(2, value);  // For displaying value
-    }
-});
-
-phaseSlider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
-});
-
-b1Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
-});
-
-b3Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
-});
-
-b5Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
-});
-
-b7Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
+        return Math.pow(2, value);
     }
 });
 
@@ -123,7 +96,10 @@ sampleSlider.on('slideStop', function () {
     nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Change "global" value
     xvUpdate();
     yvUpdate();
-    replot()
+    FFTUpdate();
+    plot();
+
+    $('#samplesSliderVal').text(nSample)
 });
 
 phaseSlider.on('slideStop', function () {
@@ -131,31 +107,46 @@ phaseSlider.on('slideStop', function () {
     yvUpdate();
     yCountUpdate();
     yApproxUpdate();
-    plot()
+    FFTUpdate();
+    plot();
+
+    $('#phaseSliderVal').text(phase)
 });
 
 b1Slider.on('slideStop', function () {
     b1 = b1Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
-    plot()
+    FFTUpdate();
+    plot();
+
+    $('#b1SliderVal').text(b1)
 });
 
 b3Slider.on('slideStop', function () {
     b3 = b3Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
-    plot()
+    FFTUpdate();
+    plot();
+
+    $('#b3SliderVal').text(b3)
 });
 
 b5Slider.on('slideStop', function () {
     b5 = b5Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
-    plot()
+    FFTUpdate();
+    plot();
+
+    $('#b5SliderVal').text(b5)
 });
 
 b7Slider.on('slideStop', function () {
     b7 = b7Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
-    plot()
+    FFTUpdate();
+    plot();
+
+    $('#b7SliderVal').text(b7)
 });
 
 // FFT
@@ -185,12 +176,12 @@ function miniFFT(re, im) {
 }
 
 function FFTUpdate() {
-    var fv = new Array(nSample);
-    var fv_im = new Array(nSample);
-    var xv_half = new Array(nSample / 2 + 1);
-    var fv_half = new Array(nSample / 2 + 1);
-    var fv_im_half = new Array(nSample / 2 + 1);
-    var fv_abs_half = new Array(nSample / 2 + 1);
+    fv = new Array(nSample);  // Cannot add 'var'
+    fv_im = new Array(nSample);
+    xv_half = new Array(nSample / 2 + 1);
+    fv_half = new Array(nSample / 2 + 1);
+    fv_im_half = new Array(nSample / 2 + 1);
+    fv_abs_half = new Array(nSample / 2 + 1);
 
     for (var i = 0; i < nSample; i++) {
         fv[i] = yv[i];  // Real part
@@ -320,9 +311,7 @@ function createPlots() {
         }
     ];
 
-    var plt0 = document.getElementById('plt0');
     Plotly.newPlot(plt0, data0, layout0);
 
-    var plt1 = document.getElementById('plt1');
     Plotly.newPlot(plt1, data1, layout1)
 }

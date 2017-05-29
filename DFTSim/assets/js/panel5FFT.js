@@ -12,8 +12,6 @@ var fmin = 1.0 / xHi;  // \alpha_min
 nMax = document.getElementById("mySamples").value;
 samplesUpdateCalc(nMax);   // Initialize
 
-fval = 1.0;  // Does not do anything
-
 valsUpdate();
 createPlots();   // Initial plot
 

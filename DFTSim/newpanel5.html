@@ -26,7 +26,7 @@
             <!-- Heading text-->
             <div class="page-header">
                 <h1>Panel 5: Reconstruct a square wave
-                    <small>with successive harmonics.</small>
+                    <small>with successive harmonics</small>
                 </h1>
             </div>
             <p>
@@ -38,57 +38,71 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="appDiv">
     <div class="row">
-        <div class="col-sm-6 col-md-4 col-lg-4" id="controlPanel">
+        <div class="col" id="controlPanel">
+            <h4>
+                DFT simulator
+            </h4>
             <div id="sliders">
                 <!-- Slide bars -->
                 <div class="slider col">
-                    <label for="mySamples" class="slideLables">Samples \( N=2^q \):</label>
+                    <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
                     <input id="mySamples" min="2" max="10" value="6" step="1" class="sliderBars">
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="samplesSliderVal"></span></span>
                 </div>
 
                 <div class="slider col">
-                    <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
-                    <input id="myPhase" min="-1" max="1" value="0" step="0.01" class="sliderBars">
+                    <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
+                    <input id="myPhase" data-slider-min="-1" data-slider-max="1" data-slider-value="0"
+                           data-slider-step="0.01" class="sliderBars">
+                    <!-- You will need data-slider- API, or else step cannot be smaller than 1. -->
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="phaseSliderVal"></span></span>
                 </div>
 
                 <div class="slider col">
                     <label for="b1" class="slideLables">Amplitude \( b_1 \)</label>
-                    <input id="b1" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                    <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0" data-slider-step="0.01"
+                           class="sliderBars">
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="b1SliderVal"></span></span>
                 </div>
 
                 <div class="slider col">
                     <label for="b3" class="slideLables">Amplitude \( b_3 \)</label>
-                    <input id="b3" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                    <input id="b3" data-slider-min="0" data-slider-max="1" data-slider-value="0" data-slider-step="0.01"
+                           class="sliderBars">
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="b3SliderVal"></span></span>
                 </div>
 
                 <div class="slider col">
                     <label for="b5" class="slideLables">Amplitude \( b_5 \)</label>
-                    <input id="b5" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                    <input id="b5" data-slider-min="0" data-slider-max="1" data-slider-value="0" data-slider-step="0.01"
+                           class="sliderBars">
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="b5SliderVal"></span></span>
                 </div>
 
                 <div class="slider col">
                     <label for="b7" class="slideLables">Amplitude \( b_7 \)</label>
-                    <input id="b7" min="0" max="1" value="0" step="0.01" class="sliderBars">
+                    <input id="b7" data-slider-min="0" data-slider-max="1" data-slider-value="0" data-slider-step="0.01"
+                           class="sliderBars">
+                    <span class="currentSliderValLabel">Current Slider Value: <span id="b7SliderVal"></span></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col" id="plots">
+    <div class="row" id="plots">
+        <div class="col">
             <div id="row">
-                <div class="col">
+                <div class="col-sm-6 col-md-4 col-lg-4" id="plt0screen">
                     <div id="plt0"></div>
                 </div>
-                <div class="col">
+                <div class="col-sm-6 col-md-4 col-lg-4" id="plt1screen">
                     <div id="plt1"></div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 

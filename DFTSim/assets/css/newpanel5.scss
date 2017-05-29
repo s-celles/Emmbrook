@@ -1,0 +1,33 @@
+#appDiv {
+  background-color: #E6E6E6;
+  border: 5px solid #D5D5D5;
+  border-radius: 10px;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.slider {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.currentSliderValLabel {
+  margin-left: 10px;
+}
+
+#plots {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+#plt0screen, #plt1screen {
+  margin: 1%;
+  width: 48%;
+  border: 5px solid #dbe0e1;
+  border-radius: 10px;
+  padding: 0 0;
+}
+
+.container {
+  width: 80%;
+}
