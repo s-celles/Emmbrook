@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,34 +11,21 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <!-- User css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
           rel="stylesheet"/>
-    <link rel="stylesheet" href="assets/css/panel5.css" type="text/css">
 
-    <!-- CDN script -->
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-    </script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML">
-    </script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.js"></script>
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/newpanel5.css" type="text/css">
 </head>
-
 <body>
 
-<!-- Nav -->
 <!-- Navigation bar -->
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" aria-expanded="false">
                 <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
                 <span class="sr-only">Toggle navigation</span>
                 <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
@@ -48,154 +34,171 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
-
-        <div class="collapse navbar-collapse">
-            <ul class="nav nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.html">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel1.html">Panel 1</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel2.html">Panel 2</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel3.html">Panel 3</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel4.html">Panel 4</a>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link active" href="index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel2.html">Panel 2</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel3.html">Panel 3</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel4.html">Panel 4</a>
+            </li>
+        </ul>
     </div>
 </nav>
 
-<!-- Heading text-->
-<h1>Panel 5: Reconstruct a square wave</h1>
 
-<div class="well">
-    <p>
-        Using four frequency components $i=1,3,5,7$, approximate the square wave.<br>
-        The approximation shows $\sum_{i=1}^4 b_i\sin{\omega_i t}$, $\omega_i = i 2\pi/\tau$<br>
-        Compare your empirical values with the prediction from the DFT below.<br>
-    </p>
-</div>
-
-<table id="mainDiv">
-    <tr>
-        <!-- 2 Plots -->
-        <td id="2plotsPane" style="width: 50%">
-            <table id="2plots">
-                <tr>
-                    <td>
-                        <div id="plt0"></div>
-                    </td>
-                    <td>
-                        <div id="plt1"></div>
-                    </td>
-                </tr>
-            </table>
-        </td>
-
-        <td>
-            <!-- Control Panel -->
-            <div id="controlPanel">
-                <!-- Sliders -->
-                <div>
-                    <div>
-                        <label for="mySamples" class="slideLables">Samples $N=2^q$:</label>
-                        <output for="mySamples" id="samplesBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="mySamples" min="2" max="10" value="8" step="1"
-                               oninput="samplesUpdate(value)">
-                    </div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>Panel 5: Reconstruct a square wave
+                        <small>with successive harmonics</small>
+                    </h1>
                 </div>
+                <p>
+                    Using four frequency components \( i=1,3,5,7 \), approximate the square wave.<br>
+                    The approximation shows \( \sum_{i=1}^4 b_i\sin{\omega_i t} \), \( \omega_i = i 2\pi/\tau \).<br>
+                    Compare your empirical values with the prediction from the DFT below.<br>
+                </p>
+            </div>
+        </div>
+    </div>
 
 
-                <div>
-                    <div>
-                        <label for="myPhase" class="slideLables">Phase $\phi$</label>
-                        <output for="myPhase" id="phsBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="myPhase" min="-1" max="1" value="0" step="0.01"
-                               oninput="phaseUpdate(value)">
-                    </div>
-                </div>
+    <div class="container" id="appDiv">
+        <div class="row">
+            <div class="col" id="controlPanel">
+                <h4>
+                    DFT simulator
+                </h4>
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row justify-content-md-center">
+                        <div class="slider col">
+                            <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
+                            <input id="mySamples" min="2" max="10" value="6" step="1" class="sliderBars">
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="samplesSliderVal"></span></span>
+                        </div>
 
-                <div>
-                    <div>
-                        <label for="B1" class="slideLables">Amplitude $b_1$</label>
-                        <output for="B1" id="B1Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B1" min="0" max="1" value="0" step="0.01" oninput="B1Update(value)">
-                    </div>
-                </div>
+                        <div class="slider col">
+                            <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
+                            <input id="myPhase" data-slider-min="-4.99" data-slider-max="4.99" data-slider-value="0"
+                                   data-slider-step="0.01" class="sliderBars">
+                            <!-- You will need data-slider- API, or else step cannot be smaller than 1. -->
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="phaseSliderVal"></span></span>
+                        </div>
 
-                <div>
-                    <div>
-                        <label for="B3" class="slideLables">Amplitude $b_3$</label>
-                        <output for="B3" id="B3Box" class="slideOutputs">0</output>
+                        <div class="slider col">
+                            <label for="b1" class="slideLables">Amplitude \( b_1 \)</label>
+                            <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01"
+                                   class="sliderBars">
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="b1SliderVal"></span></span>
+                        </div>
                     </div>
-                    <div>
-                        <input type="range" id="B3" min="0" max="1" value="0" step="0.01" oninput="B3Update(value)">
-                    </div>
-                </div>
 
-                <div>
-                    <div>
-                        <label for="B5" class="slideLables">Amplitude $b_5$</label>
-                        <output for="B5" id="B5Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B5" min="0" max="1" value="0" step="0.01" oninput="B5Update(value)">
-                    </div>
-                </div>
+                    <div class="row justify-content-md-center">
+                        <div class="slider col">
+                            <label for="b3" class="slideLables">Amplitude \( b_3 \)</label>
+                            <input id="b3" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01"
+                                   class="sliderBars">
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="b3SliderVal"></span></span>
+                        </div>
 
-                <div>
-                    <div>
-                        <label for="B7" class="slideLables">Amplitude $b_7$</label>
-                        <output for="B7" id="B7Box" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="B7" min="0" max="1" value="0" step="0.01" oninput="B7Update(value)">
+                        <div class="slider col">
+                            <label for="b5" class="slideLables">Amplitude \( b_5 \)</label>
+                            <input id="b5" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01"
+                                   class="sliderBars">
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="b5SliderVal"></span></span>
+                        </div>
+
+                        <div class="slider col">
+                            <label for="b7" class="slideLables">Amplitude \( b_7 \)</label>
+                            <input id="b7" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01"
+                                   class="sliderBars">
+                            <span class="currentSliderValLabel">Current slider value: <span
+                                    id="b7SliderVal"></span></span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </td>
+        </div>
 
-    </tr>
-</table>
+        <div class="row" id="plots">
+            <div class="col">
+                <div id="row">
+                    <div class="col-sm-6 col-md-4 col-lg-4" id="plt0screen">
+                        <div id="plt0"></div>
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-4" id="plt1screen">
+                        <div id="plt1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h3>Questions</h3>
 
-<p>
-    Qa: Compare your empirical values of $b_i$ with the FT prediction $b_n=2/(\pi n)$.
-</p>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <p>
+                    Qa: Compare your empirical values of \( b_i \) with the FT prediction \( b_n=2/(\pi n) \).
+                </p>
 
-<p>
-    Qb: What happens to the
-    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea that "bandwidth"
-    translates to "speed.")
-</p>
+                <p>
+                    Qb: What happens to the
+                    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea
+                    that
+                    "bandwidth" translates to "speed.")
+                </p>
 
-<p>
-    Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
-    of samples $N$? (Adjust the samples to the maximum to see what happens when the number of samples increases.)
-</p>
+                <p>
+                    Qc: Does the DFT agree perfectly with the continuous FT prediction for small numbers
+                    of samples \( N \)? (Adjust the samples to the maximum to see what happens when the number of
+                    samples increases.)
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script type="text/javascript" src="assets/js/panel5FFT.js"></script>
-</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel5.js"></script>
+</body>
 </html>
