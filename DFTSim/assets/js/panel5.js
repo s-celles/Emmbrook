@@ -10,8 +10,8 @@ var yCont = new Array(nCont);  // Continuous value
 var yApprox = new Array(nCont);
 var fmin = 1.0 / xHi;
 
-var sampleSlider = $('#mySamples').bootstrapSlider();
-var phaseSlider = $('#myPhase').bootstrapSlider();
+var sampleSlider = $('#mySamples').bootstrapSlider({});
+var phaseSlider = $('#myPhase').bootstrapSlider({});
 var b1Slider = $('#b1').bootstrapSlider();
 var b3Slider = $('#b3').bootstrapSlider();
 var b5Slider = $('#b5').bootstrapSlider();
@@ -54,7 +54,9 @@ function yvUpdate() {
      */
     yv = new Array(nSample);
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
-        if (xv[i] > phase) {
+        if (xv[i] > (phase + 5.0)) {
+            yv[i] = -0.5
+        } else if (xv[i] > phase || xv[i] < (phase - 5.0)) {
             yv[i] = 0.5
         } else {
             yv[i] = -0.5
@@ -66,7 +68,9 @@ function yCountUpdate() {
     /* yCount will change as the phase changes.
      */
     for (var i = 0; i < nCont; i++) {
-        if (xCont[i] > phase) {
+        if (xCont[i] > (phase + 5.0)) {
+            yCont[i] = -0.5
+        } else if (xCont[i] > phase || xCont[i] < (phase - 5.0)) {
             yCont[i] = 0.5
         } else {
             yCont[i] = -0.5
@@ -312,6 +316,11 @@ function createPlots() {
     ];
 
     Plotly.newPlot(plt0, data0, layout0);
-
     Plotly.newPlot(plt1, data1, layout1)
 }
+
+// Adjust Plotly's plot size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt0);
+    Plotly.Plots.resize(plt1);
+};

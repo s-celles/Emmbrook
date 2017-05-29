@@ -7,7 +7,7 @@
 
 .slider {
   margin-top: 10px;
-  margin-left: 10px; }
+  margin-left: 15px; }
 
 .currentSliderValLabel {
   margin-left: 10px; }
@@ -25,5 +25,9 @@
 
 .container {
   width: 80%; }
+
+section {
+  margin-top: 30px;
+  margin-bottom: 30px; }
 
 /*# sourceMappingURL=newpanel5.css.map */
