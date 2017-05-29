@@ -31,14 +31,6 @@ for (var i = 0; i < nCont; i++) {
     xCont[i] = i / nCont * xHi - 0.5 * xHi
 }
 
-// Initialize
-xvUpdate();
-yvUpdate();
-yCountUpdate();
-yApproxUpdate();
-FFTUpdate();
-createPlots();
-
 // Basic interfaces
 function xvUpdate() {
     /* xv will not change unless the number of samples changes.
@@ -324,3 +316,17 @@ window.onresize = function () {
     Plotly.Plots.resize(plt0);
     Plotly.Plots.resize(plt1);
 };
+
+// Initialize
+xvUpdate();
+yvUpdate();
+yCountUpdate();
+yApproxUpdate();
+FFTUpdate();
+createPlots();
+$('#samplesSliderVal').text(nSample);
+$('#phaseSliderVal').text(phase);
+$('#b1SliderVal').text(b1);
+$('#b3SliderVal').text(b3);
+$('#b5SliderVal').text(b5);
+$('#b7SliderVal').text(b7);
