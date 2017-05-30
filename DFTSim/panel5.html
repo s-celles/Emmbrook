@@ -25,7 +25,8 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
                 <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
                 <span class="sr-only">Toggle navigation</span>
                 <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
@@ -35,8 +36,9 @@
             </button>
         </div>
     </div>
+
     <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse">
+    <div class="collapse navbar-collapse" id="panels">
         <ul class="nav navbar-nav">
             <li>
                 <a class="nav-link active" href="index.html">Home</a>
@@ -88,51 +90,45 @@
                 <div id="sliders">
                     <!-- Slide bars -->
                     <div class="row">
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
-                            <input id="mySamples" min="2" max="10" value="6" step="1" class="sliderBars">
+                            <input id="mySamples" min="2" max="10" value="6" step="1">
                             <span id="samplesSliderVal" class="sliderVal"></span>
                         </div>
 
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
                             <input id="myPhase" data-slider-min="-4.99" data-slider-max="4.99" data-slider-value="0"
-                                   data-slider-step="0.01" class="sliderBars">
+                                   data-slider-step="0.01">
                             <!-- You will need data-slider- API, or else step cannot be smaller than 1. -->
                             <span id="phaseSliderVal" class="sliderVal"></span>
                         </div>
 
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="b1" class="slideLables">Amplitude \( b_1 \)</label>
                             <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01"
-                                   class="sliderBars">
+                                   data-slider-step="0.01">
                             <span id="b1SliderVal" class="sliderVal"></span>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="b3" class="slideLables">Amplitude \( b_3 \)</label>
                             <input id="b3" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01"
-                                   class="sliderBars">
+                                   data-slider-step="0.01">
                             <span id="b3SliderVal" class="sliderVal"></span>
                         </div>
 
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="b5" class="slideLables">Amplitude \( b_5 \)</label>
                             <input id="b5" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01"
-                                   class="sliderBars">
+                                   data-slider-step="0.01">
                             <span id="b5SliderVal" class="sliderVal"></span>
                         </div>
 
-                        <div class="slider col-sm-4">
+                        <div class="col-sm-4">
                             <label for="b7" class="slideLables">Amplitude \( b_7 \)</label>
                             <input id="b7" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01"
-                                   class="sliderBars">
+                                   data-slider-step="0.01">
                             <span id="b7SliderVal" class="sliderVal"></span>
                         </div>
                     </div>
@@ -165,7 +161,8 @@
 
                 <p>
                     Qb: What happens to the
-                    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the idea
+                    slope of the rising edge as you add higher-harmonic components? (Relate this phenomenon to the
+                    idea
                     that
                     "bandwidth" translates to "speed.")
                 </p>

@@ -7,17 +7,8 @@
   text-align: center;
 }
 
-.slider {
-  margin-top: 10px;
-  margin-left: 15px;
-}
-
-.sliderBars {
-  margin-left: 10px;
-}
-
-.sliderVal {
-  width: 10px;
+.slider.slider-horizontal {
+  max-width: 60%;
   margin-left: 10px;
 }
 
