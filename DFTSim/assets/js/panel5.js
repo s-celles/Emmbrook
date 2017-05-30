@@ -196,14 +196,34 @@ function FFTUpdate() {
 
 // Plot
 function plotDataUpdate() {
+    var a = fv_half.map(function (x) {
+        return x * Math.cos(10 * phase)
+    });
+    var b = fv_im_half.map(function (x) {
+        return x * Math.sin(10 * phase)
+    });
+    var c = fv_im_half.map(function (x) {
+        return x * Math.cos(10 * phase)
+    });
+    var d = fv_half.map(function (x) {
+        return x * Math.sin(10 * phase)
+    });
+    m = new Array(a.length);
+    n = new Array(c.length);
+    for (var i = 0; i < a.length; i++) {
+        m[i] = a[i] + b[i];
+    }
+    for (var j = 0; j < c.length; j++) {
+        n[j] = c[j] - d[j];
+    }
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
 
     plt1.data[0].x = xv_half;
-    plt1.data[0].y = fv_half;
+    plt1.data[0].y = m;
     plt1.data[1].x = xv_half;
-    plt1.data[1].y = fv_im_half;
+    plt1.data[1].y = n;
     plt1.data[2].x = xv_half;
     plt1.data[2].y = fv_abs_half;
 }
