@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,38 +8,26 @@
 
     <title>Panel 4</title>
 
-    <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <!-- User css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
           rel="stylesheet"/>
+
+    <!-- User css -->
     <link rel="stylesheet" href="assets/css/panel4.css" type="text/css">
 
-    <!-- CDN script -->
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
-    MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
-    </script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML">
-    </script>
-    <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.js"></script>
 </head>
-
 <body>
 
-<!-- Nav -->
 <!-- Navigation bar -->
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
                 <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
                 <span class="sr-only">Toggle navigation</span>
                 <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
@@ -49,145 +36,154 @@
                 <span class="icon-bar"></span>
             </button>
         </div>
+    </div>
 
-        <div class="collapse navbar-collapse">
-            <ul class="nav nav-pills">
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.html">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel1.html">Panel 1</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel2.html">Panel 2</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel3.html">Panel 3</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="panel5.html">Panel 5</a>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link active" href="index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel2.html">Panel 2</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel3.html">Panel 3</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel5.html">Panel 5</a>
+            </li>
+        </ul>
     </div>
 </nav>
 
-<!-- Heading text-->
-<h1>Panel 4: Role of sampling</h1>
-
-<div class="well">
-    <p>
-        $N$ discrete measurements (samples) of the ideal continuous wave.<br>
-        Change $N$; how does the information provided by the FFT $Y(\omega)$ change?
-    </p>
-</div>
-
-<table id="mainDiv">
-    <tr>
-        <!-- 2 Plots -->
-        <td id="2plotsPane" style="width: 50%">
-            <table id="2plots">
-                <tr>
-                    <td>
-                        <div id="plt0"></div>
-                    </td>
-                    <td>
-                        <div id="plt1"></div>
-                    </td>
-                </tr>
-            </table>
-        </td>
-
-        <td>
-            <!-- Control Panel -->
-            <div id="controlPanel">
-                <!-- Sliders -->
-                <div>
-                    <div>
-                        <label for="mySamples" class="slideLables">Samples $N=2^q$:</label>
-                        <output for="mySamples" id="samplesBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="mySamples" min="2" max="10" value="6" step="1"
-                               oninput="samplesUpdate(value)">
-                    </div>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>Panel 4: Role of sampling
+                        <small>Effect of sampling</small>
+                    </h1>
                 </div>
-
-                <div>
-                    <div>
-                        <label for="myPhase" class="slideLables">Phase $\phi$ (rad)</label>
-                        <output for="myPhase" id="phsBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="myPhase" min="-4.9" max="4.9" value="0" step="0.01"
-                               oninput="phaseUpdate(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="myFreq" class="slideLables">Frequency $\omega/2\pi$ (hz)</label>
-                        <output for="myFreq" id="freqBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="myFreq" min="0.0995" max="9.95" value="0.0995" step="0.0995"
-                               oninput="freqUpdate(value)">
-                    </div>
-                </div>
-
-                <div>
-                    <div>
-                        <label for="myAmp" class="slideLables">Amplitude $A$ (m)</label>
-                        <output for="myAmp" id="ampBox" class="slideOutputs">0</output>
-                    </div>
-                    <div>
-                        <input type="range" id="myAmp" min="0.001" max="5.0" value="1.0" step="0.01"
-                               oninput="ampUpdate(value)">
-                    </div>
-                </div>
-
+                <p>
+                    \( N \) discrete measurements (samples) of the ideal continuous wave.<br>
+                    Change \( N \); how does the information provided by the FFT \( Y(\omega) \) change?
+                </p>
             </div>
-        </td>
+        </div>
 
-    </tr>
-</table>
+        <!-- The simulator -->
+        <div class="container" id="appDiv">
+            <div class="row">
+                <div class="col" id="controlPanel">
+                    <h4>
+                        DFT simulator
+                    </h4>
+                    <div id="sliders">
+                        <!-- Slide bars -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
+                                <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="2"
+                                       data-slider-step="1">
+                                <span id="samplesSliderVal" class="sliderVal"></span>
+                            </div>
 
-<h3>Questions</h3>
+                            <div class="col-sm-3">
+                                <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
+                                <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
+                                       data-slider-step="0.01">
+                                <span id="phaseSliderVal" class="sliderVal"></span>
+                            </div>
 
-<p>
-    Qa: The length of the sample is fixed at $L=$10 s. For $N=4$ samples (default setting), what is the minimum nonzero
-    frequency that the FFT can resolve? State the theory and verify it in the FFT.
-</p>
+                            <div class="col-sm-3">
+                                <label for="myAmplitude" class="slideLables">Amplitude \( A \) (m)</label>
+                                <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
+                                       data-slider-step="0.01">
+                                <span id="ampSliderVal" class="sliderVal"></span>
+                            </div>
 
-<p>
-    Qb: For $N=4$ samples (default setting), what is the frequency <i>resolution</i> of the FFT? (i.e. what is the
-    spacing between the zeroth and first or first and second frequency bins), and how does this compare with your answer
-    in a?
-</p>
+                            <div class="col-sm-3">
+                                <label for="myFreq" class="slideLables">Frequency \( \frac{ \omega }{ 2\pi } \)
+                                    (Hz)</label>
+                                <input id="myFreq" data-slider-min="0.0995" data-slider-max="9.95"
+                                       data-slider-value="0.0995" data-slider-step="0.0995">
+                                <span id="freqSliderVal" class="sliderVal"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<p>
-    Qc: Does your answer in a,b change if you take more samples? Try increasing $N$ and see.
-</p>
+            <div class="row" id="plots">
+                <div class="col-sm-6">
+                    <div class="col-sm-12" id="plt0screen">
+                        <div id="plt0"></div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="col-sm-12" id="plt1screen">
+                        <div id="plt1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<p>
-    Qd: For $N=4$ samples (default setting), what is the highest frequency you can resolve with the FFT? Sketch the
-    sampled waveform for the <i>Nyquist</i> frequency.
-</p>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3>Questions</h3>
+                    <p>
+                        Qa: The length of the sample is fixed at \( L=10 \) s. For \( N=4 \) samples (default setting),
+                        what is the minimum nonzero frequency that the FFT can resolve? State the theory and verify it
+                        in the FFT.
+                    </p>
 
-<p>
-    Qe: What is the minimum number of samples needed to measure a frequency of 5 Hz? State the theory and verify on the
-    plot.
-</p>
+                    <p>
+                        Qb: For \( N=4 \) samples (default setting), what is the frequency <em>resolution</em> of the
+                        FFT?
+                        (i.e. what is the spacing between the zeroth and first or first and second frequency bins), and
+                        how does this compare with your answer in a?
+                    </p>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+                    <p>
+                        Qc: Does your answer in a,b change if you take more samples? Try increasing \( N \) and see.
+                    </p>
+
+                    <p>
+                        Qd: For \( N=4 \) samples (default setting), what is the highest frequency you can resolve with
+                        the FFT? Sketch the sampled waveform for the <em>Nyquist</em> frequency.
+                    </p>
+
+                    <p>
+                        Qe: What is the minimum number of samples needed to measure a frequency of \( 5 \) Hz? State the
+                        theory and verify on the plot.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 <!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- User script -->
 <script type="text/javascript" src="assets/js/panel4.js"></script>
 </body>
-
 </html>

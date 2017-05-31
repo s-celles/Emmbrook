@@ -26,14 +26,16 @@ var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 
 for (var i = 0; i < nCont; i++) {
-    /* xCont will not change in this simulation.
+    /*
+    xCont will not change in this simulation.
      */
     xCont[i] = i / nCont * xHi - 0.5 * xHi
 }
 
 // Basic interfaces
 function xvUpdate() {
-    /* xv will not change unless the number of samples changes.
+    /*
+    xv will not change unless the number of samples changes.
      */
     xv = new Array(nSample);  // Sample x coordinates
     for (var i = 0; i < nSample; i++) {   // Samples range
@@ -42,7 +44,8 @@ function xvUpdate() {
 }
 
 function yvUpdate() {
-    /* yv will change as the number of samples and phase change.
+    /*
+    yv will change as the number of samples and phase change.
      */
     yv = new Array(nSample);
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
@@ -57,7 +60,8 @@ function yvUpdate() {
 }
 
 function yCountUpdate() {
-    /* yCount will change as the phase changes.
+    /*
+    yCount will change as the phase changes.
      */
     for (var i = 0; i < nCont; i++) {
         if (xCont[i] > (phase + 5.0)) {
@@ -71,7 +75,8 @@ function yCountUpdate() {
 }
 
 function yApproxUpdate() {
-    /* yApprox will change as phase, b1, b3, b5, b7 change.
+    /*
+    yApprox will change as phase, b1, b3, b5, b7 change.
      */
     for (var i = 0; i < nCont; i++) {
         yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - phase)) +

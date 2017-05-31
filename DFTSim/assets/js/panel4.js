@@ -1,134 +1,127 @@
 /**
- * Created by Qi on 5/20/17.
+ * Created by Qi on 5/30/17.
  */
 
-var nCont = 1000
-var xHi = 10.
-var xCont = new Array(nCont)
-var yCont = new Array(nCont)
-var fmin = 1.0 / xHi
+// Variables
+var nCont = 1000;
+var xHi = 10;
+var xCont = new Array(nCont);  // Continuous value
+var yCont = new Array(nCont);  // Continuous value
+var fmin = 1.0 / xHi;
 
-nMax = document.getElementById("mySamples").value
-samplesUpdateCalc(nMax);
-
-document.querySelector('#myFreq').value = fmin
-document.querySelector('#myFreq').step = fmin
-document.querySelector('#myFreq').min = 0
-document.querySelector('#myFreq').max = 1.0 / xHi * (nMax / 4.0 + 1)
-
-fval = document.getElementById("myFreq").value;
-
+var sampleSlider = $('#mySamples').bootstrapSlider({});
+var phaseSlider = $('#myPhase').bootstrapSlider({});
+var ampSlider = $('#myAmplitude').bootstrapSlider({});
+var freqSlider = $('#myFreq').bootstrapSlider({});
+var nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Number of samples
+var phase = phaseSlider.bootstrapSlider('getValue');
+var amplitude = ampSlider.bootstrapSlider('getValue');
+var frequency = freqSlider.bootstrapSlider('getValue');
+var plt0 = document.getElementById('plt0');
+var plt1 = document.getElementById('plt1');
 
 for (var i = 0; i < nCont; i++) {
+    /*
+     xCont will not change in this simulation.
+     */
     xCont[i] = i / nCont * xHi
 }
-;
 
-valsUpdate()
-createPlots()
-
-function freqUpdate(q) {
-    document.querySelector('#freqBox').value = q;
-    doRecalc();
-}
-function ampUpdate(q) {
-    document.querySelector('#ampBox').value = q;
-    doRecalc();
-}
-function phaseUpdate(q) {
-    document.querySelector('#phsBox').value = q;
-    doRecalc();
-}
-function samplesUpdate(q) {
-    samplesUpdateCalc(q)
-    doRecalc()
-}
-function samplesUpdateCalc(q) {
-    document.querySelector('#samplesBox').value = Math.pow(2, q);
-    nsamp = document.querySelector('#samplesBox').value;
-    xv = new Array(nsamp)
-    yv = new Array(nsamp)
-    nMax = nsamp
-    for (var i = 0; i < nMax; i++) {
-        xv[i] = i / nMax * xHi
+// Basic interfaces
+function xvUpdate() {
+    /*
+     xv will not change unless the number of samples changes.
+     */
+    xv = new Array(nSample);  // Sample x coordinates
+    for (var i = 0; i < nSample; i++) {   // Samples range
+        xv[i] = i / nSample * xHi
     }
-    document.querySelector('#myFreq').max = 1.0 / xHi * (nMax / 4.0 + 1)
 }
 
-function doRecalc() {
-    valsUpdate();
-    plotDataUpdate();
-    plotsRedraw();
-}
-
-function plotDataUpdate() {
-    plt0.data[0].x = xv
-    plt0.data[0].y = yv
-    plt0.data[1].y = yCont
-    plt1.data[0].y = fv_half
-    plt1.data[0].x = xv_half
-    plt1.data[1].y = fv_im_half
-    plt1.data[1].x = xv_half
-    plt1.data[2].x = xv_half
-    plt1.data[2].y = fv_abs_half
-}
-
-function plotsRedraw() {
-    Plotly.redraw(plt0)
-    Plotly.redraw(plt1)
-}
-
-function valsUpdate() {
-    var freq = document.getElementById("myFreq").value;
-    var phs = document.getElementById("myPhase").value;
-    var amp = document.getElementById("myAmp").value;
-    fv = new Array(nMax)
-    fv_im = new Array(nMax)
-    xv_half = new Array(nMax / 2 + 1)
-    fv_half = new Array(nMax / 2 + 1)
-    fv_im_half = new Array(nMax / 2 + 1)
-    fv_abs_half = new Array(nMax / 2 + 1)
-
-    for (var i = 0; i < nMax; i++) {
-        yv[i] = amp * Math.cos(1.0 * phs + 2. * 3.1415926536 * freq * xv[i])
+function yvUpdate() {
+    /*
+     yv will not change unless the number of samples, amplitude, phase or frequency change.
+     */
+    yv = new Array(nSample);
+    for (var i = 0; i < nSample; i++) {
+        yv[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xv[i])
     }
-    ;
-    for (var i = 0; i < nCont; i++) {
-        yCont[i] = amp * Math.cos(1.0 * phs + 2. * 3.1415926536 * freq * xCont[i])
-    }
-    ;
-
-    for (var i = 0; i < nMax; i++) {
-        fv[i] = yv[i];
-        fv_im[i] = 0;
-    }
-
-    miniFFT(fv, fv_im)
-
-    for (var i = 0; i < nMax / 2 + 1; i++) {
-        xv_half[i] = i * fmin;
-        fv_half[i] = fv[i] * 2 / nMax;
-        fv_im_half[i] = fv_im[i] * 2 / nMax;
-        fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5)
-    }
-
 }
 
+function yContUpdate() {
+    /*
+     yCont will not change unless the number of samples, amplitude, phase or frequency change.
+     */
+    for (var i = 0; i < nSample; i++) {
+        yCont[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xCont[i])
+    }
+}
+
+// Interactive interfaces
+sampleSlider.bootstrapSlider({
+    formatter: function (value) {
+        return Math.pow(2, value);
+    }
+});
+
+sampleSlider.on('slideStop', function () {
+    nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Change "global" value
+    xvUpdate();
+    yvUpdate();
+    yContUpdate();
+    FFTUpdate();
+    plot();
+
+    $('#samplesSliderVal').text(nSample)
+});
+
+phaseSlider.on('slideStop', function () {
+    phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    yContUpdate();
+    FFTUpdate();
+    plot();
+
+    $('#phaseSliderVal').text(phase)
+});
+
+ampSlider.on('slideStop', function () {
+    amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    yContUpdate();
+    FFTUpdate();
+    plot();
+
+    $('#ampSliderVal').text(amplitude)
+});
+
+freqSlider.on('slideStop', function () {
+    frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    yContUpdate();
+    FFTUpdate();
+    plot();
+
+    $('#freqSliderVal').text(frequency)
+});
+
+// FFT
 function miniFFT(re, im) {
     var N = re.length;
     for (var i = 0; i < N; i++) {
         for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
             j = (j << 1) | (h & 1);
         if (j > i) {
-            re[j] = [re[i], re[i] = re[j]][0]
+            re[j] = [re[i], re[i] = re[j]][0];
             im[j] = [im[i], im[i] = im[j]][0]
         }
     }
+
     for (var hN = 1; hN * 2 <= N; hN *= 2)
-        for (var i = 0; i < N; i += hN * 2)
-            for (var j = i; j < i + hN; j++) {
+        for (i = 0; i < N; i += hN * 2)
+            for (j = i; j < i + hN; j++) {
                 var cos = Math.cos(Math.PI * (j - i) / hN),
-                    sin = Math.sin(Math.PI * (j - i) / hN)
+                    sin = Math.sin(Math.PI * (j - i) / hN);
                 var tre = re[j + hN] * cos + im[j + hN] * sin,
                     tim = -re[j + hN] * sin + im[j + hN] * cos;
                 re[j + hN] = re[j] - tre;
@@ -138,18 +131,63 @@ function miniFFT(re, im) {
             }
 }
 
+function FFTUpdate() {
+    fv = new Array(nSample);  // Cannot add 'var'
+    fv_im = new Array(nSample);
+    xv_half = new Array(nSample / 2 + 1);
+    fv_half = new Array(nSample / 2 + 1);
+    fv_im_half = new Array(nSample / 2 + 1);
+    fv_abs_half = new Array(nSample / 2 + 1);
+
+    for (var i = 0; i < nSample; i++) {
+        fv[i] = yv[i];  // Real part
+        fv_im[i] = 0;
+    }
+
+    miniFFT(fv, fv_im);
+
+    for (i = 0; i < nSample / 2 + 1; i++) {
+        xv_half[i] = i * fmin;   // \alpha_k
+        fv_half[i] = fv[i] * 2 / nSample;
+        fv_im_half[i] = fv_im[i] * 2 / nSample;
+        fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5);
+    }
+}
+
+// Plot
+function plotDataUpdate() {
+    plt0.data[0].x = xv;
+    plt0.data[0].y = yv;
+    plt0.data[1].y = yCont;
+    plt1.data[0].y = fv_half;
+    plt1.data[0].x = xv_half;
+    plt1.data[1].y = fv_im_half;
+    plt1.data[1].x = xv_half;
+    plt1.data[2].x = xv_half;
+    plt1.data[2].y = fv_abs_half;
+}
+
+function plotsRedraw() {
+    Plotly.redraw(plt0);
+    Plotly.redraw(plt1);
+}
+
+function plot() {
+    plotDataUpdate();
+    plotsRedraw();
+}
+
 function createPlots() {
+    var layout0 = {
+        margin: {t: 0},
+        yaxis: {title: 'Height Y (m)', titlefont: {size: 24}},
+        xaxis: {title: 'Time t (s)', titlefont: {size: 24}}
+    };
 
     var layout1 = {
         margin: {t: 0},
-        yaxis: {title: 'Height Y (m)', titlefont: {size: 36}},
-        xaxis: {title: 'Time t (s)', titlefont: {size: 36}}
-    };
-
-    var layout2 = {
-        margin: {t: 0},
-        yaxis: {title: 'FFT', titlefont: {size: 36}},
-        xaxis: {title: 'Frequency (hz)', titlefont: {size: 36}}
+        yaxis: {title: 'FFT', titlefont: {size: 24}},
+        xaxis: {title: 'Frequency (hz)', titlefont: {size: 24}}
     };
 
     var data0 = [
@@ -163,9 +201,23 @@ function createPlots() {
         {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'abs'}
     ];
 
-    plt0 = document.getElementById('plt0');
-    Plotly.newPlot(plt0, data0, layout1);
-
-    plt1 = document.getElementById('plt1');
-    Plotly.newPlot(plt1, data1, layout2);
+    Plotly.newPlot(plt0, data0, layout0);
+    Plotly.newPlot(plt1, data1, layout1);
 }
+
+// Adjust Plotly's plot size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt0);
+    Plotly.Plots.resize(plt1);
+};
+
+// Initialize
+xvUpdate();
+yvUpdate();
+yContUpdate();
+FFTUpdate();
+createPlots();
+$('#samplesSliderVal').text(nSample);
+$('#phaseSliderVal').text(phase);
+$('#ampSliderVal').text(amplitude);
+$('#freqSliderVal').text(frequency);
