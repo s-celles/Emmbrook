@@ -87,32 +87,31 @@
                     <div id="sliders">
                         <!-- Slide bars -->
                         <div class="row">
-                            <div class="col-sm-3">
+                            <div class="col-sm-6">
                                 <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
                                 <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="2"
                                        data-slider-step="1">
                                 <span id="samplesSliderVal" class="sliderVal"></span>
                             </div>
 
-                            <div class="col-sm-3">
+                            <div class="col-sm-6">
                                 <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
                                 <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
                                        data-slider-step="0.01">
                                 <span id="phaseSliderVal" class="sliderVal"></span>
                             </div>
 
-                            <div class="col-sm-3">
-                                <label for="myAmplitude" class="slideLables">Amplitude \( A \) (m)</label>
+                            <div class="col-sm-6">
+                                <label for="myAmplitude" class="slideLables">Amplitude \( A \)</label>
                                 <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
                                        data-slider-step="0.01">
                                 <span id="ampSliderVal" class="sliderVal"></span>
                             </div>
 
-                            <div class="col-sm-3">
-                                <label for="myFreq" class="slideLables">Frequency \( \frac{ \omega }{ 2\pi } \)
-                                    (Hz)</label>
-                                <input id="myFreq" data-slider-min="0.0995" data-slider-max="9.95"
-                                       data-slider-value="0.0995" data-slider-step="0.0995">
+                            <div class="col-sm-6">
+                                <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)</label>
+                                <input id="myFreq" data-slider-min="0" data-slider-max="0.2"
+                                       data-slider-value="0.1" data-slider-step="0.01">
                                 <span id="freqSliderVal" class="sliderVal"></span>
                             </div>
                         </div>
@@ -121,13 +120,13 @@
             </div>
 
             <div class="row" id="plots">
-                <div class="col-sm-6">
-                    <div class="col-sm-12" id="plt0screen">
+                <div class="col-sm-8">
+                    <div class="col" id="plt0screen">
                         <div id="plt0"></div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="col-sm-12" id="plt1screen">
+                <div class="col-sm-4">
+                    <div class="col" id="plt1screen">
                         <div id="plt1"></div>
                     </div>
                 </div>
@@ -138,32 +137,36 @@
             <div class="row">
                 <div class="col">
                     <h3>Questions</h3>
-                    <p>
-                        Qa: The length of the sample is fixed at \( L=10 \) s. For \( N=4 \) samples (default setting),
-                        what is the minimum nonzero frequency that the FFT can resolve? State the theory and verify it
-                        in the FFT.
-                    </p>
+                    <ol>
+                        <li>
+                            The length of the sample is fixed at \( L=10 \) s. For \( N=4 \) samples (default
+                            setting),
+                            what is the minimum nonzero frequency that the FFT can resolve? State the theory and verify
+                            it in the FFT.
+                        </li>
 
-                    <p>
-                        Qb: For \( N=4 \) samples (default setting), what is the frequency <em>resolution</em> of the
-                        FFT?
-                        (i.e. what is the spacing between the zeroth and first or first and second frequency bins), and
-                        how does this compare with your answer in a?
-                    </p>
+                        <li>
+                            For \( N=4 \) samples (default setting), what is the frequency <em>resolution</em> of
+                            the
+                            FFT?
+                            (i.e. what is the spacing between the zeroth and first or first and second frequency bins),
+                            and how does this compare with your answer in a?
+                        </li>
 
-                    <p>
-                        Qc: Does your answer in a,b change if you take more samples? Try increasing \( N \) and see.
-                    </p>
+                        <li>
+                            Does your answer in a,b change if you take more samples? Try increasing \( N \) and see.
+                        </li>
 
-                    <p>
-                        Qd: For \( N=4 \) samples (default setting), what is the highest frequency you can resolve with
-                        the FFT? Sketch the sampled waveform for the <em>Nyquist</em> frequency.
-                    </p>
+                        <li>
+                            For \( N=4 \) samples (default setting), what is the highest frequency you can resolve
+                            with the FFT? Sketch the sampled waveform for the <em>Nyquist</em> frequency.
+                        </li>
 
-                    <p>
-                        Qe: What is the minimum number of samples needed to measure a frequency of \( 5 \) Hz? State the
-                        theory and verify on the plot.
-                    </p>
+                        <li>
+                            What is the minimum number of samples needed to measure a frequency of \( 5 \) Hz? State
+                            the theory and verify on the plot.
+                        </li>
+                    </ol>
                 </div>
             </div>
         </div>

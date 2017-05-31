@@ -37,4 +37,11 @@ section {
   padding-top: 10px;
   margin-bottom: 30px; }
 
+p {
+  font-size: medium; }
+
+ol {
+  list-style-type: lower-alpha;
+  font-size: medium; }
+
 /*# sourceMappingURL=panel1.css.map */

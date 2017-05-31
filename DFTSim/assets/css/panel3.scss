@@ -48,11 +48,19 @@
 }
 
 .container {
-  width: 80%;
   margin-top: 20px;
 }
 
 section {
   padding-top: 10px;
   margin-bottom: 30px;
+}
+
+p {
+  font-size: medium;
+}
+
+ol {
+  list-style-type: lower-alpha;
+  font-size: medium;
 }

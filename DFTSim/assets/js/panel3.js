@@ -106,6 +106,7 @@ function plotDataUpdate() {
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
+
     plt1.data[0].x = xv_half;
     plt1.data[0].y = fv_half;
     plt1.data[1].x = xv_half;
