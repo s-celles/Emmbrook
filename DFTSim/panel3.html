@@ -16,7 +16,7 @@
           rel="stylesheet"/>
 
     <!-- User css -->
-    <link rel="stylesheet" href="assets/css/newpanel3.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/panel3.css" type="text/css">
 </head>
 <body>
 
@@ -90,22 +90,21 @@
                     <!-- Slide bars -->
                     <div class="row">
                         <div class="col sliderRow">
-                            <label for="myPhase" class="slideLables">Phase \( \phi \) (rad)</label>
+                            <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
                             <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
                                    data-slider-step="0.01">
                             <span id="phaseSliderVal" class="sliderVal"></span>
                         </div>
 
                         <div class="col sliderRow">
-                            <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)
-                                (hz)</label>
-                            <input id="myFreq" data-slider-min="0" data-slider-max="10"
+                            <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)</label>
+                            <input id="myFreq" data-slider-min="0" data-slider-max="1.6"
                                    data-slider-value="0.1" data-slider-step="0.01">
                             <span id="freqSliderVal" class="sliderVal"></span>
                         </div>
 
                         <div class="col sliderRow">
-                            <label for="myAmplitude" class="slideLables">Amplitude \( A \) (m)</label>
+                            <label for="myAmplitude" class="slideLables">Amplitude \( A \)</label>
                             <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
                                    data-slider-step="0.01">
                             <span id="ampSliderVal" class="sliderVal"></span>
@@ -146,7 +145,7 @@
                     </li>
 
                     <li>
-                        With the phase set to \( pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds to
+                        With the phase set to \( \pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds to
                         variations in amplitude, real or imaginary?
                     </li>
 
@@ -179,6 +178,6 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <!-- User script -->
-<script type="text/javascript" src="assets/js/newpanel3.js"></script>
+<script type="text/javascript" src="assets/js/panel3.js"></script>
 </body>
 </html>

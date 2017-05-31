@@ -5,11 +5,11 @@
 // Variables
 var nSamples = 64;
 var nCont = nSamples * 10;
-var xHi = 10;
 var xv = new Array(nSamples);
 var yv = new Array(nSamples);
 var xCont = new Array(nCont);  // Continuous value
 var yCont = new Array(nCont);  // Continuous value
+var xHi = 10;
 var fmin = 1.0 / xHi;
 var ampRand = Math.random();
 var phsRand = Math.random();
@@ -29,8 +29,8 @@ for (var i = 0; i < nSamples; i++) {
     yv[i] = Math.sin(2 * Math.PI * frequency * xv[i])
 }
 
-for (var j = 0; j < nSamples; j++) {
-    xCont[j] = j / nSamples * xHi;
+for (var j = 0; j < nCont; j++) {
+    xCont[j] = j / nCont * xHi;
     yCont[j] = ampRand * Math.sin(phsRand + freqRand * 2 * Math.PI * xCont[j])
 }
 
@@ -39,7 +39,7 @@ function yvUpdate() {
      yv will change when amplitude, phase, or frequency changes.
      */
     for (var i = 0; i < nSamples; i++) {
-        yv[i] = amplitude * Math.sin(1.0 * phase + 2 * Math.PI * frequency * xv[i])
+        yv[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xv[i])
     }
 }
 
@@ -48,7 +48,7 @@ function yContUpdate() {
      yCont will change when amplitude, phase, or frequency changes.
      */
     for (var i = 0; i < nCont; i++) {
-        yCont[i] = amplitude * Math.sin(1.0 * phase + 2 * Math.PI * frequency * xCont[i])
+        yCont[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xCont[i])
     }
 }
 
@@ -93,11 +93,11 @@ function FFTUpdate() {
 
     miniFFT(fv, fv_im);
 
-    for (i = 0; i < nSamples / 2 + 1; i++) {
+    for (i = 0; i < nSamples / 2; i++) {
         xv_half[i] = i * fmin;   // \alpha_k
         fv_half[i] = fv[i] * 2 / nSamples;
         fv_im_half[i] = fv_im[i] * 2 / nSamples;
-        fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5);
+        fv_abs_half[i] = Math.sqrt(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i]);
     }
 }
 
@@ -106,10 +106,10 @@ function plotDataUpdate() {
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
-    plt1.data[0].y = fv_half;
     plt1.data[0].x = xv_half;
-    plt1.data[1].y = fv_im_half;
+    plt1.data[0].y = fv_half;
     plt1.data[1].x = xv_half;
+    plt1.data[1].y = fv_im_half;
     plt1.data[2].x = xv_half;
     plt1.data[2].y = fv_abs_half;
 }
@@ -127,14 +127,14 @@ function plot() {
 function createPlots() {
     var layout0 = {
         margin: {t: 0},
-        yaxis: {title: 'Height Y (m)', titlefont: {size: 36}},
-        xaxis: {title: 'Time t (s)', titlefont: {size: 36}}
+        yaxis: {title: 'Height Y (m)', titlefont: {size: 18}},
+        xaxis: {title: 'Time t (s)', titlefont: {size: 18}}
     };
 
     var layout1 = {
         margin: {t: 0},
-        yaxis: {title: 'FFT', titlefont: {size: 36}},
-        xaxis: {title: 'Frequency (hz)', titlefont: {size: 36}}
+        yaxis: {title: 'FFT', titlefont: {size: 18}},
+        xaxis: {title: 'Frequency (hz)', titlefont: {size: 18}}
     };
 
     var data0 = [
