@@ -1,15 +1,33 @@
 #appDiv {
-  background-color: #E6E6E6;
-  border: 5px solid #D5D5D5;
+  margin-top: 20px;
+  background-image: linear-gradient(to bottom, #c1c1c1 0px, #d7d7d7 100%);
+  box-shadow: inset 1px 2px 3px 1px rgba(240, 240, 240, 0.5), 1px 2px 1px #dadada;
   border-radius: 10px;
   opacity: 0.8;
   text-align: center; }
 
-.slider {
-  margin-top: 10px;
-  margin-left: 15px; }
+.main-svg {
+  border-radius: 7px;
+  box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15); }
 
-.currentSliderValLabel {
+.sliderRow {
+  max-width: 90%;
+  margin: 10px auto;
+  display: inline-block; }
+
+.slider.slider-horizontal {
+  max-width: 70%;
+  margin-left: 10px; }
+
+.slider-selection {
+  background-image: linear-gradient(to bottom, #c1c1c1 0px, #d2d2d2 100%);
+  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
+
+.slider-track-high {
+  background-image: linear-gradient(to bottom, #e5e5e5 0px, white 100%);
+  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
+
+.sliderVal {
   margin-left: 10px; }
 
 #plots {
@@ -17,17 +35,21 @@
   margin-bottom: 10px; }
 
 #plt0screen, #plt1screen {
-  margin: 1%;
-  width: 48%;
-  border: 5px solid #dbe0e1;
   border-radius: 10px;
   padding: 0 0; }
 
 .container {
-  width: 80%; }
+  margin-top: 20px; }
 
 section {
-  margin-top: 30px;
+  padding-top: 10px;
   margin-bottom: 30px; }
 
-/*# sourceMappingURL=panel5.css.map
+p {
+  font-size: medium; }
+
+ol {
+  list-style-type: lower-alpha;
+  font-size: medium; }
+
+/*# sourceMappingURL=panel5.css.map */

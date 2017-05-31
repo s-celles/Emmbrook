@@ -26,22 +26,16 @@ var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 
 for (var i = 0; i < nCont; i++) {
-    /* xCont will not change in this simulation.
+    /*
+    xCont will not change in this simulation.
      */
     xCont[i] = i / nCont * xHi - 0.5 * xHi
 }
 
-// Initialize
-xvUpdate();
-yvUpdate();
-yCountUpdate();
-yApproxUpdate();
-FFTUpdate();
-createPlots();
-
 // Basic interfaces
 function xvUpdate() {
-    /* xv will not change unless the number of samples changes.
+    /*
+    xv will not change unless the number of samples changes.
      */
     xv = new Array(nSample);  // Sample x coordinates
     for (var i = 0; i < nSample; i++) {   // Samples range
@@ -50,7 +44,8 @@ function xvUpdate() {
 }
 
 function yvUpdate() {
-    /* yv will change as the number of samples and phase change.
+    /*
+    yv will change as the number of samples and phase change.
      */
     yv = new Array(nSample);
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
@@ -64,8 +59,9 @@ function yvUpdate() {
     }
 }
 
-function yCountUpdate() {
-    /* yCount will change as the phase changes.
+function yContUpdate() {
+    /*
+    yCount will change as the phase changes.
      */
     for (var i = 0; i < nCont; i++) {
         if (xCont[i] > (phase + 5.0)) {
@@ -79,7 +75,8 @@ function yCountUpdate() {
 }
 
 function yApproxUpdate() {
-    /* yApprox will change as phase, b1, b3, b5, b7 change.
+    /*
+    yApprox will change as phase, b1, b3, b5, b7 change.
      */
     for (var i = 0; i < nCont; i++) {
         yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - phase)) +
@@ -109,7 +106,7 @@ sampleSlider.on('slideStop', function () {
 phaseSlider.on('slideStop', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
-    yCountUpdate();
+    yContUpdate();
     yApproxUpdate();
     FFTUpdate();
     plot();
@@ -204,14 +201,34 @@ function FFTUpdate() {
 
 // Plot
 function plotDataUpdate() {
+    var a = fv_half.map(function (x) {
+        return x * Math.cos(10 * phase)
+    });
+    var b = fv_im_half.map(function (x) {
+        return x * Math.sin(10 * phase)
+    });
+    var c = fv_im_half.map(function (x) {
+        return x * Math.cos(10 * phase)
+    });
+    var d = fv_half.map(function (x) {
+        return x * Math.sin(10 * phase)
+    });
+    m = new Array(a.length);
+    n = new Array(c.length);
+    for (var i = 0; i < a.length; i++) {
+        m[i] = a[i] + b[i];
+    }
+    for (var j = 0; j < c.length; j++) {
+        n[j] = c[j] - d[j];
+    }
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
 
     plt1.data[0].x = xv_half;
-    plt1.data[0].y = fv_half;
+    plt1.data[0].y = m;
     plt1.data[1].x = xv_half;
-    plt1.data[1].y = fv_im_half;
+    plt1.data[1].y = n;
     plt1.data[2].x = xv_half;
     plt1.data[2].y = fv_abs_half;
 }
@@ -324,3 +341,17 @@ window.onresize = function () {
     Plotly.Plots.resize(plt0);
     Plotly.Plots.resize(plt1);
 };
+
+// Initialize
+xvUpdate();
+yvUpdate();
+yContUpdate();
+yApproxUpdate();
+FFTUpdate();
+createPlots();
+$('#samplesSliderVal').text(nSample);
+$('#phaseSliderVal').text(phase);
+$('#b1SliderVal').text(b1);
+$('#b3SliderVal').text(b3);
+$('#b5SliderVal').text(b5);
+$('#b7SliderVal').text(b7);
