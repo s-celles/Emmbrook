@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>Panel 2</title>
+    <title>Panel 3</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -16,7 +16,7 @@
           rel="stylesheet"/>
 
     <!-- User css -->
-    <link rel="stylesheet" href="assets/css/panel2.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/newpanel3.css" type="text/css">
 </head>
 <body>
 
@@ -47,7 +47,7 @@
                 <a class="nav-link" href="panel1.html">Panel 1</a>
             </li>
             <li>
-                <a class="nav-link" href="panel3.html">Panel 3</a>
+                <a class="nav-link" href="panel2.html">Panel 2</a>
             </li>
             <li>
                 <a class="nav-link" href="panel4.html">Panel 4</a>
@@ -66,13 +66,13 @@
             <div class="col">
                 <!-- Heading text-->
                 <div class="page-header">
-                    <h1>Panel 2: sine wave fit
-                        <small>amplitude, frequency, and phase</small>
+                    <h1>Panel 3: meet the FFT
+                        <small>How to read the DFT of a single sinusoid</small>
                     </h1>
                 </div>
                 <p>
-                    \( y(t)=A \sin{\left(\omega t + \phi\right)} \), fit to data. <br>
-                    Reload several times for random data to fit.
+                    \( y(t) = A \sin{\left(\omega t + \phi\right)} \), fit to data. <br>
+                    Change the amplitude, frequency, and phase. What happens to the FFT \( Y(\omega) \) of \( y(t) \)?
                 </p>
             </div>
         </div>
@@ -81,23 +81,17 @@
 
     <!-- The simulator -->
     <div class="container" id="appDiv">
-        <h4>
-            Fit simulator
-        </h4>
-        <div class="row">
-            <div class="col-md-12" id="plot">
-                <div id="plt"></div>
-            </div>
-        </div>
-
         <div class="row">
             <div class="col" id="controlPanel">
+                <h4>
+                    DFT simulator
+                </h4>
                 <div id="sliders">
                     <!-- Slide bars -->
                     <div class="row">
                         <div class="col sliderRow">
                             <label for="myPhase" class="slideLables">Phase \( \phi \) (rad)</label>
-                            <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="1"
+                            <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
                                    data-slider-step="0.01">
                             <span id="phaseSliderVal" class="sliderVal"></span>
                         </div>
@@ -105,8 +99,8 @@
                         <div class="col sliderRow">
                             <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)
                                 (hz)</label>
-                            <input id="myFreq" data-slider-min="0" data-slider-max="2"
-                                   data-slider-value="1" data-slider-step="0.01">
+                            <input id="myFreq" data-slider-min="0" data-slider-max="10"
+                                   data-slider-value="0.1" data-slider-step="0.01">
                             <span id="freqSliderVal" class="sliderVal"></span>
                         </div>
 
@@ -120,6 +114,19 @@
                 </div>
             </div>
         </div>
+
+        <div class="row" id="plots">
+            <div class="col-sm-6">
+                <div class="col" id="plt0screen">
+                    <div id="plt0"></div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="col" id="plt1screen">
+                    <div id="plt1"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -129,17 +136,35 @@
                 <h3>Questions</h3>
                 <ol>
                     <li>
-                        Determine the effects of the amplitude \( A \), frequency \( \omega \), and phase \( \phi \).
+                        Adjust the frequency and look at the FFT. How can you tell the dominant frequency of the signal
+                        from the absolute value of the FFT?
                     </li>
+
                     <li>
-                        How can you represent the waveform \( \cos(2\pi t) \)?
+                        With the phase set to zero, giving \( \cos{\omega t} \), which part of the FFT responds to
+                        variations in amplitude, real or imaginary?
+                    </li>
+
+                    <li>
+                        With the phase set to \( pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds to
+                        variations in amplitude, real or imaginary?
+                    </li>
+
+                    <li>
+                        Set the phase to \( \pi/4 \) and vary the amplitude. How do the real and imaginary components
+                        respond, and how do
+                        you understand this?
+                    </li>
+
+                    <li>
+                        Describe a general technique to determine \( A, B, \omega \) from the FFT of \(
+                        y(t) = A\cos{\omega t} + B\sin{\omega t} \).
                     </li>
                 </ol>
             </div>
         </div>
     </div>
 </section>
-
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -154,6 +179,6 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <!-- User script -->
-<script type="text/javascript" src="assets/js/panel2.js"></script>
+<script type="text/javascript" src="assets/js/newpanel3.js"></script>
 </body>
 </html>

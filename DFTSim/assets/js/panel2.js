@@ -60,6 +60,7 @@ function createPlot() {
     Plotly.newPlot(plt, data, layout);
 }
 
+// Interactive interfaces
 phaseSlider.on('slideStop', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();

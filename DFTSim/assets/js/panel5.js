@@ -59,7 +59,7 @@ function yvUpdate() {
     }
 }
 
-function yCountUpdate() {
+function yContUpdate() {
     /*
     yCount will change as the phase changes.
      */
@@ -106,7 +106,7 @@ sampleSlider.on('slideStop', function () {
 phaseSlider.on('slideStop', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
-    yCountUpdate();
+    yContUpdate();
     yApproxUpdate();
     FFTUpdate();
     plot();
@@ -345,7 +345,7 @@ window.onresize = function () {
 // Initialize
 xvUpdate();
 yvUpdate();
-yCountUpdate();
+yContUpdate();
 yApproxUpdate();
 FFTUpdate();
 createPlots();
