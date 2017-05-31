@@ -7,18 +7,19 @@
   text-align: center;
 }
 
-svg {
+.main-svg {
   border-radius: 7px;
   box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15);
 }
 
 .sliderRow {
   max-width: 90%;
-  margin: 16px auto;
+  margin: 10px auto;
+  display: inline-block;
 }
 
 .slider.slider-horizontal {
-  max-width: 60%;
+  max-width: 45%;
   margin-left: 10px;
 }
 
@@ -30,6 +31,10 @@ svg {
 .slider-track-high {
   background-image: linear-gradient(to bottom, rgb(229, 229, 229) 0px, rgb(255, 255, 255) 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.sliderVal {
+  margin-left: 10px;
 }
 
 #plots {

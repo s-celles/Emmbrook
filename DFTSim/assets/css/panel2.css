@@ -11,7 +11,7 @@
   margin-top: 20px;
   margin-bottom: 20px; }
 
-svg {
+.main-svg {
   border-radius: 7px;
   box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15); }
 
@@ -37,4 +37,4 @@ section {
   padding-top: 10px;
   margin-bottom: 30px; }
 
-/*# sourceMappingURL=panel2.css.map
+/*# sourceMappingURL=panel2.css.map */
