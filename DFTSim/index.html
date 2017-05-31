@@ -8,7 +8,6 @@
 
     <title>Using discrete fourier transforms</title>
 
-    <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -23,8 +22,8 @@
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
                 <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
                 <span class="sr-only">Toggle navigation</span>
                 <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
@@ -33,15 +32,15 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#home">Home</a>
-            <p class="navbar-text"><a href="http://apam.columbia.edu/william-bailey" style="color: inherit"
+            <p class="navbar-text"><a href="http://apam.columbia.edu/william-bailey"
                                       data-toggle="tooltip" data-placement="bottom"
                                       title="MSE/APAM, Columbia University">W.E. Bailey</a></p>
         </div>
 
-        <div class="collapse navbar-collapse">
+        <div class="collapse navbar-collapse" id="panels">
             <ul class="nav navbar-nav navbar-right">
                 <li class="active"><a href="http://spin.ap.columbia.edu/dftsim/">Old page
-                    <span class="sr-only">(current)</span></a>
+                    <span class="sr-only">(old page)</span></a>
                 </li>
                 <li><a href="http://magnet.ap.columbia.edu/home">My page</a></li>
             </ul>
@@ -49,15 +48,20 @@
     </div>
 </nav>
 
-<section id="overview">
+
+<div id="overview">
     <!-- Title -->
     <div class="container">
         <div class="jumbotron text-center">
-            <h2>
-                Spectral analysis: learn about fourier transforms
-            </h2>
+            <h1>
+                Spectral Analysis<br>
+                <small>
+                    learn about fourier transforms
+                </small>
+            </h1>
             <p>
-                These interactive exercises will help you get a feel for what the discrete Fourier transform (DFT) does.
+                These interactive exercises will help you get a feel for what the discrete Fourier transform (DFT)
+                does.
             </p>
         </div>
     </div>
@@ -85,66 +89,67 @@
             </div>
         </div>
     </div>
-</section>
+</div>
 
-<section id="preview">
+
+<div id="preview">
     <div class="container">
-        <div class="row-fluid" id="thumb-group">
+        <div class="row" id="thumb-group">
             <!-- Content should be placed within columns, and only columns may be immediate children of rows. -->
-            <div class="col-sm-6 col-md-4 col-lg-4">
+            <div class="col-sm-4">
                 <div class="thumbnail">
                     <a href="panel1.html">
                         <img src="images/panel1.png" alt="Panel 1">
                         <div class="caption">
-                            <p style="text-align: center">
+                            <p>
                                 Fit a sinusoid: What's the frequency?
                             </p>
                         </div>
                     </a>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-4">
+            <div class="col-sm-4">
                 <div class="thumbnail">
                     <a href="panel2.html">
-                        <img src="images/panel2.png" alt="Panel 1">
+                        <img src="images/panel2.png" alt="Panel 2">
                         <div class="caption">
-                            <p style="text-align: center">
+                            <p>
                                 Fit a sinusoid: amplitude, frequency, phase.
                             </p>
                         </div>
                     </a>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-4">
+            <div class="col-sm-4">
                 <div class="thumbnail">
                     <a href="panel3.html">
-                        <img src="images/panel1.png" alt="Panel 1">
+                        <img src="images/panel3.png" alt="Panel 3">
                         <div class="caption">
-                            <p style="text-align: center">
+                            <p>
                                 How to read the DFT of a single sinusoid.
                             </p>
                         </div>
                     </a>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-4">
+            <div class="col-sm-4">
                 <div class="thumbnail">
                     <a href="panel4.html">
-                        <img src="images/panel1.png" alt="Panel 1">
+                        <img src="images/panel4.png" alt="Panel 4">
                         <div class="caption">
-                            <p style="text-align: center">
+                            <p>
                                 Effect of sampling.
                             </p>
                         </div>
                     </a>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-4">
+            <div class="col-sm-4">
                 <div class="thumbnail">
                     <a href="panel5.html">
-                        <img src="images/panel5.png" alt="Panel 1">
+                        <img src="images/panel5.png" alt="Panel 5">
                         <div class="caption">
-                            <p style="text-align: center">
+                            <p>
                                 Reproduce a square wave with successive harmonics.
                             </p>
                         </div>
@@ -153,7 +158,8 @@
             </div>
         </div>
     </div>
-</section>
+</div>
+
 
 <!-- Footer -->
 <footer class="container-fluid footer text-center">
