@@ -1,68 +1,97 @@
 /**
- * Created by Qi on 5/20/17.
+ * Created by Qi on 5/31/17.
  */
 
-function freqUpdate(q) {
-    document.querySelector('#freqBox').value = q;
-    myFunction();
-}
-function ampUpdate(q) {
-    document.querySelector('#ampBox').value = q;
-    myFunction();
-}
-function phaseUpdate(q) {
-    document.querySelector('#phsBox').value = q;
-    myFunction();
-}
+// Variables
+var nSample = 200;
+var xHi = 10;
+var xv = new Array(nSample);
+var yv = new Array(nSample);
+var xPoints = new Array(nSample);
+var yPoints = new Array(nSample);
+var ampRand = Math.random();
+var phsRand = Math.random();
+var freqRand = Math.random();
 
-var nMax = 200
-var nSamp = nMax
-var xHi = 10.
-var xv = new Array(nMax)
-var yv = new Array(nMax)
-var xpts = new Array(nSamp)
-var ypts = new Array(nSamp)
+var phaseSlider = $('#myPhase').bootstrapSlider({});
+var ampSlider = $('#myAmplitude').bootstrapSlider({});
+var freqSlider = $('#myFreq').bootstrapSlider({});
+var phase = phaseSlider.bootstrapSlider('getValue');
+var amplitude = ampSlider.bootstrapSlider('getValue');
+var frequency = freqSlider.bootstrapSlider('getValue');
+var plt = document.getElementById('plt');
 
-
-fval = document.getElementById("myFreq").value;
-
-for (var i = 0; i < nMax; i++) {
-    xv[i] = i / nMax * xHi;
-    yv[i] = Math.sin(2. * 3.14159 * fval * xv[i])
+for (var i = 0; i < nSample; i++) {
+    xv[i] = i / nSample * xHi;
+    yv[i] = Math.sin(2 * Math.PI * frequency * xv[i])
 }
 
-ampRand = Math.random()
-phsRand = Math.random()
-freqRand = Math.random()
-
-for (var i = 0; i < nSamp; i++) {
-    xpts[i] = i / nSamp * xHi;
-    ypts[i] = ampRand * Math.sin(phsRand + freqRand * 2. * 3.1415 * xpts[i])
+for (var j = 0; j < nSample; j++) {
+    xPoints[j] = j / nSample * xHi;
+    yPoints[j] = ampRand * Math.sin(phsRand + freqRand * 2 * Math.PI * xPoints[j])
 }
 
-function myFunction() {
-    var freq = document.getElementById("myFreq").value;
-    var phs = document.getElementById("myPhase").value;
-    var amp = document.getElementById("myAmp").value;
-
-    for (var i = 0; i < nMax; i++) {
-        yv[i] = amp * Math.sin(1.0 * phs + 2. * 3.14159 * freq * xv[i])
+function yvUpdate() {
+    /*
+     yv will change when amplitude, phase, or frequency changes.
+     */
+    for (var i = 0; i < nSample; i++) {
+        yv[i] = amplitude * Math.sin(1.0 * phase + 2 * Math.PI * frequency * xv[i])
     }
-
-    TESTER.data[0].y = yv
-    Plotly.redraw(TESTER)
 }
 
-var layout1 = {
-    margin: {t: 0},
-    yaxis: {title: 'Height Y (m)', titlefont: {size: 36}},
-    xaxis: {title: 'Time t (s)', titlefont: {size: 36}}
+function plot() {
+    plt.data[0].y = yv;
+    Plotly.redraw(plt);
+}
+
+function createPlot() {
+    var layout = {
+        margin: {t: 0},
+        yaxis: {title: 'Height Y (m)', titlefont: {size: 18}},
+        xaxis: {title: 'Time t (s)', titlefont: {size: 18}}
+    };
+
+    var data = [
+        {x: xv, y: yv, type: 'scatter', mode: 'lines', name: 'fit'},
+        {x: xPoints, y: yPoints, type: 'scatter', mode: 'markers', name: 'data'}
+    ];
+
+    Plotly.newPlot(plt, data, layout);
+}
+
+phaseSlider.on('slideStop', function () {
+    phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    plot();
+
+    $('#phaseSliderVal').text(phase)
+});
+
+ampSlider.on('slideStop', function () {
+    amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    plot();
+
+    $('#ampSliderVal').text(amplitude)
+});
+
+freqSlider.on('slideStop', function () {
+    frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
+    yvUpdate();
+    plot();
+
+    $('#freqSliderVal').text(frequency)
+});
+
+// Adjust Plotly's plot size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt);
 };
 
-var data0 = [
-    {x: xv, y: yv, type: 'scatter', mode: 'lines', name: 'fit'},
-    {x: xpts, y: ypts, type: 'scatter', mode: 'markers', name: 'data'}
-];
-
-TESTER = document.getElementById('tester');
-Plotly.newPlot(TESTER, data0, layout1);
+// Initialize
+yvUpdate();
+createPlot();
+$('#phaseSliderVal').text(phase);
+$('#ampSliderVal').text(amplitude);
+$('#freqSliderVal').text(frequency);
