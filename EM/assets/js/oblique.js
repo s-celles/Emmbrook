@@ -2,6 +2,7 @@
  * Created by Qi on 5/27/17.
  */
 
+// Variables
 var eFieldIncident = 1;
 var eFieldReflect;
 var eFieldTransmit;
@@ -10,11 +11,11 @@ var epsilon2 = 2;  // Permittivity
 
 var n1Slider = $('#n1').bootstrapSlider();
 var n2Slider = $('#n2').bootstrapSlider();
+var thetaISlider = $('#thetaI').bootstrapSlider();
 var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
 var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-
-var thetaISlider = $('#thetaI').bootstrapSlider();
 var thetaI = thetaISlider.bootstrapSlider('getValue');
+
 // var thetaR = jQuery.extend({}, thetaIncident);  // Shallow copy thetaIncident into {}
 var thetaT = Math.asin(Math.sin(thetaI) * n1 / n2);
 
@@ -25,23 +26,22 @@ var r = (alpha - beta) / (alpha + beta);  // Reflection amplitude
 eFieldReflect = r * eFieldIncident;
 eFieldTransmit = t * eFieldIncident;
 
+// Interactive interfaces
+thetaISlider.on('slideStop', function () {
+    thetaI = thetaISlider.bootstrapSlider('getValue');
 
-
-// UI interaction
-thetaISlider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
+    $('thetaISliderVal').text(thetaI)
 });
 
-n1Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
+n1Slider.on('slideStop', function () {
+    n1 = n1Slider.bootstrapSlider('getValue');
+
+    $('n1SliderVal').text(n1)
 });
 
-n2Slider.bootstrapSlider({
-    formatter: function (value) {
-        return 'Current value: ' + value;  // For displaying value
-    }
+n2Slider.on('slideStop', function () {
+    n2 = n1Slider.bootstrapSlider('getValue');
+
+    $('n2SliderVal').text(n2)
 });
+
