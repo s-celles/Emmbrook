@@ -104,7 +104,8 @@
                         <div class="col sliderRow">
                             <label for="mySamples" class="slideLables">Samples \( N=2^q \):</label>
                             <span id="samplesSliderVal" class="sliderVal"></span>
-                            <input id="mySamples" min="2" max="10" value="6" step="1">
+                            <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="6"
+                                   data-slider-step="1">
                         </div>
 
                         <div class="col sliderRow">
@@ -120,7 +121,9 @@
                             <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0"
                                    data-slider-step="0.01">
                         </div>
+                    </div>
 
+                    <div class="row">
                         <div class="col sliderRow">
                             <label for="b3" class="slideLables">Amplitude \( b_3 \):</label>
                             <span id="b3SliderVal" class="sliderVal"></span>
