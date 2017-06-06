@@ -17,6 +17,10 @@ a {
   margin: 30px;
 }
 
+.jumbotron p {
+  font-size: x-large;
+}
+
 #pop {
   margin-top: 30px;
 }
@@ -41,16 +45,13 @@ a {
 }
 
 #preview {
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+  padding-top: 30px;
+  padding-bottom: 10px;
   background: #2B3E51;
-  color: #fff;
-}
-
-#thumb-group {
-  margin-top: 50px;
 }
 
 .thumbnail {
-  height: 320px;
   background-color: white;
   border: 1px solid #ddd; // Gray border
   border-radius: 5px; // Rounded border
@@ -70,8 +71,4 @@ a {
 .caption > p {
   font-size: medium;
   text-align: center;
-}
-
-.jumbotron p {
-  font-size: x-large;
 }
