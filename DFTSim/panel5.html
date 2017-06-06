@@ -83,69 +83,65 @@
 
     <!-- The simulator -->
     <div class="container" id="appDiv">
-        <div class="row">
-            <div class="col" id="controlPanel">
-                <h4>
-                    DFT simulator
-                </h4>
-                <div id="sliders">
-                    <!-- Slide bars -->
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
-                            <input id="mySamples" min="2" max="10" value="6" step="1">
-                            <span id="samplesSliderVal" class="sliderVal"></span>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
-                            <input id="myPhase" data-slider-min="-4.99" data-slider-max="4.99" data-slider-value="0"
-                                   data-slider-step="0.01">
-                            <!-- You will need data-slider- API, or else step cannot be smaller than 1. -->
-                            <span id="phaseSliderVal" class="sliderVal"></span>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="b1" class="slideLables">Amplitude \( b_1 \)</label>
-                            <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01">
-                            <span id="b1SliderVal" class="sliderVal"></span>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="b3" class="slideLables">Amplitude \( b_3 \)</label>
-                            <input id="b3" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01">
-                            <span id="b3SliderVal" class="sliderVal"></span>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="b5" class="slideLables">Amplitude \( b_5 \)</label>
-                            <input id="b5" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01">
-                            <span id="b5SliderVal" class="sliderVal"></span>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <label for="b7" class="slideLables">Amplitude \( b_7 \)</label>
-                            <input id="b7" data-slider-min="0" data-slider-max="1" data-slider-value="0"
-                                   data-slider-step="0.01">
-                            <span id="b7SliderVal" class="sliderVal"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h4>
+            DFT simulator
+        </h4>
 
         <div class="row" id="plots">
             <div class="col-sm-6">
-                <div class="col-sm-12" id="plt0screen">
-                    <div id="plt0"></div>
-                </div>
+                <div id="plt0" class="plot"></div>
             </div>
             <div class="col-sm-6">
-                <div class="col-sm-12" id="plt1screen">
-                    <div id="plt1"></div>
+                <div id="plt1" class="plot"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="controlPanel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col sliderRow">
+                            <label for="mySamples" class="slideLables">Samples \( N=2^q \):</label>
+                            <span id="samplesSliderVal" class="sliderVal"></span>
+                            <input id="mySamples" min="2" max="10" value="6" step="1">
+                        </div>
+
+                        <div class="col sliderRow">
+                            <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
+                            <span id="phaseSliderVal" class="sliderVal"></span>
+                            <input id="myPhase" data-slider-min="-4.99" data-slider-max="4.99" data-slider-value="0"
+                                   data-slider-step="0.01">
+                        </div>
+
+                        <div class="col sliderRow">
+                            <label for="b1" class="slideLables">Amplitude \( b_1 \):</label>
+                            <span id="b1SliderVal" class="sliderVal"></span>
+                            <input id="b1" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01">
+                        </div>
+
+                        <div class="col sliderRow">
+                            <label for="b3" class="slideLables">Amplitude \( b_3 \):</label>
+                            <span id="b3SliderVal" class="sliderVal"></span>
+                            <input id="b3" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01">
+                        </div>
+
+                        <div class="col sliderRow">
+                            <label for="b5" class="slideLables">Amplitude \( b_5 \):</label>
+                            <span id="b5SliderVal" class="sliderVal"></span>
+                            <input id="b5" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01">
+                        </div>
+
+                        <div class="col sliderRow">
+                            <label for="b7" class="slideLables">Amplitude \( b_7 \):</label>
+                            <span id="b7SliderVal" class="sliderVal"></span>
+                            <input id="b7" data-slider-min="0" data-slider-max="1" data-slider-value="0"
+                                   data-slider-step="0.01">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

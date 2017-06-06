@@ -81,11 +81,21 @@
 
     <!-- The simulator -->
     <div class="container" id="appDiv">
+        <h4>
+            DFT simulator
+        </h4>
+
+        <div class="row" id="plots">
+            <div class="col-sm-6">
+                <div id="plt0" class="plot"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="plt1" class="plot"></div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col" id="controlPanel">
-                <h4>
-                    DFT simulator
-                </h4>
                 <div id="sliders">
                     <!-- Slide bars -->
                     <div class="row">
@@ -113,19 +123,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="row" id="plots">
-            <div class="col-sm-6">
-                <div class="col" id="plt0screen">
-                    <div id="plt0"></div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="col" id="plt1screen">
-                    <div id="plt1"></div>
-                </div>
-            </div>
-        </div>
     </div>
 
 
@@ -145,7 +142,8 @@
                     </li>
 
                     <li>
-                        With the phase set to \( \pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds to
+                        With the phase set to \( \pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds
+                        to
                         variations in amplitude, real or imaginary?
                     </li>
 

@@ -251,13 +251,13 @@ function createPlots() {
         yaxis: {
             title: 'Height Y (m)',
             titlefont: {
-                size: 24
+                size: 18
             }
         },
         xaxis: {
             title: 'Time t (s)',
             titlefont: {
-                size: 24
+                size: 18
             }
         }
     };
@@ -269,13 +269,13 @@ function createPlots() {
         yaxis: {
             title: 'FFT',
             titlefont: {
-                size: 24
+                size: 18
             }
         },
         xaxis: {
             title: 'Frequency (hz)',
             titlefont: {
-                size: 24
+                size: 18
             },
             range: [0, 2]
         }
