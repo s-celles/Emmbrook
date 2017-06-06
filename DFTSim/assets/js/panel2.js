@@ -60,6 +60,11 @@ function createPlot() {
     Plotly.newPlot(plt, data, layout);
 }
 
+// Adjust Plotly's plot size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt);
+};
+
 // Interactive interfaces
 phaseSlider.on('slideStop', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
@@ -84,11 +89,6 @@ freqSlider.on('slideStop', function () {
 
     $('#freqSliderVal').text(frequency)
 });
-
-// Adjust Plotly's plot size responsively according to window motion
-window.onresize = function () {
-    Plotly.Plots.resize(plt);
-};
 
 // Initialize
 yvUpdate();

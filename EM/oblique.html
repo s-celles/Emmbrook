@@ -49,7 +49,7 @@
                     $$
                     \begin{align}
                     \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I }, \\
-                    \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_2 }.
+                    \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_1 }.
                     \end{align}
                     $$
                     From above we can derive
@@ -90,19 +90,22 @@
                     <div class="row">
                         <div class="col sliderRow">
                             <label for="thetaI" class="slideLables">\( \theta_I \):</label>
-                            <input id="thetaI" min="0" max="90" step="1" value="45">
+                            <input id="thetaI" data-slider-min="0" data-slider-max="pi/2" data-slider-step="1"
+                                   data-slider-value="45">
                             <span id="thetaISliderVal" class="sliderVal"></span>
                         </div>
 
                         <div class="col sliderRow">
                             <label for="n1" class="slideLables">\( n_1 \):</label>
-                            <input id="n1" min="1" max="10" step="1" value="5">
+                            <input id="n1" data-slider-min="1" data-slider-max="3" data-slider-step="0.01"
+                                   data-slider-value="1">
                             <span id="n1SliderVal" class="sliderVal"></span>
                         </div>
 
                         <div class="row sliderRow">
                             <label for="n2" class="slideLables">\( n_2 \):</label>
-                            <input id="n2" min="1" max="10" step="1" value="5">
+                            <input id="n2" data-slider-min="1" data-slider-max="3" data-slider-step="0.01"
+                                   data-slider-value="1.5">
                             <span id="n2SliderVal" class="sliderVal"></span>
                         </div>
                     </div>
@@ -123,6 +126,7 @@
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <!-- User script -->
