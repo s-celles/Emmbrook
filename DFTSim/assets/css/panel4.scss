@@ -7,9 +7,13 @@
   text-align: center;
 }
 
+#controlPanel {
+  padding-bottom: 10px;
+}
+
 #plots {
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .plot {
@@ -22,14 +26,15 @@
 }
 
 .sliderRow {
-  max-width: 30%;
-  margin: auto 10px;
+  max-width: 40%;
+  margin: 10px auto;
   display: inline-block;
 }
 
 .slider.slider-horizontal {
-  margin-left: 10px;
+  max-width: 70%;
   display: block;
+  margin: 0 auto;
 }
 
 .slider-selection {
@@ -40,10 +45,6 @@
 .slider-track-high {
   background-image: linear-gradient(to bottom, rgb(229, 229, 229) 0px, rgb(255, 255, 255) 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15);
-}
-
-.sliderVal {
-  margin-left: 10px;
 }
 
 section {

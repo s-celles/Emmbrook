@@ -6,6 +6,9 @@
   opacity: 0.8;
   text-align: center; }
 
+#controlPanel {
+  padding-bottom: 10px; }
+
 #plots {
   margin-top: 20px;
   margin-bottom: 10px; }
@@ -45,8 +48,5 @@ p {
 ol {
   list-style-type: lower-alpha;
   font-size: medium; }
-
-label {
-  display: inline-block; }
 
 /*# sourceMappingURL=panel5.css.map */

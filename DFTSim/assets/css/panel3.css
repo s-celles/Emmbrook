@@ -6,9 +6,12 @@
   opacity: 0.8;
   text-align: center; }
 
+#controlPanel {
+  padding-bottom: 10px; }
+
 #plots {
   margin-top: 20px;
-  margin-bottom: 20px; }
+  margin-bottom: 10px; }
 
 .plot {
   margin-top: 10px; }
@@ -18,12 +21,14 @@
   box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15); }
 
 .sliderRow {
-  max-width: 50%;
-  margin: 16px 10px;
+  max-width: 40%;
+  margin: 10px auto;
   display: inline-block; }
 
 .slider.slider-horizontal {
-  margin-left: 10px; }
+  max-width: 75%;
+  display: block;
+  margin: 0 auto; }
 
 .slider-selection {
   background-image: linear-gradient(to bottom, #c1c1c1 0px, #d2d2d2 100%);
@@ -32,9 +37,6 @@
 .slider-track-high {
   background-image: linear-gradient(to bottom, #e5e5e5 0px, white 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
-
-.sliderVal {
-  margin-left: 10px; }
 
 section {
   padding-top: 30px;

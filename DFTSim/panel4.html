@@ -98,31 +98,32 @@
                         <!-- Slide bars -->
                         <div class="row">
                             <div class="col sliderRow">
-                                <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
+                                <label for="mySamples" class="slideLables">Samples \( N \):</label>
+                                <span id="samplesSliderVal" class="sliderVal"></span>
                                 <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="2"
                                        data-slider-step="1">
-                                <span id="samplesSliderVal" class="sliderVal"></span>
                             </div>
 
                             <div class="col sliderRow">
-                                <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
+                                <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
+                                <span id="phaseSliderVal" class="sliderVal"></span>
                                 <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
                                        data-slider-step="0.01">
-                                <span id="phaseSliderVal" class="sliderVal"></span>
                             </div>
 
                             <div class="col sliderRow">
-                                <label for="myAmplitude" class="slideLables">Amplitude \( A \)</label>
+                                <label for="myAmplitude" class="slideLables">Amplitude \( A \):</label>
+                                <span id="ampSliderVal" class="sliderVal"></span>
                                 <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
                                        data-slider-step="0.01">
-                                <span id="ampSliderVal" class="sliderVal"></span>
                             </div>
 
                             <div class="col sliderRow">
-                                <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)</label>
+                                <label for="myFreq" class="slideLables">Frequency \( \frac{ \omega }{ 2\pi }
+                                    \):</label>
+                                <span id="freqSliderVal" class="sliderVal"></span>
                                 <input id="myFreq" data-slider-min="0" data-slider-max="0.2"
                                        data-slider-value="0.1" data-slider-step="0.01">
-                                <span id="freqSliderVal" class="sliderVal"></span>
                             </div>
                         </div>
                     </div>
