@@ -11,13 +11,13 @@ var yApprox = new Array(nCont);
 var fmin = 1.0 / xHi;
 
 var sampleSlider = $('#mySamples').bootstrapSlider({});
-var phaseSlider = $('#myPhase').bootstrapSlider({});
+var t0Slider = $('#myT0').bootstrapSlider({});
 var b1Slider = $('#b1').bootstrapSlider();
 var b3Slider = $('#b3').bootstrapSlider();
 var b5Slider = $('#b5').bootstrapSlider();
 var b7Slider = $('#b7').bootstrapSlider();
 var nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Number of samples
-var phase = phaseSlider.bootstrapSlider('getValue');
+var t0 = t0Slider.bootstrapSlider('getValue');
 var b1 = b1Slider.bootstrapSlider('getValue');
 var b3 = b3Slider.bootstrapSlider('getValue');
 var b5 = b5Slider.bootstrapSlider('getValue');
@@ -45,13 +45,13 @@ function xvUpdate() {
 
 function yvUpdate() {
     /*
-    yv will change as the number of samples and phase change.
+    yv will change as the number of samples and t0 change.
      */
     yv = new Array(nSample);
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
-        if (xv[i] > (phase + 5.0)) {
+        if (xv[i] > (t0 + 5.0)) {
             yv[i] = -0.5
-        } else if (xv[i] > phase || xv[i] < (phase - 5.0)) {
+        } else if (xv[i] > t0 || xv[i] < (t0 - 5.0)) {
             yv[i] = 0.5
         } else {
             yv[i] = -0.5
@@ -61,12 +61,12 @@ function yvUpdate() {
 
 function yContUpdate() {
     /*
-    yCount will change as the phase changes.
+    yCount will change as the t0 changes.
      */
     for (var i = 0; i < nCont; i++) {
-        if (xCont[i] > (phase + 5.0)) {
+        if (xCont[i] > (t0 + 5.0)) {
             yCont[i] = -0.5
-        } else if (xCont[i] > phase || xCont[i] < (phase - 5.0)) {
+        } else if (xCont[i] > t0 || xCont[i] < (t0 - 5.0)) {
             yCont[i] = 0.5
         } else {
             yCont[i] = -0.5
@@ -76,13 +76,13 @@ function yContUpdate() {
 
 function yApproxUpdate() {
     /*
-    yApprox will change as phase, b1, b3, b5, b7 change.
+    yApprox will change as t0, b1, b3, b5, b7 change.
      */
     for (var i = 0; i < nCont; i++) {
-        yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - phase)) +
-            b3 * Math.sin(3. * 0.62832 * (xCont[i] - phase)) +
-            b5 * Math.sin(5. * 0.62832 * (xCont[i] - phase)) +
-            b7 * Math.sin(7. * 0.62832 * (xCont[i] - phase))
+        yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - t0)) +
+            b3 * Math.sin(3. * 0.62832 * (xCont[i] - t0)) +
+            b5 * Math.sin(5. * 0.62832 * (xCont[i] - t0)) +
+            b7 * Math.sin(7. * 0.62832 * (xCont[i] - t0))
     }
 }
 
@@ -103,15 +103,15 @@ sampleSlider.on('slideStop', function () {
     $('#samplesSliderVal').text(nSample)
 });
 
-phaseSlider.on('slideStop', function () {
-    phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
+t0Slider.on('slideStop', function () {
+    t0 = t0Slider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     yContUpdate();
     yApproxUpdate();
     FFTUpdate();
     plot();
 
-    $('#phaseSliderVal').text(phase)
+    $('#t0SliderVal').text(t0)
 });
 
 b1Slider.on('slideStop', function () {
@@ -202,16 +202,16 @@ function FFTUpdate() {
 // Plot
 function plotDataUpdate() {
     var a = fv_half.map(function (x) {
-        return x * Math.cos(10 * phase)
+        return x * Math.cos(10 * t0)
     });
     var b = fv_im_half.map(function (x) {
-        return x * Math.sin(10 * phase)
+        return x * Math.sin(10 * t0)
     });
     var c = fv_im_half.map(function (x) {
-        return x * Math.cos(10 * phase)
+        return x * Math.cos(10 * t0)
     });
     var d = fv_half.map(function (x) {
-        return x * Math.sin(10 * phase)
+        return x * Math.sin(10 * t0)
     });
     m = new Array(a.length);
     n = new Array(c.length);
@@ -350,7 +350,7 @@ yApproxUpdate();
 FFTUpdate();
 createPlots();
 $('#samplesSliderVal').text(nSample);
-$('#phaseSliderVal').text(phase);
+$('#t0SliderVal').text(t0);
 $('#b1SliderVal').text(b1);
 $('#b3SliderVal').text(b3);
 $('#b5SliderVal').text(b5);
