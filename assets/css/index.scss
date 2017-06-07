@@ -1,16 +1,6 @@
-.navbar-custom {
+.navbar-light {
   background-color: transparent;
   border-color: transparent;
-
-  .navbar-brand {
-    .active, &:active, &:focus, &:hover {
-      color: brown;
-    }
-  }
-
-  .navbar-collapse {
-    border-color: rgba(255, 255, 255, 02);
-  }
 }
 
 @mixin background-size($size) {
@@ -94,13 +84,9 @@ section h2.section-heading {
 }
 
 @media (min-width: 768px) {
-  @include card-columns(3);
+  @include card-columns(2);
 }
 
 @media (min-width: 992px) {
-  @include card-columns(4);
-}
-
-@media (min-width: 1200px) {
-  @include card-columns(5);
+  @include card-columns(3);
 }
