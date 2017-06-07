@@ -1,3 +1,63 @@
+.navbar-custom {
+  background-color: transparent;
+  border-color: transparent;
+
+  .navbar-brand {
+    .active, &:active, &:focus, &:hover {
+      color: brown;
+    }
+  }
+
+  .navbar-collapse {
+    border-color: rgba(255, 255, 255, 02);
+  }
+}
+
+@mixin background-size($size) {
+  -webkit-background-size: $size;
+  -moz-background-size: $size;
+  -o-background-size: $size;
+  background-size: $size;
+}
+
+header {
+  background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url("../../images/enora_pic.jpg") no-repeat center center fixed;
+  @include background-size(cover);
+  color: #fff;
+  opacity: 0.8;
+  height: 500px;
+  text-align: center;
+
+  .intro-text {
+    padding-top: 200px;
+    padding-bottom: 200px;
+
+    .intro-lead-in {
+      font-size: 22px;
+      line-height: 22px;
+      margin-bottom: 25px;
+    }
+
+    .intro-heading {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 50px;
+      line-height: 50px;
+      margin-bottom: 25px;
+    }
+  }
+}
+
+section {
+  padding: 50px 100px
+}
+
+section h2.section-heading {
+  font-size: 40px;
+  margin-top: 0;
+  margin-bottom: 30px
+}
+
 @mixin border-radius($radius) {
   -webkit-border-radius: $radius;
   -moz-border-radius: $radius;
@@ -9,11 +69,11 @@
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   @include border-radius(10px);
-}
 
-.card:hover {
-  /* On mouse-over, add a deeper shadow */
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  &:hover {
+    /* On mouse-over, add a deeper shadow */
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  }
 }
 
 .rounded-top {
@@ -43,17 +103,4 @@
 
 @media (min-width: 1200px) {
   @include card-columns(5);
-}
-
-.card-columns .card {
-  margin: 10px;
-}
-
-#bg-overlay {
-  background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7));
-  background-size: cover;
-  background-position: center center;
-  color: #fff;
-  height: 450px;
-  padding-top: 50px;
 }

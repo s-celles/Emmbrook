@@ -1,3 +1,43 @@
+.navbar-custom {
+  background-color: transparent;
+  border-color: transparent; }
+  .navbar-custom .navbar-brand .active, .navbar-custom .navbar-brand:active, .navbar-custom .navbar-brand:focus, .navbar-custom .navbar-brand:hover {
+    color: brown; }
+  .navbar-custom .navbar-collapse {
+    border-color: white; }
+
+header {
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../../images/enora_pic.jpg") no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  color: #fff;
+  opacity: 0.8;
+  height: 500px;
+  text-align: center; }
+  header .intro-text {
+    padding-top: 200px;
+    padding-bottom: 200px; }
+    header .intro-text .intro-lead-in {
+      font-size: 22px;
+      line-height: 22px;
+      margin-bottom: 25px; }
+    header .intro-text .intro-heading {
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 50px;
+      line-height: 50px;
+      margin-bottom: 25px; }
+
+section {
+  padding: 50px 100px; }
+
+section h2.section-heading {
+  font-size: 40px;
+  margin-top: 0;
+  margin-bottom: 30px; }
+
 .card {
   /* Add shadows to create the "card" effect */
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -5,10 +45,9 @@
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px; }
-
-.card:hover {
-  /* On mouse-over, add a deeper shadow */
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); }
+  .card:hover {
+    /* On mouse-over, add a deeper shadow */
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); }
 
 .rounded-top {
   border-top-left-radius: 10px;
@@ -34,15 +73,5 @@
     -webkit-column-count: 5;
     -moz-column-count: 5;
     column-count: 5; } }
-.card-columns .card {
-  margin: 10px; }
-
-#bg-overlay {
-  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
-  background-size: cover;
-  background-position: center center;
-  color: #fff;
-  height: 450px;
-  padding-top: 50px; }
 
 /*# sourceMappingURL=index.css.map */
