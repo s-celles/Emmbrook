@@ -1,6 +1,11 @@
 .navbar-light {
   background-color: transparent;
   border-color: transparent;
+
+  &:hover {
+    background-color: #010101;
+    color: #ffffff;
+  }
 }
 
 @mixin background-size($size) {
