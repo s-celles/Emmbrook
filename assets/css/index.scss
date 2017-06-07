@@ -48,3 +48,12 @@
 .card-columns .card {
   margin: 10px;
 }
+
+#bg-overlay {
+  background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7));
+  background-size: cover;
+  background-position: center center;
+  color: #fff;
+  height: 450px;
+  padding-top: 50px;
+}
