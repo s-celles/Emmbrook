@@ -1,53 +1,40 @@
-/*
-Error: Invalid CSS after "...t-up(xs) { ... ": expected "{", was "}"
-        on line 20 of index.scss
+.card {
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px; }
 
-15:     -moz-column-count: $count;
-16:     column-count: $count;
-17:   }
-18: }
-19: 
-20: @include media-breakpoint-up(xs) { ... }
-21: @include media-breakpoint-up(sm) { ... }
-22: @include media-breakpoint-up(md) { ... }
-23: @include media-breakpoint-up(lg) { ... }
-24: @include media-breakpoint-up(xl) { ... }
-25: 
+.card:hover {
+  /* On mouse-over, add a deeper shadow */
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2); }
 
-Backtrace:
-index.scss:20
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:1207:in `expected'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:1137:in `expected'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:1132:in `tok!'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:665:in `block'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:735:in `declaration_or_ruleset'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:685:in `block_child'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:674:in `block_contents'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:666:in `block'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:245:in `include_directive'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:222:in `special_directive'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:197:in `directive'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:684:in `block_child'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:677:in `block_contents'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:125:in `stylesheet'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/scss/parser.rb:41:in `parse'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/engine.rb:406:in `_to_tree'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/engine.rb:381:in `_render_with_sourcemap'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/engine.rb:298:in `render_with_sourcemap'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/plugin/compiler.rb:492:in `update_stylesheet'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/plugin/compiler.rb:215:in `block in update_stylesheets'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/plugin/compiler.rb:209:in `each'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/plugin/compiler.rb:209:in `update_stylesheets'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/plugin.rb:82:in `update_stylesheets'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/exec/sass_scss.rb:340:in `watch_or_update'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/exec/sass_scss.rb:51:in `process_result'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/exec/base.rb:52:in `parse'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/lib/sass/exec/base.rb:19:in `parse!'
-/usr/local/lib/ruby/gems/2.4.0/gems/sass-3.4.23/bin/scss:13:in `<top (required)>'
-/usr/local/bin/scss:22:in `load'
-/usr/local/bin/scss:22:in `<main>'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Error: Invalid CSS after \"...t-up(xs) { ... \": expected \"{\", was \"}\"\A         on line 20 of index.scss\A \A 15:     -moz-column-count: $count;\A 16:     column-count: $count;\A 17:   }\A 18: }\A 19: \A 20: @include media-breakpoint-up(xs) { ... }\A 21: @include media-breakpoint-up(sm) { ... }\A 22: @include media-breakpoint-up(md) { ... }\A 23: @include media-breakpoint-up(lg) { ... }\A 24: @include media-breakpoint-up(xl) { ... }\A 25: "; }
+.rounded-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px; }
+
+@media (min-width: 576px) {
+  .card-columns {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2; } }
+@media (min-width: 768px) {
+  .card-columns {
+    -webkit-column-count: 3;
+    -moz-column-count: 3;
+    column-count: 3; } }
+@media (min-width: 992px) {
+  .card-columns {
+    -webkit-column-count: 4;
+    -moz-column-count: 4;
+    column-count: 4; } }
+@media (min-width: 1200px) {
+  .card-columns {
+    -webkit-column-count: 5;
+    -moz-column-count: 5;
+    column-count: 5; } }
+.card-columns .card {
+  margin: 10px; }
+
+/*# sourceMappingURL=index.css.map */

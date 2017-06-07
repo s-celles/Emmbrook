@@ -1,12 +1,24 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
 .card {
   /* Add shadows to create the "card" effect */
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
+  @include border-radius(10px);
 }
 
 .card:hover {
   /* On mouse-over, add a deeper shadow */
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.rounded-top {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 @mixin card-columns($count) {
@@ -17,42 +29,22 @@
   }
 }
 
-@include media-breakpoint-up(xs) { ... }
-@include media-breakpoint-up(sm) { ... }
-@include media-breakpoint-up(md) { ... }
-@include media-breakpoint-up(lg) { ... }
-@include media-breakpoint-up(xl) { ... }
-
-// Example usage:
-@include media-breakpoint-up(sm) {
-  .some-class {
-    display: block;
-  }
-}
-
-$card-column-sizes: (
-        xs: 2,
-        sm: 3,
-        md: 4,
-        lg: 5,
-);
-
-@each $breakpoint-size, $column-count in $card-column-sizes {
-  @include card-columns($column-count)
-}
-
-@media (min-width: 34em) {
+@media (min-width: 576px) {
   @include card-columns(2);
 }
 
-@media (min-width: 48em) {
+@media (min-width: 768px) {
   @include card-columns(3);
 }
 
-@media (min-width: 62em) {
+@media (min-width: 992px) {
   @include card-columns(4);
 }
 
-@media (min-width: 75em) {
+@media (min-width: 1200px) {
   @include card-columns(5);
+}
+
+.card-columns .card {
+  margin: 10px;
 }
