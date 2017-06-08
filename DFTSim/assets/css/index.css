@@ -12,9 +12,8 @@ a {
 .jumbotron {
   color: #000000;
   margin: 30px; }
-
-.jumbotron p {
-  font-size: x-large; }
+  .jumbotron p {
+    font-size: x-large; }
 
 #pop {
   margin-top: 30px; }
@@ -22,8 +21,10 @@ a {
 #prime-img:hover {
   opacity: 0.7; }
 
-.modal {
-  box-shadow: #010101; }
+.modal.fade {
+  margin-top: 10%;
+  box-shadow: #010101;
+  z-index: 10000000 !important; }
 
 #img-preview {
   width: 80%;

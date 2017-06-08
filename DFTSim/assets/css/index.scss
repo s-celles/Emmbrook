@@ -1,6 +1,7 @@
 a {
   color: inherit;
   text-decoration: none;
+
   &:hover {
     color: #2B3E51;
     text-decoration: none;
@@ -15,10 +16,10 @@ a {
 .jumbotron {
   color: #000000;
   margin: 30px;
-}
 
-.jumbotron p {
-  font-size: x-large;
+  p {
+    font-size: x-large;
+  }
 }
 
 #pop {
@@ -31,8 +32,10 @@ a {
   }
 }
 
-.modal {
+.modal.fade {
+  margin-top: 10%;
   box-shadow: #010101;
+  z-index: 10000000 !important;
 }
 
 #img-preview {
@@ -56,6 +59,7 @@ a {
   border: 1px solid #ddd; // Gray border
   border-radius: 5px; // Rounded border
   box-shadow: 2px 2px 3px 2px rgba(0, 0, 0, 0.1), 2px 2px 3px 2px rgba(0, 0, 0, 0.2);
+
   &:hover {
     box-shadow: 0 0 5px 2px rgba(240, 240, 240, 0.3), 0 0 5px 2px rgba(240, 240, 240, 0.4);
   }
