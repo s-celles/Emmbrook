@@ -171,7 +171,7 @@ sampleSlider.bootstrapSlider({
     }
 });
 
-sampleSlider.on('slideStop', function () {
+sampleSlider.on('change', function () {
     nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Change "global" value
     xvUpdate();
     yvUpdate();
@@ -184,7 +184,7 @@ sampleSlider.on('slideStop', function () {
     freqSlider.bootstrapSlider('refresh');  // To make it synchronously changing
 });
 
-phaseSlider.on('slideStop', function () {
+phaseSlider.on('change', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     yContUpdate();
@@ -194,7 +194,7 @@ phaseSlider.on('slideStop', function () {
     $('#phaseSliderVal').text(phase)
 });
 
-ampSlider.on('slideStop', function () {
+ampSlider.on('change', function () {
     amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     yContUpdate();
@@ -204,7 +204,7 @@ ampSlider.on('slideStop', function () {
     $('#ampSliderVal').text(amplitude)
 });
 
-freqSlider.on('slideStop', function () {
+freqSlider.on('change', function () {
     frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     yContUpdate();

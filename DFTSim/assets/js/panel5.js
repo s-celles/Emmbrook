@@ -93,7 +93,7 @@ sampleSlider.bootstrapSlider({
     }
 });
 
-sampleSlider.on('slideStop', function () {
+sampleSlider.on('change', function () {
     nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Change "global" value
     xvUpdate();
     yvUpdate();
@@ -103,7 +103,7 @@ sampleSlider.on('slideStop', function () {
     $('#samplesSliderVal').text(nSample)
 });
 
-t0Slider.on('slideStop', function () {
+t0Slider.on('change', function () {
     t0 = t0Slider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     yContUpdate();
@@ -114,7 +114,7 @@ t0Slider.on('slideStop', function () {
     $('#t0SliderVal').text(t0)
 });
 
-b1Slider.on('slideStop', function () {
+b1Slider.on('change', function () {
     b1 = b1Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
     FFTUpdate();
@@ -123,7 +123,7 @@ b1Slider.on('slideStop', function () {
     $('#b1SliderVal').text(b1)
 });
 
-b3Slider.on('slideStop', function () {
+b3Slider.on('change', function () {
     b3 = b3Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
     FFTUpdate();
@@ -132,7 +132,7 @@ b3Slider.on('slideStop', function () {
     $('#b3SliderVal').text(b3)
 });
 
-b5Slider.on('slideStop', function () {
+b5Slider.on('change', function () {
     b5 = b5Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
     FFTUpdate();
@@ -141,7 +141,7 @@ b5Slider.on('slideStop', function () {
     $('#b5SliderVal').text(b5)
 });
 
-b7Slider.on('slideStop', function () {
+b7Slider.on('change', function () {
     b7 = b7Slider.bootstrapSlider('getValue');  // Change "global" value
     yApproxUpdate();
     FFTUpdate();
