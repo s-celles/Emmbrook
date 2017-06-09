@@ -66,7 +66,7 @@ freqSlider.on('change', function () {
     $('#freqSliderVal').text(frequency)
 });
 
-// Adjust Plotly's plot size responsively according to window motion
+// Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt);
 };

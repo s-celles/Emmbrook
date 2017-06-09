@@ -336,7 +336,7 @@ function createPlots() {
     Plotly.newPlot(plt1, data1, layout1)
 }
 
-// Adjust Plotly's plot size responsively according to window motion
+// Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt0);
     Plotly.Plots.resize(plt1);

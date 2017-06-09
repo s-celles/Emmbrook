@@ -14,30 +14,37 @@ var plt1 = document.getElementById('plt1');
 
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
+var reflectRatio, transmitRatio;
 
 // Interactive interfaces
-thetaISlider.on('slideStop', function () {
+thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
+    plotRatios();
 
     $('thetaISliderVal').text(thetaI)
 });
 
-n1Slider.on('slideStop', function () {
+n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
-    plot();
+    plotRatios();
 
     $('n1SliderVal').text(n1)
 });
 
-n2Slider.on('slideStop', function () {
+n2Slider.on('change', function () {
     n2 = n1Slider.bootstrapSlider('getValue');
-    plot();
+    plotRatios();
 
     $('n2SliderVal').text(n2)
 });
 
-// Adjust Plotly's plot size responsively according to window motion
+// Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt0);
     Plotly.Plots.resize(plt1);
 };
+
+// Initialize
+$('thetaISliderVal').text(thetaI);
+$('n1SliderVal').text(n1);
+$('n2SliderVal').text(n2);

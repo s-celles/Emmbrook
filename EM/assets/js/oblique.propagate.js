@@ -107,9 +107,6 @@ function createPlot() {
 
     var layout = {
         title: 'E filed intensity',
-        margin: {
-            t: 50
-        },
         xaxis: {
             title: 'x',
             fontsize: 18
