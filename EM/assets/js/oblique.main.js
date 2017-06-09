@@ -26,14 +26,18 @@ thetaISlider.on('change', function () {
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
+    [reflectRatios, transmitRatios] = updateRatioLists();
     plotRatios();
+    plotRatioLists();
 
     $('#n1SliderVal').text(n1)
 });
 
 n2Slider.on('change', function () {
     n2 = n1Slider.bootstrapSlider('getValue');
+    [reflectRatios, transmitRatios] = updateRatioLists();
     plotRatios();
+    plotRatioLists();
 
     $('#n2SliderVal').text(n2)
 });
