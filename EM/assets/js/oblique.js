@@ -13,10 +13,10 @@ var plt = document.getElementById('plt');
 
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
-var spatialX = 200;  // Spatial physical size
-var spatialZ = 200;  // Spatial physical size
-var nx = 2000;  // Spatial grid size
-var nz = 2000;  // Spatial grid size
+var spatialX = 20;  // Spatial physical size
+var spatialZ = 20;  // Spatial physical size
+var nx = 200;  // Spatial grid size
+var nz = 200;  // Spatial grid size
 var xStep = spatialX / nx;
 var zStep = spatialZ / nz;
 
