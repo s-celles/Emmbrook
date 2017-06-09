@@ -1,18 +1,7 @@
 /**
- * Created by Qi on 5/27/17.
+ * Created by Qi on 6/9/17.
  */
 
-// Variables
-var n1Slider = $('#n1').bootstrapSlider();
-var n2Slider = $('#n2').bootstrapSlider();
-var thetaISlider = $('#thetaI').bootstrapSlider();
-var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-var thetaI = thetaISlider.bootstrapSlider('getValue');
-var plt = document.getElementById('plt');
-
-var epsilon1 = Math.pow(n1, 2);  // Permittivity
-var epsilon2 = Math.pow(n2, 2);  // Permittivity
 var spatialX = 20;  // Spatial physical size
 var spatialZ = 20;  // Spatial physical size
 var nx = 200;  // Spatial grid size
@@ -131,29 +120,8 @@ function createPlot() {
         }
     };
 
-    Plotly.newPlot('plt', data, layout)
+    Plotly.newPlot('plt0', data, layout)
 }
-
-// Interactive interfaces
-thetaISlider.on('slideStop', function () {
-    thetaI = thetaISlider.bootstrapSlider('getValue');
-
-    $('thetaISliderVal').text(thetaI)
-});
-
-n1Slider.on('slideStop', function () {
-    n1 = n1Slider.bootstrapSlider('getValue');
-    plot();
-
-    $('n1SliderVal').text(n1)
-});
-
-n2Slider.on('slideStop', function () {
-    n2 = n1Slider.bootstrapSlider('getValue');
-    plot();
-
-    $('n2SliderVal').text(n2)
-});
 
 // Initialize
 var incidentGrid = generate2DGrid(nx / 2, nz / 2);
