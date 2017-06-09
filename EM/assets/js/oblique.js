@@ -13,12 +13,12 @@ var plt = document.getElementById('plt');
 
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
-var spatialX = 20;  // Spatial dimension
-var spatialZ = 20;  // Spatial dimension
-var nx = 200;  // Grid size
-var nz = 200;  // Grid size
-var gridLengthX = spatialX / nx;
-var gridLengthZ = spatialZ / nz;
+var spatialX = 200;  // Spatial physical size
+var spatialZ = 200;  // Spatial physical size
+var nx = 2000;  // Spatial grid size
+var nz = 2000;  // Spatial grid size
+var xStep = spatialX / nx;
+var zStep = spatialZ / nz;
 
 // Basic interfaces
 function sqr(x) {
@@ -47,15 +47,15 @@ function dist2PointToSegment(u, v, w) {
     return luv * sinTheta
 }
 
-function generate2DGrid(grid_x, grid_z) {
+function generate2DGrid(gridXDimesion, gridZDimesion) {
     var grid = [];
 
-    for (var i = 0; i < grid_x; i++) {
+    for (var i = 0; i < gridXDimesion; i++) {
         grid[i] = [];
-        for (var j = 0; j < grid_z; j++) {
+        for (var j = 0; j < gridZDimesion; j++) {
             grid[i][j] = {
-                x: i * gridLengthX,  // Normalize grid coordinate
-                z: j * gridLengthZ,  // Normalize grid coordinate
+                x: i * xStep,  // Normalize grid x coordinate
+                z: j * zStep,  // Normalize grid z coordinate
                 eFieldIntens: 0
             };
         }
@@ -85,12 +85,19 @@ function assignDecayFactor(grid, v, w) {
     return grid
 }
 
-function geteFieldIntens(grid) {
+function geteFieldIntens(grid, gridXOffset, gridZOffset) {
     var intens = [];
-    for (var i = 0; i < grid.length; i++) {
+
+    for (var i = 0; i < nx; i++) {
         intens[i] = [];
-        for (var j = 0; j < grid[0].length; j++) {
-            intens[i][j] = grid[i][j].eFieldIntens
+        for (var j = 0; j < nz; j++) {
+            intens[i][j] = 0
+        }
+    }
+
+    for (i = 0; i < grid.length; i++) {
+        for (j = 0; j < grid[0].length; j++) {
+            intens[i + gridXOffset][j + gridZOffset] += grid[i][j].eFieldIntens
         }
     }
     return intens
@@ -98,28 +105,33 @@ function geteFieldIntens(grid) {
 
 // Plot
 function createPlot() {
-    var x = numeric.linspace(0, spatialX, nx);
-    var y = numeric.linspace(0, spatialZ, nz);
-    var z = geteFieldIntens(grid2D);
 
-    var heatmap = {
-        x: x,
-        y: y,
-        z: z,
+    var incidenthm = {
+        x: numeric.linspace(0, spatialX, nx),
+        y: numeric.linspace(0, spatialZ, nz),
+        z: geteFieldIntens(incidentGrid, nx / 2, 0),
         type: 'heatmap',
         colorscale: 'Viridis'
     };
 
-    var data = [heatmap];
+    var data = [incidenthm];
 
-    // var layout = {
-    //     title: 'efield',
-    //     margin: {
-    //         t: 0
-    //     }
-    // };
+    var layout = {
+        title: 'E filed intensity',
+        margin: {
+            t: 50
+        },
+        xaxis: {
+            title: 'x',
+            fontsize: 18
+        },
+        yaxis: {
+            title: 'z',
+            fontsize: 18
+        }
+    };
 
-    Plotly.newPlot('plt', data)//, layout)
+    Plotly.newPlot('plt', data, layout)
 }
 
 // Interactive interfaces
@@ -131,7 +143,6 @@ thetaISlider.on('slideStop', function () {
 
 n1Slider.on('slideStop', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
-    updateHeatmapValues();
     plot();
 
     $('n1SliderVal').text(n1)
@@ -139,13 +150,15 @@ n1Slider.on('slideStop', function () {
 
 n2Slider.on('slideStop', function () {
     n2 = n1Slider.bootstrapSlider('getValue');
-    updateHeatmapValues();
     plot();
 
     $('n2SliderVal').text(n2)
 });
 
 // Initialize
-var grid2D = generate2DGrid(nx / 2, nz / 2);
-assignDecayFactor(grid2D, grid2D[grid2D.length - 1][grid2D[0].length - 1], grid2D[0][0]);
+var incidentGrid = generate2DGrid(nx / 2, nz / 2);
+var physicalGrid = generate2DGrid(nx, nz);
+assignDecayFactor(incidentGrid,
+    incidentGrid[0][incidentGrid.length - 1],
+    incidentGrid[incidentGrid.length - 1][0]);
 createPlot();
