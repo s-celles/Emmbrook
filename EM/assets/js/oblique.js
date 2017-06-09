@@ -13,8 +13,12 @@ var plt = document.getElementById('plt');
 
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
+var spatialX = 20;  // Spatial dimension
+var spatialZ = 20;  // Spatial dimension
 var nx = 200;  // Grid size
 var nz = 200;  // Grid size
+var gridLengthX = spatialX / nx;
+var gridLengthZ = spatialZ / nz;
 
 // Basic interfaces
 function sqr(x) {
@@ -34,7 +38,7 @@ function dist2PointToSegment(u, v, w) {
      */
     var lwv = dist2(w, v);
     var luv = dist2(u, v);
-    if (lwv === 0) {
+    if (lwv === 0 || luv === 0) {  // Remember to include both
         return luv
     }
 
@@ -43,15 +47,15 @@ function dist2PointToSegment(u, v, w) {
     return luv * sinTheta
 }
 
-function generate2DGrid(nx, nz) {
+function generate2DGrid(grid_x, grid_z) {
     var grid = [];
 
-    for (var i = 0; i < nx; i++) {
+    for (var i = 0; i < grid_x; i++) {
         grid[i] = [];
-        for (var j = 0; j < nz; j++) {
+        for (var j = 0; j < grid_z; j++) {
             grid[i][j] = {
-                x: i / nx,  // Normalize grid coordinate
-                z: j / nz,  // Normalize grid coordinate
+                x: i * gridLengthX,  // Normalize grid coordinate
+                z: j * gridLengthZ,  // Normalize grid coordinate
                 eFieldIntens: 0
             };
         }
@@ -71,8 +75,8 @@ function assignDecayFactor(grid, v, w) {
     /*
      Assign each grid point an electric field intensity, according to its distance from line vw.
      */
-    for (var i = 0; i < nx; i++) {
-        for (var j = 0; j < nz; j++) {
+    for (var i = 0; i < grid.length; i++) {
+        for (var j = 0; j < grid[0].length; j++) {
             var u = grid[i][j];
             var d = generateDecayFactor(u, v, w);
             u.eFieldIntens = 1 * d;  // The intensity on line segment vw is 1
@@ -81,8 +85,42 @@ function assignDecayFactor(grid, v, w) {
     return grid
 }
 
-var grid2D = generate2DGrid(nx, nz);
-console.log(assignDecayFactor(grid2D, grid2D[0][0], grid2D[100][100]));
+function geteFieldIntens(grid) {
+    var intens = [];
+    for (var i = 0; i < grid.length; i++) {
+        intens[i] = [];
+        for (var j = 0; j < grid[0].length; j++) {
+            intens[i][j] = grid[i][j].eFieldIntens
+        }
+    }
+    return intens
+}
+
+// Plot
+function createPlot() {
+    var x = numeric.linspace(0, spatialX, nx);
+    var y = numeric.linspace(0, spatialZ, nz);
+    var z = geteFieldIntens(grid2D);
+
+    var heatmap = {
+        x: x,
+        y: y,
+        z: z,
+        type: 'heatmap',
+        colorscale: 'Viridis'
+    };
+
+    var data = [heatmap];
+
+    // var layout = {
+    //     title: 'efield',
+    //     margin: {
+    //         t: 0
+    //     }
+    // };
+
+    Plotly.newPlot('plt', data)//, layout)
+}
 
 // Interactive interfaces
 thetaISlider.on('slideStop', function () {
@@ -108,3 +146,6 @@ n2Slider.on('slideStop', function () {
 });
 
 // Initialize
+var grid2D = generate2DGrid(nx / 2, nz / 2);
+assignDecayFactor(grid2D, grid2D[grid2D.length - 1][grid2D[0].length - 1], grid2D[0][0]);
+createPlot();
