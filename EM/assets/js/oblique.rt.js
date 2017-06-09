@@ -2,7 +2,7 @@
  * Created by Qi on 6/9/17.
  */
 
-var thetaIList = numeric.linspace(0, Math.PI / 2, 500);
+var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
 
 function updateRatioValues() {
     var alphaList = thetaIList.map(function (tI) {
@@ -48,7 +48,8 @@ function createRatioPlot() {
 
     var data = [
         {x: thetaIList, y: reflectRatio, type: 'scatter', mode: 'lines', name: 'r'},
-        {x: thetaIList, y: transmitRatio, type: 'scatter', mode: 'lines', name: 't'}
+        {x: thetaIList, y: transmitRatio, type: 'scatter', mode: 'lines', name: 't'},
+        {x: thetaI, y: []}
     ];
 
     Plotly.newPlot(plt1, data, layout)

@@ -45,11 +45,23 @@ function generate2DGrid(gridXDimesion, gridZDimesion) {
             grid[i][j] = {
                 x: i * xStep,  // Normalize grid x coordinate
                 z: j * zStep,  // Normalize grid z coordinate
-                eFieldIntens: 0
+                eFieldIncidentIntens: 0
             };
         }
     }
     return grid
+}
+
+function roundPoint(u) {
+    /*
+     Snap a point to its nearest grid square
+     */
+    return [Math.round(u.x), Math.round(u.y)];
+}
+
+function generateEndPointOfRay(startPoint, theta) {
+    var edgePoint = [0, startPoint.y];
+
 }
 
 function generateDecayFactor(u, v, w) {
@@ -68,13 +80,13 @@ function assignDecayFactor(grid, v, w) {
         for (var j = 0; j < grid[0].length; j++) {
             var u = grid[i][j];
             var d = generateDecayFactor(u, v, w);
-            u.eFieldIntens = 1 * d;  // The intensity on line segment vw is 1
+            u.eFieldIncidentIntens = 1 * d;  // The intensity on line segment vw is 1
         }
     }
     return grid
 }
 
-function geteFieldIntens(grid, gridXOffset, gridZOffset) {
+function geteFieldIncidentIntens(grid, gridXOffset, gridZOffset) {
     var intens = [];
 
     for (var i = 0; i < nx; i++) {
@@ -86,10 +98,18 @@ function geteFieldIntens(grid, gridXOffset, gridZOffset) {
 
     for (i = 0; i < grid.length; i++) {
         for (j = 0; j < grid[0].length; j++) {
-            intens[i + gridXOffset][j + gridZOffset] += grid[i][j].eFieldIntens
+            intens[i + gridXOffset][j + gridZOffset] += grid[i][j].eFieldIncidentIntens
         }
     }
     return intens
+}
+
+function eFieldReflectIntens(eFieldIncidentIntens) {
+    return sqr(reflectRatio * eFieldIncidentIntens)
+}
+
+function eFieldTransmitIntens(eFieldIncidentIntens) {
+    return sqr(transmitRatio * eFieldIncidentIntens)
 }
 
 // Plot
@@ -98,7 +118,7 @@ function createPlot() {
     var incidenthm = {
         x: numeric.linspace(0, spatialX, nx),
         y: numeric.linspace(0, spatialZ, nz),
-        z: geteFieldIntens(incidentGrid, nx / 2, 0),
+        z: geteFieldIncidentIntens(incidentGrid, nx / 2, 0),
         type: 'heatmap',
         colorscale: 'Viridis'
     };
