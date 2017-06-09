@@ -4,25 +4,33 @@
 
 var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
 
-function updateRatioValues() {
-    var alphaList = thetaIList.map(function (tI) {
-        return Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI)
-    });
+function updateRatioValues(tI) {
+    /*
+     Accept an incident angle tI, return the reflection ratio and transmission ratio.
+     */
+    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
     var beta = n1 / n2 * epsilon2 / epsilon1;
-    var t = alphaList.map(function (alpha) {
-        return 2 / (alpha + beta)
-    });
-    var r = alphaList.map(function (alpha) {
-        return (alpha - beta) / (alpha + beta)
-    });
+    var t = 2 / (alpha + beta);
+    var r = (alpha - beta) / (alpha + beta);
     return [r, t]
+}
+
+function updateRatioLists() {
+    /*
+     Return: An array of [[r0, r1, ...], [t0, t1, ...]].
+     */
+    return numeric.transpose(thetaIList.map(updateRatioValues))
 }
 
 // Plot
 function plotRatios() {
-    [reflectRatio, transmitRatio] = updateRatioValues();
-    plt1.data[0].y = reflectRatio;
-    plt1.data[1].y = transmitRatio;
+    [reflectRatios, transmitRatios] = updateRatioLists();
+    plt1.data[0].y = reflectRatios;
+
+    plt1.data[1].y = transmitRatios;
+
+    plt1.data[2].x = [thetaI, thetaI];
+    plt1.data[2].y = updateRatioValues(thetaI);
     Plotly.redraw(plt1)
 }
 
@@ -47,9 +55,9 @@ function createRatioPlot() {
     };
 
     var data = [
-        {x: thetaIList, y: reflectRatio, type: 'scatter', mode: 'lines', name: 'r'},
-        {x: thetaIList, y: transmitRatio, type: 'scatter', mode: 'lines', name: 't'},
-        {x: thetaI, y: []}
+        {x: thetaIList, y: reflectRatios, type: 'scatter', mode: 'lines', name: 'r'},
+        {x: thetaIList, y: transmitRatios, type: 'scatter', mode: 'lines', name: 't'},
+        {x: [thetaI, thetaI], y: updateRatioValues(thetaI), typr: 'scatter', mode: 'markers', name: 'ratios'}
     ];
 
     Plotly.newPlot(plt1, data, layout)
