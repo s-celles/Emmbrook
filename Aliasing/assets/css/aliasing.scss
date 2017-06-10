@@ -1,53 +1,71 @@
-#appDiv {
-  margin-top: 15px;
-  background-image: linear-gradient(to bottom, rgb(193, 193, 193) 0px, rgb(215, 215, 215) 100%);
-  box-shadow: inset 1px 2px 3px 1px rgba(240, 240, 240, 0.5), 1px 2px 1px #dadada;
+$color1: rgba(240, 240, 240, .5);
+$color2: rgb(193, 193, 193);
+$color3: rgb(215, 215, 215);
+$color4: #dadada;
+$shadow1: rgba(0, 0, 0, .15);
+$gradient1: rgb(229, 229, 229);
+$gradient2: rgb(255, 255, 255);
+$gradient3: rgb(210, 210, 210);
+
+#app-div {
+  background-image: linear-gradient(to bottom, $color2 0, $color2 100%);
   border-radius: 10px;
-  opacity: 0.8;
+  box-shadow: inset 1px 2px 3px 1px $color1, 1px 2px 1px $color4;
+  margin-top: 15px;
+  opacity: .8;
   text-align: center;
 }
 
-#controlPanel {
+#control-panel {
   padding-bottom: 10px;
 }
 
-#plot {
+#plots {
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.plot {
   margin-top: 10px;
 }
 
 .main-svg {
   border-radius: 7px;
-  box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15);
+  box-shadow: inset 1px 2px 1px 1px $shadow1;
 }
 
-.sliderRow {
-  max-width: 60%;
-  margin: 10px auto;
+.slider-row {
   display: inline-block;
+  margin: 10px auto;
+  max-width: 60%;
 }
 
 .slider.slider-horizontal {
-  max-width: 80%;
   display: block;
   margin: 0 auto;
+  max-width: 80%;
 }
 
 .slider-selection {
-  background-image: linear-gradient(to bottom, rgb(193, 193, 193) 0px, rgb(210, 210, 210) 100%);
-  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15);
+  background-image: linear-gradient(to bottom, $color2 0, $gradient3 100%);
+  box-shadow: inset 1px 1px 1px 0 $shadow1;
 }
 
 .slider-track-high {
-  background-image: linear-gradient(to bottom, rgb(229, 229, 229) 0px, rgb(255, 255, 255) 100%);
-  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15);
+  background-image: linear-gradient(to bottom, $gradient1 0, $gradient2 100%);
+  box-shadow: inset 1px 1px 1px 0 $shadow1;
 }
 
 section {
-  padding-top: 30px;
   margin-bottom: 30px;
+  padding-top: 30px;
 }
 
 p {
   font-size: medium;
 }
 
+ol {
+  font-size: medium;
+  list-style-type: lower-alpha;
+}
