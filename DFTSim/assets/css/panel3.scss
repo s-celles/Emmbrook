@@ -1,9 +1,9 @@
 #appDiv {
-  margin-top: 15px;
   background-image: linear-gradient(to bottom, rgb(193, 193, 193) 0px, rgb(215, 215, 215) 100%);
-  box-shadow: inset 1px 2px 3px 1px rgba(240, 240, 240, 0.5), 1px 2px 1px #dadada;
   border-radius: 10px;
-  opacity: 0.8;
+  box-shadow: inset 1px 2px 3px 1px rgba(240, 240, 240, 0.5), 1px 2px 1px #dadada;
+  margin-top: 15px;
+  opacity: .8;
   text-align: center;
 }
 
@@ -12,8 +12,8 @@
 }
 
 #plots {
-  margin-top: 20px;
   margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .plot {
@@ -26,15 +26,15 @@
 }
 
 .sliderRow {
-  max-width: 40%;
-  margin: 10px auto;
   display: inline-block;
+  margin: 10px auto;
+  max-width: 40%;
 }
 
 .slider.slider-horizontal {
-  max-width: 75%;
   display: block;
   margin: 0 auto;
+  max-width: 75%;
 }
 
 .slider-selection {
@@ -48,8 +48,8 @@
 }
 
 section {
-  padding-top: 30px;
   margin-bottom: 30px;
+  padding-top: 30px;
 }
 
 p {
@@ -57,6 +57,6 @@ p {
 }
 
 ol {
-  list-style-type: lower-alpha;
   font-size: medium;
+  list-style-type: lower-alpha;
 }
