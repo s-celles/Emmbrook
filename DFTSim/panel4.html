@@ -42,7 +42,10 @@
     <div class="collapse navbar-collapse" id="panels">
         <ul class="nav navbar-nav">
             <li>
-                <a class="nav-link active" href="index.html">Home</a>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
             </li>
             <li>
                 <a class="nav-link" href="panel1.html">Panel 1</a>
@@ -78,56 +81,53 @@
         </div>
 
         <!-- The simulator -->
-        <div class="container" id="appDiv">
-            <div class="row">
-                <div class="col" id="controlPanel">
-                    <h4>
-                        DFT simulator
-                    </h4>
-                    <div id="sliders">
-                        <!-- Slide bars -->
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <label for="mySamples" class="slideLables">Samples \( N=2^q \)</label>
-                                <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="2"
-                                       data-slider-step="1">
-                                <span id="samplesSliderVal" class="sliderVal"></span>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <label for="myPhase" class="slideLables">Phase \( \phi \)</label>
-                                <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
-                                       data-slider-step="0.01">
-                                <span id="phaseSliderVal" class="sliderVal"></span>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <label for="myAmplitude" class="slideLables">Amplitude \( A \)</label>
-                                <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
-                                       data-slider-step="0.01">
-                                <span id="ampSliderVal" class="sliderVal"></span>
-                            </div>
-
-                            <div class="col-sm-6">
-                                <label for="myFreq" class="slideLables">Frequency \( \dfrac{ \omega }{ 2\pi } \)</label>
-                                <input id="myFreq" data-slider-min="0" data-slider-max="0.2"
-                                       data-slider-value="0.1" data-slider-step="0.01">
-                                <span id="freqSliderVal" class="sliderVal"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="container" id="app-div">
+            <h4>
+                DFT simulator
+            </h4>
 
             <div class="row" id="plots">
                 <div class="col-sm-8">
-                    <div class="col" id="plt0screen">
-                        <div id="plt0"></div>
-                    </div>
+                    <div id="plt0" class="plot"></div>
                 </div>
                 <div class="col-sm-4">
-                    <div class="col" id="plt1screen">
-                        <div id="plt1"></div>
+                    <div id="plt1" class="plot"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col" id="control-panel">
+                    <div id="sliders">
+                        <!-- Slide bars -->
+                        <div class="row">
+                            <div class="col slider-row">
+                                <label for="mySamples" class="slideLables">Samples \( N \):</label>
+                                <span id="samplesSliderVal" class="sliderVal"></span>
+                                <input id="mySamples" data-slider-min="2" data-slider-max="10" data-slider-value="2"
+                                       data-slider-step="1">
+                            </div>
+
+                            <div class="col slider-row">
+                                <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
+                                <span id="phaseSliderVal" class="sliderVal"></span>
+                                <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
+                                       data-slider-step="0.01">
+                            </div>
+
+                            <div class="col slider-row">
+                                <label for="myAmplitude" class="slideLables">Amplitude \( A \):</label>
+                                <span id="ampSliderVal" class="sliderVal"></span>
+                                <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
+                                       data-slider-step="0.01">
+                            </div>
+
+                            <div class="col slider-row">
+                                <label for="myFreq" class="slideLables">Frequency \( \omega / ( 2\pi ) \):</label>
+                                <span id="freqSliderVal" class="sliderVal"></span>
+                                <input id="myFreq" data-slider-min="0" data-slider-max="0.2"
+                                       data-slider-value="0.1" data-slider-step="0.1">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

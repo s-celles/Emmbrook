@@ -8,7 +8,6 @@
 
     <title>EM propagation at oblique incidence to an interface between dissimilar dielectric media.</title>
 
-    <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -21,84 +20,123 @@
 </head>
 
 <body>
-<div class="container">
-    <!-- Heading text-->
-    <div class="page-header">
-        <h1>EM propagation at oblique incidence
-        </h1>
-    </div>
-    <p>
-        From EM-class we know
-        $$
-        \begin{align}
-        E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_I, \\
-        \epsilon_1 (-E_I \sin \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T,
-        \end{align}
-        $$
-        this can be simplified to
-        $$
-        \begin{align}
-        1 + r &= \alpha t, \\
-        1 - r &= \beta t,
-        \end{align}
-        $$
-        where \( \alpha \) and \( \beta \) are defined as
-        $$
-        \begin{align}
-        \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I }, \\
-        \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_2 }.
-        \end{align}
-        $$
-        From above we can derive
-        $$
-        \begin{align}
-        t &= \frac{ 2 }{ \alpha + \beta }, \\
-        r &= \frac{ \alpha - \beta }{ \alpha + \beta }.
-        \end{align}
-        $$
-        We can even delve further that
-        $$
-        \begin{align}
-        \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\
-        \beta &= \arctan \theta_B,
-        \end{align}
-        $$
-        where \( \theta_B \) is called Brewster angle.
-    </p>
 
-    <div id="appDiv">
-        <div>
-            <h3 class="text-center">
-                Simulator
-            </h3>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>EM propagation at oblique incidence
+                    </h1>
+                </div>
+                <p>
+                    From EM-class we know
+                    $$
+                    \begin{align}
+                    E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_I, \\
+                    \epsilon_1 (-E_I \sin \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T,
+                    \end{align}
+                    $$
+                    this can be simplified to
+                    $$
+                    \begin{align}
+                    1 + r &= \alpha t, \\
+                    1 - r &= \beta t,
+                    \end{align}
+                    $$
+                    where \( \alpha \) and \( \beta \) are defined as
+                    $$
+                    \begin{align}
+                    \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I }, \\
+                    \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_1 }.
+                    \end{align}
+                    $$
+                    From above we can derive
+                    $$
+                    \begin{align}
+                    t &= \frac{ 2 }{ \alpha + \beta }, \\
+                    r &= \frac{ \alpha - \beta }{ \alpha + \beta }.
+                    \end{align}
+                    $$
+                    We can even delve further that
+                    $$
+                    \begin{align}
+                    \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\
+                    \beta &= \arctan \theta_B,
+                    \end{align}
+                    $$
+                    where \( \theta_B \) is called Brewster angle.
+                </p>
+                <p>
+                    For a <a href="https://www.wikiwand.com/en/Gaussian_beam#/">Gaussian beam</a>, the intensity
+                    distribution is
+                    $$
+                    I = I_0 \bigg( \frac{ w_0^2 }{ w(z)^2 } \bigg) \exp \bigg( -\frac{ 2r^2 }{ w(z)^2 } \bigg),
+                    $$
+                    where
+                    $$
+                    w(z)^2 = w_0^2 \bigg( 1 + \Big( \frac{ z }{ z_R } \Big)^2 \bigg)
+                    $$
+                    is the square of radial radius at which the field amplitudes fall to \( 1/ e \), \( w_0 \) is the
+                    waist radius, \( z_R = \pi w_0^2 / \lambda \), \( z \) is the axial distance, \( r \) is the radial
+                    distance.
+                </p>
+                <p>
+                    Here, for simplicity, we will assume
+                    $$
+                    I = I_0 \exp ( -r^2 ).
+                    $$
+                </p>
+            </div>
         </div>
+    </div>
 
-        <div id="controlPanel">
-            <div id="sliders">
-                <!-- Slide bars -->
-                <div class="slider">
-                    <label for="thetaI" class="slideLables">\( \theta_I \):</label>
-                    <input id="thetaI" min="0" max="90" step="1" value="45" class="sliderBars">
-                </div>
-
-                <div class="slider">
-                    <label for="n1" class="slideLables">\( n_1 \):</label>
-                    <input id="n1" min="1" max="10" step="1" value="5" class="sliderBars">
-                </div>
-
-                <div class="slider">
-                    <label for="n2" class="slideLables">\( n_2 \):</label>
-                    <input id="n2" min="1" max="10" step="1" value="5" class="sliderBars">
-                </div>
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Simulator
+        </h4>
+        <div class="row" id="plots">
+            <div class="col-sm-6">
+                <div id="plt0" class="plot"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="plt1" class="plot"></div>
             </div>
         </div>
 
-        <div id="canvasDiv">
-            <!-- Plot -->
-            <div id="plt"></div>
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="thetaI" class="slideLables">\( \theta_I \):</label>
+                            <span id="thetaISliderVal" class="sliderVal"></span>
+                            <input id="thetaI" data-slider-min="0" data-slider-max="1.57" data-slider-step="0.01"
+                                   data-slider-value="0">
+                        </div>
+
+                        <div class="col slider-row">
+                            <label for="n1" class="slideLables">\( n_1 \):</label>
+                            <span id="n1SliderVal" class="sliderVal"></span>
+                            <input id="n1" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
+                                   data-slider-value="1">
+                        </div>
+
+                        <div class="row slider-row">
+                            <label for="n2" class="slideLables">\( n_2 \):</label>
+                            <span id="n2SliderVal" class="sliderVal"></span>
+                            <input id="n2" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
+                                   data-slider-value="1.5">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 
 <!-- Latest compiled and minified JavaScript -->
@@ -111,64 +149,13 @@
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.13.3/math.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
 <!-- User script -->
-<!--<script type="text/javascript" src="assets/js/oblique.js"></script>-->
-
-<script lang="javascript">
-    var eFieldIncident = 1;
-    var eFieldReflect;
-    var eFieldTransmit;
-    var epsilon1 = 1;  // Permittivity
-    var epsilon2 = 2;  // Permittivity
-
-    var n1Slider = $('#n1').bootstrapSlider();
-    var n2Slider = $('#n2').bootstrapSlider();
-    var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-    var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-
-    var thetaISlider = $('#thetaI').bootstrapSlider();
-    var thetaI = thetaISlider.bootstrapSlider('getValue');
-    var thetaT = Math.asin(Math.sin(thetaI) * n1 / n2);
-
-    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(thetaI), 2)) / Math.cos(thetaI);
-    var beta = n1 / n2 * epsilon2 / epsilon1;
-    var t = 2 / (alpha + beta);  // Transmission amplitude
-    var r = (alpha - beta) / (alpha + beta);  // Reflection amplitude
-    eFieldReflect = r * eFieldIncident;
-    eFieldTransmit = t * eFieldIncident;
-
-    // UI interaction
-    thetaISlider.bootstrapSlider({
-        formatter: function (value) {
-            return 'Current value: ' + value;  // For displaying value
-        }
-    });
-
-    n1Slider.bootstrapSlider({
-        formatter: function (value) {
-            return 'Current value: ' + value;  // For displaying value
-        }
-    });
-
-    n2Slider.bootstrapSlider({
-        formatter: function (value) {
-            return 'Current value: ' + value;  // For displaying value
-        }
-    });
-
-    var sliderBars = document.getElementsByClassName('sliderBars');
-    for (var i = 0; i < sliderBars.length; i += 1) {
-        sliderBars[i].setAttribute('orientation', 'vertical');
-    }
-
-    // Plot
-    var origin = [0, 0];
-
-
-//    Plotly.newPlot('plt', data)
-</script>
+<script type="text/javascript" src="assets/js/oblique.main.js"></script>
+<script type="text/javascript" src="assets/js/oblique.propagate.js"></script>
+<script type="text/javascript" src="assets/js/oblique.rt.js"></script>
 </body>
 </html>

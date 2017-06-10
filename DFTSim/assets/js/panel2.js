@@ -60,8 +60,13 @@ function createPlot() {
     Plotly.newPlot(plt, data, layout);
 }
 
+// Adjust Plotly's plotRatios size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt);
+};
+
 // Interactive interfaces
-phaseSlider.on('slideStop', function () {
+phaseSlider.on('change', function () {
     phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     plot();
@@ -69,7 +74,7 @@ phaseSlider.on('slideStop', function () {
     $('#phaseSliderVal').text(phase)
 });
 
-ampSlider.on('slideStop', function () {
+ampSlider.on('change', function () {
     amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     plot();
@@ -77,18 +82,13 @@ ampSlider.on('slideStop', function () {
     $('#ampSliderVal').text(amplitude)
 });
 
-freqSlider.on('slideStop', function () {
+freqSlider.on('change', function () {
     frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
     yvUpdate();
     plot();
 
     $('#freqSliderVal').text(frequency)
 });
-
-// Adjust Plotly's plot size responsively according to window motion
-window.onresize = function () {
-    Plotly.Plots.resize(plt);
-};
 
 // Initialize
 yvUpdate();

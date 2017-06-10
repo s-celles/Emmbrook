@@ -1,6 +1,7 @@
 a {
   color: inherit;
   text-decoration: none;
+
   &:hover {
     color: #2B3E51;
     text-decoration: none;
@@ -15,6 +16,10 @@ a {
 .jumbotron {
   color: #000000;
   margin: 30px;
+
+  p {
+    font-size: x-large;
+  }
 }
 
 #pop {
@@ -27,8 +32,10 @@ a {
   }
 }
 
-.modal {
+.modal.fade {
+  margin-top: 10%;
   box-shadow: #010101;
+  z-index: 10000000 !important;
 }
 
 #img-preview {
@@ -41,20 +48,18 @@ a {
 }
 
 #preview {
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+  padding-top: 30px;
+  padding-bottom: 10px;
   background: #2B3E51;
-  color: #fff;
-}
-
-#thumb-group {
-  margin-top: 50px;
 }
 
 .thumbnail {
-  height: 320px;
   background-color: white;
   border: 1px solid #ddd; // Gray border
   border-radius: 5px; // Rounded border
   box-shadow: 2px 2px 3px 2px rgba(0, 0, 0, 0.1), 2px 2px 3px 2px rgba(0, 0, 0, 0.2);
+
   &:hover {
     box-shadow: 0 0 5px 2px rgba(240, 240, 240, 0.3), 0 0 5px 2px rgba(240, 240, 240, 0.4);
   }
@@ -70,8 +75,4 @@ a {
 .caption > p {
   font-size: medium;
   text-align: center;
-}
-
-.jumbotron p {
-  font-size: x-large;
 }

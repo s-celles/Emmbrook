@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Aliasing</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
+          rel="stylesheet"/>
+
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/aliasing.css" type="text/css">
+</head>
+<body>
+
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link active" href="index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link" href="bloch.html">Bloch theorem</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        Aliasing
+                    </h1>
+                </div>
+                <p>
+                    This is an illustration of <strong>aliasing</strong> in a discrete sample.
+                </p>
+                <p>
+                <p>
+                    Recall that for a sample of \( N \) points, \( \mathbf x = [x_0,x_1...x_{N-1}] \), the discrete
+                    Fourier transform (DFT) \( \mathbf X \) will also have \( N \) points. The frequencies \( k \),
+                    given in the implicit units \( \Delta\alpha = \frac {2\pi}{Na} \), so \( \alpha_k = k\Delta\alpha
+                    \),
+                    where \( a \) is the spacing of samples \( x \), are on the range
+                    $$
+                    -\frac {N}{2} + 1 \le k \le \frac {N}{2}.
+                    $$
+                </p>
+                <p>
+                    These \( N \) DFT frequencies are equivalent to the frequencies contained in the <em>first
+                    Brillouin zone</em>, derived in the context of diffraction:
+                    $$
+                    -\frac {\pi}{a} \le a \le \frac {\pi}{a}.
+                    $$
+                </p>
+                <p>
+                    The only difference here being that we exclude \( k = 0 \) in the BZ and consider the negative
+                    Nyquist component.
+                </p>
+                <p>
+                    The highest-frequency component (Nyquist frequency) will have a frequency \( \frac {N}{2} \),
+                    with units of \( \frac {2\pi}{L} = \frac {2\pi}{Na} \) where \( a \) is the (implicit) spacing
+                    between the sample points.
+                </p>
+                <p>
+                    We can represent a Fourier component as
+                    $$
+                    x_k = X_ke^{i\alpha_kx}.
+                    $$
+                </p>
+                <p>
+                    We will examine what happens if we try to sample a signal with a frequency greater than the
+                    Nyquist frequency \( \frac {N}{2} \). Below we show a sample of \( 20 \) points, \( N = 20 \), over
+                    the
+                    range \( x = 0, 1, \ldots \), at frequency \( k \), taking unit amplitude \( X_k = 1 \). The highest
+                    frequencies that this sample can represent are \( k = \pm10 \), or \( k = \pm \frac{N}{2} \) .
+                    Higher
+                    frequencies will be aliased, or undersampled (by not enough sampling points.)
+                </p>
+                <p>
+                    The slider controls the frequency \( k \) of the cosine wave we try to represent using the discrete
+                    samples. The samples represent the wave accurately if we keep \( −10 \le k \le 10 \). However, if we
+                    try to represent a frequency beyond this value, \( \frac{N}{2} \), on the positive or negative
+                    side---so
+                    outside the first BZ--the waveform is represented equally well, and in many case more obviously,
+                    by its "alias", on the range \( -\frac {N}{2} \le k \le \frac {N}{2} \).
+                </p>
+                <p>
+                    The aliasing effect can be seen most clearly for \( k = \pm 19 \). This frequency "aliases" to the
+                    fundamental frequencies \( k = \mp 1 \)! Set the slider to \( k = \pm 19 \) to see this.
+                </p>
+                <p>
+                    Aliasing is easy to understand mathematically. Consider that we would like to represent a unit
+                    waveform with frequency \( x_{k \pm N} \). We will then have
+                    $$
+                    \begin{align}
+                    x_{k \pm N} &= e^{i \frac{2\pi}{N}j(k \pm N)}, \\
+                    x_{k \pm N} &= e^{i \frac{2\pi}{N}jk \pm i 2\pi j}.
+                    \end{align}
+                    $$
+                </p>
+                <p>
+                    But since \( j \) is an integer,
+                    $$
+                    \begin{align}
+                    x_{k \pm N} &= e^{i \frac{2\pi}{N}jk}, \\
+                    x_{k \pm N} &= x_k,
+                    \end{align}
+                    $$
+                    i.e., the waveform is exactly the same for frequency \( k \) and frequency \( k+N \). The same
+                    reasoning would hold if we try to represent \( x_{k \pm 2N},x_{k \pm 3N} \), etc.
+                </p>
+                <p>
+                    There are several, related conclusions:
+                <ul>
+                    <li>
+                        The frequency range \( −\frac{N}{2} \le k \le \frac {N}{2} \) (first BZ) is a complete
+                        representation of the possible frequencies contained in the signal.
+                    </li>
+                    <li>
+                        Any signal with a higher frequency has a discrete waveform which is completely identical to a
+                        that of a frequency in the first BZ. We can then always shift these frequencies
+                        \( x_k \to x_{k+N} \) to those in the first BZ.
+                    </li>
+                </ul>
+                </p>
+                <p>
+                    We will see that these second two statements are equivalent to the <strong>Bloch theorem</strong>.
+                    We
+                    can represent all possible electron waves in a solid with the same frequency basis,
+                    \( −\frac{N}{2} \le k \le \frac {N}{2} \), where now \( N \) are the number of formula units in any
+                    direction.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Simulator
+        </h4>
+        <div class="row">
+            <div class="col-md-12" id="plot">
+                <div id="plt"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="col slider-row">
+                        <label for="k" class="slideLables">\( k \):</label>
+                        <span id="kSliderVal" class="sliderVal"></span>
+                        <input id="k" data-slider-min="-20" data-slider-max="20" data-slider-value="0"
+                               data-slider-step="1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.13.1/numjs.js"></script>
+
+<!-- User script -->
+<script type="text/javascript" src="assets/js/aliasing.js"></script>
+</body>
+</html>
