@@ -8,13 +8,25 @@ var n2Slider = $('#n2').bootstrapSlider();
 var thetaISlider = $('#thetaI').bootstrapSlider();
 var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
 var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-var thetaI = thetaISlider.bootstrapSlider('getValue');
+var thetaI = thetaISlider.bootstrapSlider('getValue');  // Get incident angle from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-
+// Variables for calculation
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
-var reflectRatioList, transmitRatioList;
+var reflectRatioList, transmitRatioList;  // Used in oblique.rt.js
+
+// Main interfaces
+function updateRatioValues(tI) {
+    /*
+     Accept an incident angle tI, return the reflection ratio and transmission ratio.
+     */
+    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    var beta = n1 / n2 * epsilon2 / epsilon1;
+    var t = 2 / (alpha + beta);
+    var r = (alpha - beta) / (alpha + beta);
+    return [r, t]
+}
 
 // Interactive interfaces
 thetaISlider.on('change', function () {
