@@ -278,10 +278,10 @@ typings/
 # dotenv environment variables file
 .env
 
+package-lock.json
 
 .sass-cache/
 *.css.map
-
 
 .idea/
 
