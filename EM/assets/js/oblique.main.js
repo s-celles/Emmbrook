@@ -14,7 +14,7 @@ var plt1 = document.getElementById('plt1');
 
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
-var reflectRatios, transmitRatios;
+var reflectRatioList, transmitRatioList;
 
 // Interactive interfaces
 thetaISlider.on('change', function () {
@@ -26,7 +26,7 @@ thetaISlider.on('change', function () {
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
-    [reflectRatios, transmitRatios] = updateRatioLists();
+    [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
 
@@ -35,7 +35,7 @@ n1Slider.on('change', function () {
 
 n2Slider.on('change', function () {
     n2 = n1Slider.bootstrapSlider('getValue');
-    [reflectRatios, transmitRatios] = updateRatioLists();
+    [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
 
