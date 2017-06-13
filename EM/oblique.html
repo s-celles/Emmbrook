@@ -68,26 +68,6 @@
                     $$
                     where \( \theta_B \) is called Brewster angle.
                 </p>
-                <p>
-                    For a <a href="https://www.wikiwand.com/en/Gaussian_beam#/">Gaussian beam</a>, the intensity
-                    distribution is
-                    $$
-                    I = I_0 \bigg( \frac{ w_0^2 }{ w(z)^2 } \bigg) \exp \bigg( -\frac{ 2r^2 }{ w(z)^2 } \bigg),
-                    $$
-                    where
-                    $$
-                    w(z)^2 = w_0^2 \bigg( 1 + \Big( \frac{ z }{ z_R } \Big)^2 \bigg)
-                    $$
-                    is the square of radial radius at which the field amplitudes fall to \( 1/ e \), \( w_0 \) is the
-                    waist radius, \( z_R = \pi w_0^2 / \lambda \), \( z \) is the axial distance, \( r \) is the radial
-                    distance.
-                </p>
-                <p>
-                    Here, for simplicity, we will assume
-                    $$
-                    I = I_0 \exp ( -r^2 ).
-                    $$
-                </p>
             </div>
         </div>
     </div>
@@ -115,7 +95,7 @@
                             <label for="thetaI" class="slideLables">\( \theta_I \):</label>
                             <span id="thetaISliderVal" class="sliderVal"></span>
                             <input id="thetaI" data-slider-min="0" data-slider-max="1.57" data-slider-step="0.01"
-                                   data-slider-value="1">
+                                   data-slider-value="1.57">
                         </div>
 
                         <div class="col slider-row">

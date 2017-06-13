@@ -94,9 +94,10 @@ function createPlot() {
 
 // Plot
 function plotHeatmap() {
+    [r, t] = updateRatioValues(thetaI);
     plt0.data[0].z = generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1);
-    plt0.data[1].z = generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), 0.5);
-    plt0.data[2].z = generateLight(c, f, -Math.tan(thetaT), 0.2);
+    plt0.data[1].z = generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), r);
+    plt0.data[2].z = generateLight(c, f, -Math.tan(thetaT), t);
     Plotly.redraw(plt0)
 }
 
