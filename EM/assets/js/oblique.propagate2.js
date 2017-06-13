@@ -18,8 +18,8 @@ function generateLight(xList, zList, slope, intensity) {
         intens[i] = [];
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
-            if (-0.005 < cond && cond < 0.005) {
-                intens[i][j] = intensity;
+            if (-0.01 < cond && cond < 0.01) {
+                intens[i][j] = Math.abs(intensity);
             }
             else {
                 intens[i][j] = 0;
@@ -94,7 +94,6 @@ function createPlot() {
 
 // Plot
 function plotHeatmap() {
-    [r, t] = updateRatioValues(thetaI);
     plt0.data[0].z = generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1);
     plt0.data[1].z = generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), r);
     plt0.data[2].z = generateLight(c, f, -Math.tan(thetaT), t);

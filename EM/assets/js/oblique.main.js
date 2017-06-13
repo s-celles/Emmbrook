@@ -16,16 +16,17 @@ var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
 var reflectRatioList, transmitRatioList;  // Used in oblique.rt.js
 var thetaT;  // Transmission angle
+var alpha, beta, t, r;
 
 // Main interfaces
 function updateRatioValues(tI) {
     /*
      Accept an incident angle tI, return the reflection ratio and transmission ratio.
      */
-    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
-    var beta = n1 / n2 * epsilon2 / epsilon1;
-    var t = 2 / (alpha + beta);
-    var r = (alpha - beta) / (alpha + beta);
+    alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    beta = n1 / n2 * epsilon2 / epsilon1;
+    t = 2 / (alpha + beta);
+    r = (alpha - beta) / (alpha + beta);
     return [r, t]
 }
 
@@ -44,6 +45,7 @@ n1Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    plotHeatmap();
 
     $('#n1SliderVal').text(n1)
 });
@@ -53,6 +55,7 @@ n2Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    plotHeatmap();
 
     $('#n2SliderVal').text(n2)
 });

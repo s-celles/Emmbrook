@@ -13,12 +13,18 @@ function updateRatioLists() {
 
 // Plot
 function plotRatios() {
+    /*
+     Make 2 "ratios" points move as their real values.
+     */
     plt1.data[2].x = [thetaI, thetaI];
     plt1.data[2].y = updateRatioValues(thetaI);
     Plotly.redraw(plt1)
 }
 
 function plotRatioLists() {
+    /*
+     Re-plot 2 curves.
+     */
     plt1.data[0].y = reflectRatioList;
 
     plt1.data[1].y = transmitRatioList;
