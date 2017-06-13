@@ -30,9 +30,9 @@ function plotRatios() {
 }
 
 function plotRatioLists() {
-  plt1.data[0].y = reflectRatios;
+  plt1.data[0].y = reflectRatioList;
 
-  plt1.data[1].y = transmitRatios;
+  plt1.data[1].y = transmitRatioList;
   Plotly.redraw(plt1)
 }
 
@@ -58,14 +58,14 @@ function createRatioPlot() {
 
   var data = [{
       x: thetaIList,
-      y: reflectRatios,
+      y: reflectRatioList,
       type: 'scatter',
       mode: 'lines',
       name: 'r'
     },
     {
       x: thetaIList,
-      y: transmitRatios,
+      y: transmitRatioList,
       type: 'scatter',
       mode: 'lines',
       name: 't'
@@ -83,7 +83,7 @@ function createRatioPlot() {
 }
 
 // Initialize
-[reflectRatios, transmitRatios] = updateRatioLists();
+[reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
 plotRatios();
 plotRatioLists();

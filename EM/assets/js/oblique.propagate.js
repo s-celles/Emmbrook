@@ -105,11 +105,11 @@ function geteFieldIncidentIntens(grid, gridXOffset, gridZOffset) {
 }
 
 function eFieldReflectIntens(eFieldIncidentIntens) {
-    return sqr(reflectRatios * eFieldIncidentIntens)
+    return sqr(reflectRatioList * eFieldIncidentIntens)
 }
 
 function eFieldTransmitIntens(eFieldIncidentIntens) {
-    return sqr(transmitRatios * eFieldIncidentIntens)
+    return sqr(transmitRatioList * eFieldIncidentIntens)
 }
 
 // Plot
