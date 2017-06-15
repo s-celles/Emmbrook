@@ -1,149 +1,121 @@
 /**
- * Created by Qi on 6/9/17.
+ * Created by Qi on 6/12/17.
  */
 
-var spatialX = 20;  // Spatial physical size
-var spatialZ = 20;  // Spatial physical size
+var spatialX = 10;  // Spatial physical size
+var spatialZ = 10;  // Spatial physical size
 var nx = 200;  // Spatial grid size
 var nz = 200;  // Spatial grid size
-var xStep = spatialX / nx;
-var zStep = spatialZ / nz;
+var a = numeric.linspace(0, -spatialX, nx);
+var b = numeric.linspace(0, spatialZ, nz);
+var c = numeric.linspace(0, spatialX, nx);
+var f = numeric.linspace(0, -spatialZ, nz);
 
-// Basic interfaces
-function sqr(x) {
-    return Math.pow(x, 2)
-}
-
-function dist2(v, w) {
-    /*
-     Calculate 2D distance between 2 points v and w.
-     */
-    return Math.sqrt(sqr(v.x - w.x) + sqr(v.z - w.z))
-}
-
-function dist2PointToSegment(u, v, w) {
-    /*
-     Calculate 2D distance between a point u and a line segment vw.
-     */
-    var lwv = dist2(w, v);
-    var luv = dist2(u, v);
-    if (lwv === 0 || luv === 0) {  // Remember to include both
-        return luv
-    }
-
-    var cosTheta = ((u.x - v.x) * (w.x - v.x) + (u.z - v.z) * (w.z - v.z)) / (lwv * luv);  // Cosine of angle between 2 segments
-    var sinTheta = Math.sqrt(1 - sqr(cosTheta));  // Sine of angle between 2 segments
-    return luv * sinTheta
-}
-
-function generate2DGrid(gridXDimesion, gridZDimesion) {
-    var grid = [];
-
-    for (var i = 0; i < gridXDimesion; i++) {
-        grid[i] = [];
-        for (var j = 0; j < gridZDimesion; j++) {
-            grid[i][j] = {
-                x: i * xStep,  // Normalize grid x coordinate
-                z: j * zStep,  // Normalize grid z coordinate
-                eFieldIncidentIntens: 0
-            };
-        }
-    }
-    return grid
-}
-
-function roundPoint(u) {
-    /*
-     Snap a point to its nearest grid square
-     */
-    return [Math.round(u.x), Math.round(u.y)];
-}
-
-function generateEndPointOfRay(startPoint, theta) {
-    var edgePoint = [0, startPoint.y];
-
-}
-
-function generateDecayFactor(u, v, w) {
-    /*
-     The electric field intensity I decays as exp(-r^2), where r is the radial distance of point u from line vw.
-     */
-    var r = dist2PointToSegment(u, v, w);
-    return Math.exp(-sqr(r));
-}
-
-function assignDecayFactor(grid, v, w) {
-    /*
-     Assign each grid point an electric field intensity, according to its distance from line vw.
-     */
-    for (var i = 0; i < grid.length; i++) {
-        for (var j = 0; j < grid[0].length; j++) {
-            var u = grid[i][j];
-            var d = generateDecayFactor(u, v, w);
-            u.eFieldIncidentIntens = 1 * d;  // The intensity on line segment vw is 1
-        }
-    }
-    return grid
-}
-
-function geteFieldIncidentIntens(grid, gridXOffset, gridZOffset) {
+function generateLight(xList, zList, slope, intensity) {
     var intens = [];
 
-    for (var i = 0; i < nx; i++) {
+    if (Math.abs(slope) > 3) {
+        var bw = 0.10;
+    }
+    else {
+        bw = 0.05;
+    }
+
+    for (var i = 0; i < xList.length; i++) {
         intens[i] = [];
-        for (var j = 0; j < nz; j++) {
-            intens[i][j] = 0
+        for (var j = 0; j < zList.length; j++) {
+            var cond = zList[j] - slope * xList[i];
+            if (-bw < cond && cond < bw) {
+                intens[i][j] = Math.abs(intensity);
+            }
+            else {
+                intens[i][j] = 0;
+            }
         }
     }
 
-    for (i = 0; i < grid.length; i++) {
-        for (j = 0; j < grid[0].length; j++) {
-            intens[i + gridXOffset][j + gridZOffset] += grid[i][j].eFieldIncidentIntens
-        }
-    }
-    return intens
+    return intens;
 }
 
-function eFieldReflectIntens(eFieldIncidentIntens) {
-    return sqr(reflectRatioList * eFieldIncidentIntens)
-}
-
-function eFieldTransmitIntens(eFieldIncidentIntens) {
-    return sqr(transmitRatioList * eFieldIncidentIntens)
-}
 
 // Plot
 function createPlot() {
 
     var incidenthm = {
-        x: numeric.linspace(0, spatialX, nx),
-        y: numeric.linspace(0, spatialZ, nz),
-        z: geteFieldIncidentIntens(incidentGrid, nx / 2, 0),
+        x: a,
+        y: b,
+        z: generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1),
         type: 'heatmap',
-        colorscale: 'Viridis'
+        colorscale: 'Viridis',
+        zmin: -0.2,
+        zmax: 1
     };
 
-    var data = [incidenthm];
+    var reflecthm = {
+        x: c,
+        y: b,
+        z: generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), 0.5),
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -0.2,
+        zmax: 1
+    };
+
+    var transmithm = {
+        x: c,
+        y: f,
+        z: generateLight(c, f, -Math.tan(thetaT), 0.2),
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -0.2,
+        zmax: 1
+    };
+
+    var empty = {
+        x: a,
+        y: f,
+        z: generateLight(a, f, 0, 0),
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -0.2,
+        zmax: 1
+    };
+
+    var interfaceLine = {
+        x: [-spatialX, spatialX],
+        y: [0, 0],
+        mode: 'lines',
+        color: 'black'
+    };
+
+    var data = [incidenthm, reflecthm, transmithm, empty, interfaceLine];
 
     var layout = {
         title: 'E filed intensity',
         xaxis: {
             title: 'x',
-            fontsize: 18
+            fontsize: 18,
+            range: [-spatialX, spatialX],
+            domain: [0, 1]
         },
         yaxis: {
             title: 'z',
-            fontsize: 18
+            fontsize: 18,
+            range: [-spatialZ, spatialZ],
+            domain: [0, 1]
         }
     };
 
-    Plotly.newPlot('plt0', data, layout)
+    Plotly.newPlot('plt0', data, layout);
+}
+
+// Plot
+function plotHeatmap() {
+    plt0.data[0].z = generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1);
+    plt0.data[1].z = generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), r);
+    plt0.data[2].z = generateLight(c, f, -Math.tan(thetaT), t);
+    Plotly.redraw(plt0);
 }
 
 // Initialize
-var incidentGrid = generate2DGrid(nx / 2, nz / 2);
-var physicalGrid = generate2DGrid(nx, nz);
-assignDecayFactor(incidentGrid,
-    incidentGrid[0][incidentGrid.length - 1],
-    incidentGrid[incidentGrid.length - 1][0]);
 createPlot();
