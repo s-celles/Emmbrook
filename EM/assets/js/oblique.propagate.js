@@ -6,10 +6,10 @@ var spatialX = 10;  // Spatial physical size
 var spatialZ = 10;  // Spatial physical size
 var nx = 200;  // Spatial grid size
 var nz = 200;  // Spatial grid size
-var a = numeric.linspace(0, -spatialX, nx);
-var b = numeric.linspace(0, spatialZ, nz);
-var c = numeric.linspace(0, spatialX, nx);
-var f = numeric.linspace(0, -spatialZ, nz);
+var leftX = numeric.linspace(0, -spatialX, nx);
+var rightX = numeric.linspace(0, spatialX, nx);
+var upperZ = numeric.linspace(0, spatialZ, nz);
+var lowerZ = numeric.linspace(0, -spatialZ, nz);
 
 function generateLight(xList, zList, slope, intensity) {
     var intens = [];
@@ -42,9 +42,9 @@ function generateLight(xList, zList, slope, intensity) {
 function createPlot() {
 
     var incidenthm = {
-        x: a,
-        y: b,
-        z: generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1),
+        x: leftX,
+        y: upperZ,
+        z: generateLight(leftX, upperZ, -Math.tan(Math.PI / 2 - thetaI), 1),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -52,9 +52,9 @@ function createPlot() {
     };
 
     var reflecthm = {
-        x: c,
-        y: b,
-        z: generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), 0.5),
+        x: rightX,
+        y: upperZ,
+        z: generateLight(rightX, upperZ, Math.tan(Math.PI / 2 - thetaI), 0.5),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -62,9 +62,9 @@ function createPlot() {
     };
 
     var transmithm = {
-        x: c,
-        y: f,
-        z: generateLight(c, f, -Math.tan(thetaT), 0.2),
+        x: rightX,
+        y: lowerZ,
+        z: generateLight(rightX, lowerZ, -Math.tan(thetaT), 0.2),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -72,9 +72,9 @@ function createPlot() {
     };
 
     var empty = {
-        x: a,
-        y: f,
-        z: generateLight(a, f, 0, 0),
+        x: leftX,
+        y: lowerZ,
+        z: generateLight(leftX, lowerZ, 0, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -111,9 +111,9 @@ function createPlot() {
 
 // Plot
 function plotHeatmap() {
-    plt0.data[0].z = generateLight(a, b, -Math.tan(Math.PI / 2 - thetaI), 1);
-    plt0.data[1].z = generateLight(c, b, Math.tan(Math.PI / 2 - thetaI), r);
-    plt0.data[2].z = generateLight(c, f, -Math.tan(thetaT), t);
+    plt0.data[0].z = generateLight(leftX, upperZ, -Math.tan(Math.PI / 2 - thetaI), 1);
+    plt0.data[1].z = generateLight(rightX, upperZ, Math.tan(Math.PI / 2 - thetaI), r);
+    plt0.data[2].z = generateLight(rightX, lowerZ, -Math.tan(thetaT), t);
     Plotly.redraw(plt0);
 }
 
