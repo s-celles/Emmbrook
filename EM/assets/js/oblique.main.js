@@ -35,6 +35,7 @@ thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     thetaT = Math.asin(n1 / n2 * Math.sin(thetaI));
     plotRatios();
+    updateSlopes();
     plotHeatmap();
 
     $('#thetaISliderVal').text(thetaI)
@@ -45,6 +46,7 @@ n1Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    updateSlopes();
     plotHeatmap();
 
     $('#n1SliderVal').text(n1)
@@ -55,6 +57,7 @@ n2Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    updateSlopes();
     plotHeatmap();
 
     $('#n2SliderVal').text(n2)

@@ -10,9 +10,15 @@ var leftX = numeric.linspace(0, -spatialX, nx);
 var rightX = numeric.linspace(0, spatialX, nx);
 var upperZ = numeric.linspace(0, spatialZ, nz);
 var lowerZ = numeric.linspace(0, -spatialZ, nz);
+var incidentSlope;
+var reflectSlope;
+var transmitSlope;
 
-function generateLight(xList, zList, slope, intensity) {
-    var intens = [];
+function generateLight(xList, zList, slope, amplitude) {
+    /*
+     Generate light amplitude for incident/reflective/transmitted light on a heatmap grid.
+     */
+    var amp = [];
 
     if (Math.abs(slope) > 3) {
         var bw = 0.10;
@@ -22,21 +28,30 @@ function generateLight(xList, zList, slope, intensity) {
     }
 
     for (var i = 0; i < xList.length; i++) {
-        intens[i] = [];
+        amp[i] = [];
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
             if (-bw < cond && cond < bw) {
-                intens[i][j] = Math.abs(intensity);
+                amp[i][j] = Math.abs(amplitude);
             }
             else {
-                intens[i][j] = 0;
+                amp[i][j] = 0;
             }
         }
     }
 
-    return intens;
+    return amp;
 }
 
+function updateSlopes() {
+    /*
+     Update incident/reflective/transmitted light slopes according to slider motion.
+     Those change when thetaI, n1, and n2 change.
+     */
+    incidentSlope = -Math.tan(thetaI);
+    reflectSlope = Math.tan(thetaI);
+    transmitSlope = -Math.tan(thetaT);
+}
 
 // Plot
 function createPlot() {
@@ -44,7 +59,7 @@ function createPlot() {
     var incidenthm = {
         x: leftX,
         y: upperZ,
-        z: generateLight(leftX, upperZ, -Math.tan(Math.PI / 2 - thetaI), 1),
+        z: generateLight(leftX, upperZ, incidentSlope, 1),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -54,7 +69,7 @@ function createPlot() {
     var reflecthm = {
         x: rightX,
         y: upperZ,
-        z: generateLight(rightX, upperZ, Math.tan(Math.PI / 2 - thetaI), 0.5),
+        z: generateLight(rightX, upperZ, reflectSlope, 0.5),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -64,7 +79,7 @@ function createPlot() {
     var transmithm = {
         x: rightX,
         y: lowerZ,
-        z: generateLight(rightX, lowerZ, -Math.tan(thetaT), 0.2),
+        z: generateLight(rightX, lowerZ, transmitSlope, 0.2),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -0.2,
@@ -111,11 +126,12 @@ function createPlot() {
 
 // Plot
 function plotHeatmap() {
-    plt0.data[0].z = generateLight(leftX, upperZ, -Math.tan(Math.PI / 2 - thetaI), 1);
-    plt0.data[1].z = generateLight(rightX, upperZ, Math.tan(Math.PI / 2 - thetaI), r);
-    plt0.data[2].z = generateLight(rightX, lowerZ, -Math.tan(thetaT), t);
+    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1);
+    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, r);
+    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, t);
     Plotly.redraw(plt0);
 }
 
 // Initialize
+updateSlopes();
 createPlot();
