@@ -39,7 +39,7 @@ function plotRatioLists() {
 }
 
 function plotBrewsterAngle() {
-    plt1.data[2].x = [updateBrewsterAngle()];
+    plt1.data[3].x = [updateBrewsterAngle()];
     Plotly.redraw(plt1)
 }
 
@@ -59,17 +59,19 @@ function createRatioPlot() {
             title: 'Ratio',
             titlefont: {
                 size: 18
-            }
+            },
+            range: [-1, 1]
         }
     };
 
-    var data = [{
-        x: thetaIList,
-        y: reflectRatioList,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'r'
-    },
+    var data = [
+        {
+            x: thetaIList,
+            y: reflectRatioList,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'r'
+        },
         {
             x: thetaIList,
             y: transmitRatioList,

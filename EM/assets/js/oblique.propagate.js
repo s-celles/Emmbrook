@@ -107,7 +107,7 @@ function createPlot() {
     var data = [incidenthm, reflecthm, transmithm, empty, interfaceLine];
 
     var layout = {
-        title: 'E filed intensity',
+        title: 'E filed amplitude',
         xaxis: {
             title: 'x',
             fontsize: 18,
