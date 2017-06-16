@@ -49,6 +49,7 @@ function updateSlopes() {
      Update incident/reflective/transmitted light slopes according to slider motion.
      Those change when thetaI, n1, and n2 change.
      */
+    var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI));  // Transmission angle
     incidentSlope = -Math.tan(thetaI);
     reflectSlope = Math.tan(thetaI);
     transmitSlope = -Math.tan(thetaT);

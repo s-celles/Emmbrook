@@ -3,6 +3,19 @@
  */
 
 var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
+var alpha, beta, t, r;
+
+// Main interfaces
+function updateRatioValues(tI) {
+    /*
+     Accept an incident angle tI, return the reflection ratio and transmission ratio.
+     */
+    alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    beta = n1 / n2 * epsilon2 / epsilon1;
+    t = 2 / (alpha + beta);
+    r = (alpha - beta) / (alpha + beta);
+    return [r, t]
+}
 
 function updateRatioLists() {
     /*
@@ -59,8 +72,7 @@ function createRatioPlot() {
             title: 'Ratio',
             titlefont: {
                 size: 18
-            },
-            range: [-1, 1]
+            }
         }
     };
 
