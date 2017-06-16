@@ -4,7 +4,7 @@ This is a simulation project for classes MSAE-E4206 and MSAE-E4215, i.e., *E&M* 
 
 Todo:
 - [ ] EM oblique incidence
-- [ ] list syntax required
+- [x] Diffraction
 - [ ] Aliasing
 - [ ] Magnetic domain
 - [x] DFT simulation

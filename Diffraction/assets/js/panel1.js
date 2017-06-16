@@ -12,6 +12,7 @@ var zIm = [];
 var zIntensity = [];
 var zHM = create2DArray(nY);
 var thetaMax = 0.2;
+
 var nSlider = $('#N').bootstrapSlider({});
 var lambdaSlider = $('#lambda').bootstrapSlider({});
 var aSlider = $('#a').bootstrapSlider({});
@@ -45,7 +46,7 @@ function yContUpdate() {
 
 function zUpdate() {
     /*
-     zRe, zIm, zIntensity, zHM will change when lambda, a, n change.
+     zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
      */
     var xP = [];
     if (Number.isInteger(n)) { // If n is integer, then determine whether odd or even.
@@ -62,10 +63,10 @@ function zUpdate() {
 
     var kv = 1e9 * 2 * Math.PI / lambda;
     for (var k = 0; k < nY; k++) {
-        for (i = 0; i < nCont; i++) { // outer loop over positions on the screen
+        for (i = 0; i < nCont; i++) {  // Outer loop over positions on the screen
             zRe[i] = 0;
             zIm[i] = 0;
-            for (j = 0; j < n; j++) { // inner loop over particles
+            for (j = 0; j < n; j++) {  // Inner loop over particles
                 var r = Math.pow(yCont[k] * yCont[k] + (xCont[i] - xP[j]) * (xCont[i] - xP[j]), 0.5);
                 zRe[i] += Math.cos(kv * r);
                 zIm[i] += Math.sin(kv * r);
@@ -94,6 +95,9 @@ function create2DArray(rows) {
 // Plot
 function createPlots() {
     var layout0 = {
+        margin: {
+            t: 50
+        },
         yaxis: {
             title: 'Light intensity',
             titlefont: {
@@ -105,6 +109,13 @@ function createPlots() {
             titlefont: {
                 size: 18
             }
+        }
+    };
+
+    var layout1 = {
+        title: 'heatmap',
+        titlefont: {
+            size: 18
         }
     };
 
@@ -122,7 +133,7 @@ function createPlots() {
     }];
 
     Plotly.newPlot(plt0, data0, layout0);
-    Plotly.newPlot(plt1, data1);
+    Plotly.newPlot(plt1, data1, layout1);
 }
 
 function plotDataUpdate() {
@@ -141,6 +152,13 @@ function plot() {
     plotDataUpdate();
     plotsRedraw();
 }
+
+// Adjust Plotly's plotRatios size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt0);
+    Plotly.Plots.resize(plt1);
+};
+
 
 // Interactive interfaces
 nSlider.on('change', function () {
@@ -171,6 +189,7 @@ clSlider.on('change', function () {
     cl = clSlider.bootstrapSlider('getValue'); // Change "global" value
     xContUpdate();
     yContUpdate();
+    zUpdate();
     plot();
 
     $('#clSliderVal').text(cl);
@@ -178,6 +197,9 @@ clSlider.on('change', function () {
 
 
 // Initialize
+xContUpdate();
+yContUpdate();
+zUpdate();
 createPlots();
 $('#nSliderVal').text(n);
 $('#lambdaSliderVal').text(lambda);

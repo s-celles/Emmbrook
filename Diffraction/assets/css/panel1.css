@@ -23,12 +23,12 @@
 .slider-row {
   display: inline-block;
   margin: 10px auto;
-  max-width: 40%; }
+  max-width: 30%; }
 
 .slider.slider-horizontal {
   display: block;
   margin: 0 auto;
-  max-width: 70%; }
+  max-width: 90%; }
 
 .slider-selection {
   background-image: linear-gradient(to bottom, #c1c1c1 0, #d2d2d2 100%);
@@ -49,4 +49,4 @@ ol {
   font-size: medium;
   list-style-type: lower-alpha; }
 
-/*# sourceMappingURL=panel1.css/
+/*# sourceMappingURL=panel1.css.map */
