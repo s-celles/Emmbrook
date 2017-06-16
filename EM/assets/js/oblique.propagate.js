@@ -27,12 +27,13 @@ function generateLight(xList, zList, slope, amplitude) {
         bw = 0.05;
     }
 
+    // Produce a light with width 2 * bw.
     for (var i = 0; i < xList.length; i++) {
         amp[i] = [];
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
             if (-bw < cond && cond < bw) {
-                amp[i][j] = Math.abs(amplitude);
+                amp[i][j] = amplitude;
             }
             else {
                 amp[i][j] = 0;
