@@ -8,3 +8,4 @@ Todo:
 - [ ] Aliasing
 - [ ] Magnetic domain
 - [x] DFT simulation
+- [ ] Main page
