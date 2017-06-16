@@ -46,6 +46,7 @@ n1Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateSlopes();
     plotHeatmap();
 
@@ -57,6 +58,7 @@ n2Slider.on('change', function () {
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateSlopes();
     plotHeatmap();
 

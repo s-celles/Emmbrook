@@ -11,6 +11,13 @@ function updateRatioLists() {
     return numeric.transpose(thetaIList.map(updateRatioValues))  // Defined in oblique.main.js
 }
 
+function updateBrewsterAngle() {
+    /*
+     Brewster angle changes when n1, n2 changes.
+     */
+    return Math.atan(n1 / n2 * epsilon2 / epsilon1)
+}
+
 // Plot
 function plotRatios() {
     /*
@@ -28,6 +35,11 @@ function plotRatioLists() {
     plt1.data[0].y = reflectRatioList;
 
     plt1.data[1].y = transmitRatioList;
+    Plotly.redraw(plt1)
+}
+
+function plotBrewsterAngle() {
+    plt1.data[2].x = [updateBrewsterAngle()];
     Plotly.redraw(plt1)
 }
 
@@ -68,9 +80,16 @@ function createRatioPlot() {
         {
             x: [thetaI, thetaI],
             y: updateRatioValues(thetaI),
-            typr: 'scatter',
+            type: 'scatter',
             mode: 'markers',
             name: 'ratios'
+        },
+        {
+            x: [updateBrewsterAngle()],
+            y: [0],
+            type: 'scatter',
+            mode: 'markers',
+            name: 'Brewster angle'
         }
     ];
 
@@ -80,5 +99,3 @@ function createRatioPlot() {
 // Initialize
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
-plotRatios();
-plotRatioLists();
