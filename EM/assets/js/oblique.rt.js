@@ -3,17 +3,17 @@
  */
 
 var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
-var alpha, beta, t, r;
+
 
 // Main interfaces
 function updateRatioValues(tI) {
     /*
      Accept an incident angle tI, return the reflection ratio and transmission ratio.
      */
-    alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
-    beta = n1 / n2 * epsilon2 / epsilon1;
-    t = 2 / (alpha + beta);
-    r = (alpha - beta) / (alpha + beta);
+    var alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    var beta = n1 / n2 * epsilon2 / epsilon1;
+    var t = 2 / (alpha + beta);
+    var r = (alpha - beta) / (alpha + beta);
     return [r, t]
 }
 
@@ -30,6 +30,7 @@ function updateBrewsterAngle() {
      */
     return Math.atan(n1 / n2 * epsilon2 / epsilon1)
 }
+
 
 // Plot
 function plotRatios() {
@@ -109,6 +110,7 @@ function createRatioPlot() {
 
     Plotly.newPlot(plt1, data, layout)
 }
+
 
 // Initialize
 [reflectRatioList, transmitRatioList] = updateRatioLists();

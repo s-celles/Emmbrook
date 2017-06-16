@@ -14,6 +14,7 @@ var incidentSlope;
 var reflectSlope;
 var transmitSlope;
 
+
 function generateLight(xList, zList, slope, amplitude) {
     /*
      Generate light amplitude for incident/reflective/transmitted light on a heatmap grid.
@@ -33,7 +34,7 @@ function generateLight(xList, zList, slope, amplitude) {
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
             if (-bw < cond && cond < bw) {
-                amp[i][j] = amplitude;
+                amp[i][j] = Math.abs(amplitude);
             }
             else {
                 amp[i][j] = 0;
@@ -55,6 +56,7 @@ function updateSlopes() {
     transmitSlope = -Math.tan(thetaT);
 }
 
+
 // Plot
 function createPlot() {
 
@@ -64,7 +66,7 @@ function createPlot() {
         z: generateLight(leftX, upperZ, incidentSlope, 1),
         type: 'heatmap',
         colorscale: 'Viridis',
-        zmin: -0.2,
+        zmin: 0,
         zmax: 1
     };
 
@@ -74,7 +76,7 @@ function createPlot() {
         z: generateLight(rightX, upperZ, reflectSlope, 0.5),
         type: 'heatmap',
         colorscale: 'Viridis',
-        zmin: -0.2,
+        zmin: 0,
         zmax: 1
     };
 
@@ -84,7 +86,7 @@ function createPlot() {
         z: generateLight(rightX, lowerZ, transmitSlope, 0.2),
         type: 'heatmap',
         colorscale: 'Viridis',
-        zmin: -0.2,
+        zmin: 0,
         zmax: 1
     };
 
@@ -94,7 +96,7 @@ function createPlot() {
         z: generateLight(leftX, lowerZ, 0, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
-        zmin: -0.2,
+        zmin: 0,
         zmax: 1
     };
 
@@ -126,13 +128,13 @@ function createPlot() {
     Plotly.newPlot('plt0', data, layout);
 }
 
-// Plot
 function plotHeatmap() {
     plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1);
-    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, r);
-    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, t);
+    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0]);
+    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1]);
     Plotly.redraw(plt0);
 }
+
 
 // Initialize
 updateSlopes();
