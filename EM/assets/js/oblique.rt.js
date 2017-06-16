@@ -28,6 +28,8 @@ function updateBrewsterAngle() {
     /*
      Brewster angle changes when n1, n2 changes.
      */
+    epsilon1 = Math.pow(n1, 2);
+    epsilon2 = Math.pow(n2, 2);
     return Math.atan(n1 / n2 * epsilon2 / epsilon1)
 }
 
