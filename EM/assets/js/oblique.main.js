@@ -54,7 +54,7 @@ n1Slider.on('change', function () {
 });
 
 n2Slider.on('change', function () {
-    n2 = n1Slider.bootstrapSlider('getValue');
+    n2 = n2Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
     plotRatios();
     plotRatioLists();
