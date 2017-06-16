@@ -85,6 +85,41 @@
             </div>
         </div>
     </div>
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Bloch-wave simulator
+        </h4>
+
+        <div class="row" id="plots">
+            <div class="col-sm-4">
+                <div id="plt0" class="plot"></div>
+            </div>
+            <div class="col-sm-4">
+                <div id="plt1" class="plot"></div>
+            </div>
+            <div class="col-sm-4">
+                <div id="plt2" class="plot"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="potential" class="slideLables">potential \( V \):</label>
+                            <span id="potentialSliderVal" class="sliderVal"></span>
+                            <input id="potential" data-slider-min="0" data-slider-max="10" data-slider-step="1"
+                                   data-slider-value="5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 

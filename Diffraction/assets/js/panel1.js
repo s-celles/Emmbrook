@@ -67,14 +67,14 @@ function zUpdate() {
             zRe[i] = 0;
             zIm[i] = 0;
             for (j = 0; j < n; j++) {  // Inner loop over particles
-                var r = Math.pow(yCont[k] * yCont[k] + (xCont[i] - xP[j]) * (xCont[i] - xP[j]), 0.5);
+                var r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
                 zRe[i] += Math.cos(kv * r);
                 zIm[i] += Math.sin(kv * r);
             }
             if (k === nY - 1) {
-                zIntensity[i] = zRe[i] * zRe[i] + zIm[i] * zIm[i]
+                zIntensity[i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
             }
-            zHM[k][i] = zRe[i] * zRe[i] + zIm[i] * zIm[i];
+            zHM[k][i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
         }
     }
 }
