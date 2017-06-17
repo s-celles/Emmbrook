@@ -2,14 +2,31 @@
  * Created by Qi on 5/28/17.
  */
 
-// Variables
+// Import libraries
+var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
+var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var show = require("ndarray-show");  // For debugging
+var cwise = require("cwise");  // Elementwise operation
+var pool = require("ndarray-scratch");  // A simple wrapper for typedarray-pool.
+var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
+var fill = require("ndarray-fill");  // Initialize an ndarray with a function.
+
+
+// Initialize variables
 var nCont = 1000;
 var xHi = 10;
-var xCont = new Array(nCont);  // Continuous value
-var yCont = new Array(nCont);  // Continuous value
-var yApprox = new Array(nCont);
+var xCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yApprox = ndarray(new Float64Array(nCont));
 var fmin = 1.0 / xHi;
+fill(xCont, function (i) {
+    /*
+     xCont will not change in this simulation.
+     */
+    return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
+});
 
+// Other variables
 var sampleSlider = $('#mySamples').bootstrapSlider({});
 var t0Slider = $('#myT0').bootstrapSlider({});
 var b1Slider = $('#b1').bootstrapSlider();
@@ -24,21 +41,6 @@ var b5 = b5Slider.bootstrapSlider('getValue');
 var b7 = b7Slider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-
-for (var i = 0; i < nCont; i++) {
-    /*
-     xCont will not change in this simulation.
-     */
-    xCont[i] = i / nCont * xHi - 0.5 * xHi
-}
-
-// Import libraries
-var ndarray = require("ndarray");
-var ops = require("ndarray-ops");
-var show = require("ndarray-show");  // For debugging
-var cwise = require("cwise");
-var pool = require("ndarray-scratch");
-var unpack = require("ndarray-unpack");
 
 
 // Basic interfaces
@@ -73,12 +75,12 @@ function yContUpdate() {
      yCount will change as the t0 changes.
      */
     for (var i = 0; i < nCont; i++) {
-        if (xCont[i] > (t0 + 5.0)) {
-            yCont[i] = -0.5
-        } else if (xCont[i] > t0 || xCont[i] < (t0 - 5.0)) {
-            yCont[i] = 0.5
+        if (xCont.get(i) > (t0 + 5.0)) {
+            yCont.set(i, -0.5);  // yCont[i] = -0.5
+        } else if (xCont.get(i) > t0 || xCont.get(i) < (t0 - 5.0)) {
+            yCont.set(i, 0.5);
         } else {
-            yCont[i] = -0.5
+            yCont.set(i, -0.5);
         }
     }
 }
@@ -161,7 +163,7 @@ function plotDataUpdate() {
 
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
-    plt0.data[1].y = yCont;
+    plt0.data[1].y = unpack(yCont);
 
     plt1.data[0].x = xv_half;
     plt1.data[0].y = unpack(a);
@@ -231,8 +233,8 @@ function createPlots() {
             name: 'samples'
         },
         {
-            x: xCont,
-            y: yCont,
+            x: unpack(xCont),
+            y: unpack(yCont),
             type: 'scatter',
             mode: 'lines',
             name: 'continuous'
