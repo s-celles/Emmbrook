@@ -35,15 +35,14 @@ var xCont = ndarray(new Float64Array(nCont));  // Continuous value
 var yCont = ndarray(new Float64Array(nCont));  // Continuous value
 var yApprox = ndarray(new Float64Array(nCont));
 var fmin = 1.0 / xHi;
-fill(xCont, function (i) {
+var xv = ndarray(new Float64Array(nSample));  // Sample points
+var yv = ndarray(new Float64Array(nSample));  // Sample points
+fill(xCont, function (i) {  // Initialize xCont
     /*
      xCont will not change in this simulation.
      */
     return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
 });
-
-var xv = ndarray(new Float64Array(nSample));  // Sample points
-var yv = ndarray(new Float64Array(nSample));  // Sample points
 
 
 // Basic interfaces
@@ -102,7 +101,10 @@ function yApproxUpdate() {
 
 // FFT
 function miniFFT(re, im) {
-    var N = re.length;
+    var N = re.size;
+    re = unpack(re);
+    im = unpack(im);
+
     for (var i = 0; i < N; i++) {
         for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
             j = (j << 1) | (h & 1);
@@ -112,8 +114,8 @@ function miniFFT(re, im) {
         }
     }
 
-    for (var hN = 1; hN * 2 <= N; hN *= 2)
-        for (i = 0; i < N; i += hN * 2)
+    for (var hN = 1; hN * 2 <= N; hN *= 2) {
+        for (i = 0; i < N; i += hN * 2) {
             for (j = i; j < i + hN; j++) {
                 var cos = Math.cos(Math.PI * (j - i) / hN),
                     sin = Math.sin(Math.PI * (j - i) / hN);
@@ -124,29 +126,35 @@ function miniFFT(re, im) {
                 re[j] += tre;
                 im[j] += tim;
             }
+        }
+    }
+
+    return [ndarray(re), ndarray(im)];
 }
 
 function FFTUpdate() {
-    fv = new Array(nSample);  // Cannot add 'var'
-    fv_im = new Array(nSample);
-    xv_half = new Array(nSample / 2 + 1);
-    fv_half = new Array(nSample / 2 + 1);
-    fv_im_half = new Array(nSample / 2 + 1);
-    fv_abs_half = new Array(nSample / 2 + 1);
+    fv = pool.clone(yv);  // Real part, size: nSample
+    fv_im = pool.zeros([1, nSample], 'float64');  // Imaginary part
+    xv_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
-    for (var i = 0; i < nSample; i++) {
-        fv[i] = yv[i];  // Real part
-        fv_im[i] = 0;
-    }
+    [fv, fv_im] = miniFFT(fv, fv_im);
 
-    miniFFT(fv, fv_im);
+    fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
+        return i * fmin;
+        
+    });
+    console.log(fv_half);
+    console.log(fv.pick(0, 1, 1));
 
-    for (i = 0; i < nSample / 2 + 1; i++) {
-        xv_half[i] = i * fmin;   // \alpha_k
-        fv_half[i] = fv[i] * 2 / nSample;
-        fv_im_half[i] = fv_im[i] * 2 / nSample;
-        fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5);
-    }
+    fill(fv_half, function (i) {
+        return fv.get(i) * 2 / nSample;
+    });
+    ops.muls(fv_half, fv.pick(0, nSample / 2 - 1), 2 / nSample);  // fv_half[i] = fv[i] * 2 / nSample;
+    ops.muls(fv_im_half, fv_im.pick(0, nSample / 2), 2 / nSample);  // fv_im_half[i] = fv_im[i] * 2 / nSample;
+    ops.add(fv_abs_half, ops.pows(fv_im_half, 2), ops.pows(fv_half, 2));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
 }
 
 // Plot
