@@ -13,20 +13,7 @@ var fill = require("ndarray-fill");  // Initialize an ndarray with a function.
 
 
 // Initialize variables
-var nCont = 1000;
-var xHi = 10;
-var xCont = ndarray(new Float64Array(nCont));  // Continuous value
-var yCont = ndarray(new Float64Array(nCont));  // Continuous value
-var yApprox = ndarray(new Float64Array(nCont));
-var fmin = 1.0 / xHi;
-fill(xCont, function (i) {
-    /*
-     xCont will not change in this simulation.
-     */
-    return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
-});
-
-// Other variables
+// UI variables
 var sampleSlider = $('#mySamples').bootstrapSlider({});
 var t0Slider = $('#myT0').bootstrapSlider({});
 var b1Slider = $('#b1').bootstrapSlider();
@@ -41,6 +28,22 @@ var b5 = b5Slider.bootstrapSlider('getValue');
 var b7 = b7Slider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+// Basic variables
+var nCont = 1000;
+var xHi = 10;
+var xCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yApprox = ndarray(new Float64Array(nCont));
+var fmin = 1.0 / xHi;
+fill(xCont, function (i) {
+    /*
+     xCont will not change in this simulation.
+     */
+    return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
+});
+
+var xv = ndarray(new Float64Array(nSample));  // Sample points
+var yv = ndarray(new Float64Array(nSample));  // Sample points
 
 
 // Basic interfaces
@@ -48,24 +51,24 @@ function xvUpdate() {
     /*
      xv will not change unless the number of samples changes.
      */
-    xv = new Array(nSample);  // Sample x coordinates
-    for (var i = 0; i < nSample; i++) {   // Samples range
-        xv[i] = (i / nSample - 0.5) * xHi
-    }
+    xv = ndarray(new Float64Array(nSample));  // Sample x coordinates
+    fill(xv, function (i) {
+        return (i / nSample - 0.5) * xHi;
+    });
 }
 
 function yvUpdate() {
     /*
      yv will change as the number of samples and t0 change.
      */
-    yv = new Array(nSample);
+    yv = ndarray(new Float64Array(nSample));
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
-        if (xv[i] > (t0 + 5.0)) {
-            yv[i] = -0.5
-        } else if (xv[i] > t0 || xv[i] < (t0 - 5.0)) {
-            yv[i] = 0.5
+        if (xv.get(i) > (t0 + 5.0)) {
+            yv.set(i, -0.5)
+        } else if (xv.get(i) > t0 || xv.get(i) < (t0 - 5.0)) {
+            yv.set(i, 0.5)
         } else {
-            yv[i] = -0.5
+            yv.set(i, -0.5)
         }
     }
 }
@@ -89,12 +92,12 @@ function yApproxUpdate() {
     /*
      yApprox will change as t0, b1, b3, b5, b7 change.
      */
-    for (var i = 0; i < nCont; i++) {
-        yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - t0)) +
-            b3 * Math.sin(3. * 0.62832 * (xCont[i] - t0)) +
-            b5 * Math.sin(5. * 0.62832 * (xCont[i] - t0)) +
-            b7 * Math.sin(7. * 0.62832 * (xCont[i] - t0))
-    }
+    fill(yApprox, function (i) {
+        return b1 * Math.sin(0.62832 * (xCont.get(i) - t0)) +
+            b3 * Math.sin(3. * 0.62832 * (xCont.get(i) - t0)) +
+            b5 * Math.sin(5. * 0.62832 * (xCont.get(i) - t0)) +
+            b7 * Math.sin(7. * 0.62832 * (xCont.get(i) - t0))
+    });
 }
 
 // FFT
@@ -161,9 +164,10 @@ function plotDataUpdate() {
     ops.addeq(a, b);  // a += b
     ops.subeq(c, d);  // c -= d
 
-    plt0.data[0].x = xv;
-    plt0.data[0].y = yv;
+    plt0.data[0].x = unpack(xv);
+    plt0.data[0].y = unpack(yv);
     plt0.data[1].y = unpack(yCont);
+    plt0.data[2].y = unpack(yApprox);
 
     plt1.data[0].x = xv_half;
     plt1.data[0].y = unpack(a);
@@ -223,8 +227,8 @@ function createPlots() {
 
     var data0 = [
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'scatter',
             mode: 'markers',
             marker: {
@@ -240,8 +244,8 @@ function createPlots() {
             name: 'continuous'
         },
         {
-            x: xCont,
-            y: yApprox,
+            x: unpack(xCont),
+            y: unpack(yApprox),
             type: 'scatter',
             mode: 'lines',
             name: 'approx'
