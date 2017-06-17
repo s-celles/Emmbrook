@@ -38,6 +38,7 @@ var ops = require("ndarray-ops");
 var show = require("ndarray-show");  // For debugging
 var cwise = require("cwise");
 var pool = require("ndarray-scratch");
+var unpack = require("ndarray-unpack");
 
 
 // Basic interfaces
@@ -121,12 +122,12 @@ function miniFFT(re, im) {
 }
 
 function FFTUpdate() {
-    fv = ndarray(new Float32Array(nSample));
-    fv_im = ndarray(new Float32Array(nSample));
-    xv_half = ndarray(new Float32Array(nSample / 2 + 1));
-    fv_half = ndarray(new Float32Array(nSample / 2 + 1));
-    fv_im_half = ndarray(new Float32Array(nSample / 2 + 1));
-    fv_abs_half = ndarray(new Float32Array(nSample / 2 + 1));
+    fv = new Array(nSample);  // Cannot add 'var'
+    fv_im = new Array(nSample);
+    xv_half = new Array(nSample / 2 + 1);
+    fv_half = new Array(nSample / 2 + 1);
+    fv_im_half = new Array(nSample / 2 + 1);
+    fv_abs_half = new Array(nSample / 2 + 1);
 
     for (var i = 0; i < nSample; i++) {
         fv[i] = yv[i];  // Real part
@@ -146,24 +147,26 @@ function FFTUpdate() {
 // Plot
 function plotDataUpdate() {
 
-    var a = pool.clone(fv_half);
-    var b = pool.clone(fv_im_half);
-    var c = pool.clone(fv_im_half);
-    var d = pool.clone(fv_half);
+    var a = pool.clone(ndarray(fv_half));
+    var b = pool.clone(ndarray(fv_im_half));
+    var c = pool.clone(ndarray(fv_im_half));
+    var d = pool.clone(ndarray(fv_half));
     // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
     ops.mulseq(a, Math.cos(10 * t0));
     ops.mulseq(b, Math.sin(10 * t0));
     ops.mulseq(c, Math.cos(10 * t0));
     ops.mulseq(d, Math.sin(10 * t0));
+    ops.addeq(a, b);  // a += b
+    ops.subeq(c, d);  // c -= d
 
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
 
     plt1.data[0].x = xv_half;
-    plt1.data[0].y = ops.addeq(a, b);  // a += b
+    plt1.data[0].y = unpack(a);
     plt1.data[1].x = xv_half;
-    plt1.data[1].y = ops.subeq(c, d);  // c -= d
+    plt1.data[1].y = unpack(c);
     plt1.data[2].x = xv_half;
     plt1.data[2].y = fv_abs_half;
 }
