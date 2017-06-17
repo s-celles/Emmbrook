@@ -10,6 +10,7 @@ var cwise = require("cwise");  // Elementwise operation
 var pool = require("ndarray-scratch");  // A simple wrapper for typedarray-pool.
 var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
 var fill = require("ndarray-fill");  // Initialize an ndarray with a function.
+var fft = require("ndarray-fft");  // A fast Fourier transform implementation for ndarrays.
 
 
 // Initialize variables
@@ -134,36 +135,37 @@ function miniFFT(re, im) {
 
 function FFTUpdate() {
     fv = pool.clone(yv);  // Real part, size: nSample
-    fv_im = pool.zeros([1, nSample], 'float64');  // Imaginary part
+    fv_im = pool.zeros([nSample], 'float64');  // Imaginary part
     xv_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
-
-    [fv, fv_im] = miniFFT(fv, fv_im);
+    
+    fft(1, fv, fv_im);
 
     fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
         return i * fmin;
-        
-    });
-    console.log(fv_half);
-    console.log(fv.pick(0, 1, 1));
 
-    fill(fv_half, function (i) {
+    });
+
+    fill(fv_half, function (i) {  // fv_half[i] = fv[i] * 2 / nSample;
         return fv.get(i) * 2 / nSample;
     });
-    ops.muls(fv_half, fv.pick(0, nSample / 2 - 1), 2 / nSample);  // fv_half[i] = fv[i] * 2 / nSample;
-    ops.muls(fv_im_half, fv_im.pick(0, nSample / 2), 2 / nSample);  // fv_im_half[i] = fv_im[i] * 2 / nSample;
-    ops.add(fv_abs_half, ops.pows(fv_im_half, 2), ops.pows(fv_half, 2));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
+
+    fill(fv_im_half, function (i) {  // fv_im_half[i] = fv_im[i] * 2 / nSample;
+        return fv_im.get(i) * 2 / nSample;
+    });
+
+    // ops.add(fv_abs_half, ops.pows(fv_im_half, 2), ops.pows(fv_half, 2));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
 }
 
 // Plot
 function plotDataUpdate() {
 
-    var a = pool.clone(ndarray(fv_half));
-    var b = pool.clone(ndarray(fv_im_half));
-    var c = pool.clone(ndarray(fv_im_half));
-    var d = pool.clone(ndarray(fv_half));
+    var a = pool.clone(fv_half);
+    var b = pool.clone(fv_im_half);
+    var c = pool.clone(fv_im_half);
+    var d = pool.clone(fv_half);
     // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
     ops.mulseq(a, Math.cos(10 * t0));
     ops.mulseq(b, Math.sin(10 * t0));
@@ -177,12 +179,12 @@ function plotDataUpdate() {
     plt0.data[1].y = unpack(yCont);
     plt0.data[2].y = unpack(yApprox);
 
-    plt1.data[0].x = xv_half;
+    plt1.data[0].x = unpack(xv_half);
     plt1.data[0].y = unpack(a);
-    plt1.data[1].x = xv_half;
+    plt1.data[1].x = unpack(xv_half);
     plt1.data[1].y = unpack(c);
-    plt1.data[2].x = xv_half;
-    plt1.data[2].y = fv_abs_half;
+    plt1.data[2].x = unpack(xv_half);
+    plt1.data[2].y = unpack(fv_abs_half);
 }
 
 function plotsRedraw() {
@@ -262,22 +264,22 @@ function createPlots() {
 
     var data1 = [
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'Real'
         },
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'Imag'
         },
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'abs'

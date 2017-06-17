@@ -4,6 +4,7 @@
   "dependencies": {
     "cwise": "^1.0.10",
     "ndarray": "latest",
+    "ndarray-fft": "^1.0.3",
     "ndarray-fill": "^1.0.2",
     "ndarray-ops": "latest",
     "ndarray-scratch": "^1.2.0",
