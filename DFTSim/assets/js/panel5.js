@@ -38,12 +38,6 @@ var yApprox = ndarray(new Float64Array(nCont));
 var fmin = 1.0 / xHi;
 var xv = ndarray(new Float64Array(nSample));  // Sample points
 var yv = ndarray(new Float64Array(nSample));  // Sample points
-var fv = pool.clone(yv);  // Real part, size: nSample
-var fv_im = pool.zeros([nSample], 'float64');  // Imaginary part
-var xv_half = ndarray(new Float64Array(nSample / 2 + 1));
-var fv_half = ndarray(new Float64Array(nSample / 2 + 1));
-var fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
-var fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
 fill(xCont, function (i) {  // Initialize xCont
     /*
@@ -117,12 +111,10 @@ function FFTUpdate() {
     fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
     fft(1, fv, fv_im);  // Forward FFT
-    ops.mulseq(fv_im, -1);
-    console.log(show(fv_im));
+    ops.mulseq(fv_im, -1);  // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
 
     fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
         return i * fmin;
-
     });
 
     fill(fv_half, function (i) {  // fv_half[i] = fv[i] * 2 / nSample;
@@ -135,18 +127,15 @@ function FFTUpdate() {
 
     var p = ndarray(new Float64Array(nSample / 2 + 1));
     var q = ndarray(new Float64Array(nSample / 2 + 1));
-    ops.add(fv_abs_half, ops.pows(p, fv_im_half, 2), ops.pows(q, fv_half, 2));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
-    ops.sqrteq(fv_abs_half);
+    ops.sqrteq(ops.add(fv_abs_half, ops.pows(p, fv_im_half, 2), ops.pows(q, fv_half, 2)));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
 }
 
 // Plot
 function plotDataUpdate() {
-    console.log(show(fv_im));
     var a = pool.clone(fv_half);
     var b = pool.clone(fv_im_half);
     var c = pool.clone(fv_im_half);
     var d = pool.clone(fv_half);
-    // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
     ops.mulseq(a, Math.cos(10 * t0));
     ops.mulseq(b, Math.sin(10 * t0));
     ops.mulseq(c, Math.cos(10 * t0));
@@ -154,7 +143,6 @@ function plotDataUpdate() {
     ops.addeq(a, b);  // a += b
     ops.subeq(c, d);  // c -= d
 
-    console.log(show(fv_im));
     plt0.data[0].x = unpack(xv);
     plt0.data[0].y = unpack(yv);
     plt0.data[1].y = unpack(yCont);
@@ -346,7 +334,6 @@ xvUpdate();
 yvUpdate();
 yContUpdate();
 yApproxUpdate();
-FFTUpdate();
 createPlots();
 $('#samplesSliderVal').text(nSample);
 $('#t0SliderVal').text(t0);

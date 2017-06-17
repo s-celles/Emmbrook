@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "cwise": "^1.0.10",
+    "mathjax-node": "^1.1.0",
     "ndarray": "latest",
     "ndarray-fft": "^1.0.3",
     "ndarray-fill": "^1.0.2",
