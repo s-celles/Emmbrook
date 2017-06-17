@@ -1,0 +1,12 @@
+{
+  "name": "Emmbrook",
+  "version": "0.0.1",
+  "dependencies": {
+    "cwise": "^1.0.10",
+    "ndarray": "latest",
+    "ndarray-ops": "latest",
+    "ndarray-scratch": "^1.2.0",
+    "ndarray-show": "^2.0.0",
+    "plotly": "^1.0.6"
+  }
+}

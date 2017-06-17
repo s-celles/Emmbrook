@@ -32,6 +32,14 @@ for (var i = 0; i < nCont; i++) {
     xCont[i] = i / nCont * xHi - 0.5 * xHi
 }
 
+// Import libraries
+var ndarray = require("ndarray");
+var ops = require("ndarray-ops");
+var show = require("ndarray-show");  // For debugging
+var cwise = require("cwise");
+var pool = require("ndarray-scratch");
+
+
 // Basic interfaces
 function xvUpdate() {
     /*
@@ -113,12 +121,12 @@ function miniFFT(re, im) {
 }
 
 function FFTUpdate() {
-    fv = new Array(nSample);  // Cannot add 'var'
-    fv_im = new Array(nSample);
-    xv_half = new Array(nSample / 2 + 1);
-    fv_half = new Array(nSample / 2 + 1);
-    fv_im_half = new Array(nSample / 2 + 1);
-    fv_abs_half = new Array(nSample / 2 + 1);
+    fv = ndarray(new Float32Array(nSample));
+    fv_im = ndarray(new Float32Array(nSample));
+    xv_half = ndarray(new Float32Array(nSample / 2 + 1));
+    fv_half = ndarray(new Float32Array(nSample / 2 + 1));
+    fv_im_half = ndarray(new Float32Array(nSample / 2 + 1));
+    fv_abs_half = ndarray(new Float32Array(nSample / 2 + 1));
 
     for (var i = 0; i < nSample; i++) {
         fv[i] = yv[i];  // Real part
@@ -137,34 +145,25 @@ function FFTUpdate() {
 
 // Plot
 function plotDataUpdate() {
-    var a = fv_half.map(function (x) {
-        return x * Math.cos(10 * t0)
-    });
-    var b = fv_im_half.map(function (x) {
-        return x * Math.sin(10 * t0)
-    });
-    var c = fv_im_half.map(function (x) {
-        return x * Math.cos(10 * t0)
-    });
-    var d = fv_half.map(function (x) {
-        return x * Math.sin(10 * t0)
-    });
-    m = new Array(a.length);
-    n = new Array(c.length);
-    for (var i = 0; i < a.length; i++) {
-        m[i] = a[i] + b[i];
-    }
-    for (var j = 0; j < c.length; j++) {
-        n[j] = c[j] - d[j];
-    }
+
+    var a = pool.clone(fv_half);
+    var b = pool.clone(fv_im_half);
+    var c = pool.clone(fv_im_half);
+    var d = pool.clone(fv_half);
+    // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
+    ops.mulseq(a, Math.cos(10 * t0));
+    ops.mulseq(b, Math.sin(10 * t0));
+    ops.mulseq(c, Math.cos(10 * t0));
+    ops.mulseq(d, Math.sin(10 * t0));
+
     plt0.data[0].x = xv;
     plt0.data[0].y = yv;
     plt0.data[1].y = yCont;
 
     plt1.data[0].x = xv_half;
-    plt1.data[0].y = m;
+    plt1.data[0].y = ops.addeq(a, b);  // a += b
     plt1.data[1].x = xv_half;
-    plt1.data[1].y = n;
+    plt1.data[1].y = ops.subeq(c, d);  // c -= d
     plt1.data[2].x = xv_half;
     plt1.data[2].y = fv_abs_half;
 }
