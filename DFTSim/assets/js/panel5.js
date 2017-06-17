@@ -116,7 +116,9 @@ function FFTUpdate() {
     fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
-    fft(1, fv, ops.mulseq(fv_im, -1));  // Forward FFT
+    fft(1, fv, fv_im);  // Forward FFT
+    ops.mulseq(fv_im, -1);
+    console.log(show(fv_im));
 
     fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
         return i * fmin;
@@ -135,12 +137,11 @@ function FFTUpdate() {
     var q = ndarray(new Float64Array(nSample / 2 + 1));
     ops.add(fv_abs_half, ops.pows(p, fv_im_half, 2), ops.pows(q, fv_half, 2));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
     ops.sqrteq(fv_abs_half);
-    console.log(show(fv_abs_half));
 }
 
 // Plot
 function plotDataUpdate() {
-    console.log(show(fv_abs_half));
+    console.log(show(fv_im));
     var a = pool.clone(fv_half);
     var b = pool.clone(fv_im_half);
     var c = pool.clone(fv_im_half);
@@ -153,7 +154,7 @@ function plotDataUpdate() {
     ops.addeq(a, b);  // a += b
     ops.subeq(c, d);  // c -= d
 
-    console.log(show(fv_abs_half));
+    console.log(show(fv_im));
     plt0.data[0].x = unpack(xv);
     plt0.data[0].y = unpack(yv);
     plt0.data[1].y = unpack(yCont);
