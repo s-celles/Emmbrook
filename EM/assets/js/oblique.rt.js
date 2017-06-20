@@ -21,7 +21,7 @@ function updateRatioLists() {
     /*
      Return: An array of [[r0, r1, ...], [t0, t1, ...]].
      */
-    return numeric.transpose(thetaIList.map(updateRatioValues))  // Defined in oblique.main.js
+    return numeric.transpose(thetaIList.map(updateRatioValues))  // Defined in oblique.js
 }
 
 function updateBrewsterAngle() {

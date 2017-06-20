@@ -1,6 +1,10 @@
 /**
  * Created by Qi on 6/12/17.
  */
+/* jshint -W097 */
+
+// Module
+var numeric = require("numeric");
 
 var spatialX = 10;  // Spatial physical size
 var spatialZ = 10;  // Spatial physical size
