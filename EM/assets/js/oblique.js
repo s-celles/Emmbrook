@@ -93,10 +93,10 @@ function generateLight(xList, zList, slope, amplitude) {
     var bw;
 
     if (Math.abs(slope) > 3) {
-        bw = 0.10;
+        bw = 0.20;
     }
     else {
-        bw = 0.05;
+        bw = 0.10;
     }
 
     // Produce a light with width 2 * bw.
@@ -104,8 +104,10 @@ function generateLight(xList, zList, slope, amplitude) {
         amp[i] = [];
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
+
+            var coeff = Math.cos(Math.sqrt(Math.pow(xList[i], 2) + Math.pow(zList[j], 2)));
             if (-bw < cond && cond < bw) {
-                amp[i][j] = Math.abs(amplitude);
+                amp[i][j] = Math.abs(amplitude) * coeff;
             }
             else {
                 amp[i][j] = 0;
