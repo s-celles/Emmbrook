@@ -23,7 +23,6 @@ var plt1 = document.getElementById('plt1');
 // Variables for calculation
 var epsilon1 = Math.pow(n1, 2);  // Permittivity
 var epsilon2 = Math.pow(n2, 2);  // Permittivity
-var reflectRatioList, transmitRatioList;  // Used in oblique.rt.js
 
 
 // Interactive interfaces
@@ -31,7 +30,9 @@ thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
     updateSlopes();
-    plotHeatmap();
+    for (var t = 0; t < 3; t++) {
+        plotHeatmap(t);
+    }
 
     $('#thetaISliderVal').text(thetaI);
 });
@@ -43,7 +44,9 @@ n1Slider.on('change', function () {
     plotRatioLists();
     plotBrewsterAngle();
     updateSlopes();
-    plotHeatmap();
+    for (var t = 0; t < 3; t++) {
+        plotHeatmap(t);
+    }
 
     $('#n1SliderVal').text(n1);
 });
@@ -55,7 +58,9 @@ n2Slider.on('change', function () {
     plotRatioLists();
     plotBrewsterAngle();
     updateSlopes();
-    plotHeatmap();
+    for (var t = 0; t < 3; t++) {
+        plotHeatmap(t);
+    }
 
     $('#n2SliderVal').text(n2);
 });
@@ -71,7 +76,6 @@ window.onresize = function () {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-
 var spatialX = 10;  // Spatial physical size
 var spatialZ = 10;  // Spatial physical size
 var nx = 200;  // Spatial grid size
@@ -85,7 +89,7 @@ var reflectSlope;
 var transmitSlope;
 
 
-function generateLight(xList, zList, slope, amplitude) {
+function generateLight(xList, zList, slope, amplitude, t) {
     /*
      Generate light amplitude for incident/reflective/transmitted light on a heatmap grid.
      */
@@ -99,13 +103,14 @@ function generateLight(xList, zList, slope, amplitude) {
         bw = 0.10;
     }
 
-    // Produce a light with width 2 * bw.
     for (var i = 0; i < xList.length; i++) {
         amp[i] = [];
         for (var j = 0; j < zList.length; j++) {
             var cond = zList[j] - slope * xList[i];
 
-            var coeff = Math.cos(Math.sqrt(Math.pow(xList[i], 2) + Math.pow(zList[j], 2)));
+            var kr = Math.sqrt(Math.pow(xList[i], 2) + Math.pow(zList[j], 2));
+            var wt = t * 10;
+            var coeff = Math.cos(kr) * Math.cos(wt) + Math.sin(kr) * Math.sin(wt);
             if (-bw < cond && cond < bw) {
                 amp[i][j] = Math.abs(amplitude) * coeff;
             }
@@ -136,7 +141,7 @@ function createPlot() {
     var incidenthm = {
         x: leftX,
         y: upperZ,
-        z: generateLight(leftX, upperZ, incidentSlope, 1),
+        z: generateLight(leftX, upperZ, incidentSlope, 1, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -146,7 +151,7 @@ function createPlot() {
     var reflecthm = {
         x: rightX,
         y: upperZ,
-        z: generateLight(rightX, upperZ, reflectSlope, 0.5),
+        z: generateLight(rightX, upperZ, reflectSlope, 0.5, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -156,7 +161,7 @@ function createPlot() {
     var transmithm = {
         x: rightX,
         y: lowerZ,
-        z: generateLight(rightX, lowerZ, transmitSlope, 0.2),
+        z: generateLight(rightX, lowerZ, transmitSlope, 0.2, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -166,7 +171,7 @@ function createPlot() {
     var empty = {
         x: leftX,
         y: lowerZ,
-        z: generateLight(leftX, lowerZ, 0, 0),
+        z: generateLight(leftX, lowerZ, 0, 0, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -201,17 +206,20 @@ function createPlot() {
     Plotly.newPlot('plt0', data, layout);
 }
 
-function plotHeatmap() {
-    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1);
-    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0]);
-    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1]);
+function plotHeatmap(t) {
+    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1, t);
+    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0], t);
+    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1], t);
     Plotly.redraw(plt0);
 }
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////
 ////////////////// Reflection and transmission ratios /////////////////////
 ///////////////////////////////////////////////////////////////////////////
+var reflectRatioList, transmitRatioList;
 var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
 
 
@@ -231,7 +239,7 @@ function updateRatioLists() {
     /*
      Return: An array of [[r0, r1, ...], [t0, t1, ...]].
      */
-    return numeric.transpose(thetaIList.map(updateRatioValues));  // Defined in oblique.js
+    return numeric.transpose(thetaIList.map(updateRatioValues));
 }
 
 function updateBrewsterAngle() {
