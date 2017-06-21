@@ -30,9 +30,7 @@ thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
     updateSlopes();
-    for (var t = 0; t < 3; t++) {
-        plotHeatmap(t);
-    }
+    plotHeatmap();
 
     $('#thetaISliderVal').text(thetaI);
 });
@@ -44,9 +42,7 @@ n1Slider.on('change', function () {
     plotRatioLists();
     plotBrewsterAngle();
     updateSlopes();
-    for (var t = 0; t < 3; t++) {
-        plotHeatmap(t);
-    }
+    plotHeatmap();
 
     $('#n1SliderVal').text(n1);
 });
@@ -58,9 +54,7 @@ n2Slider.on('change', function () {
     plotRatioLists();
     plotBrewsterAngle();
     updateSlopes();
-    for (var t = 0; t < 3; t++) {
-        plotHeatmap(t);
-    }
+    plotHeatmap();
 
     $('#n2SliderVal').text(n2);
 });
@@ -89,7 +83,7 @@ var reflectSlope;
 var transmitSlope;
 
 
-function generateLight(xList, zList, slope, amplitude, t) {
+function generateLight(xList, zList, slope, amplitude) {
     /*
      Generate light amplitude for incident/reflective/transmitted light on a heatmap grid.
      */
@@ -109,8 +103,7 @@ function generateLight(xList, zList, slope, amplitude, t) {
             var cond = zList[j] - slope * xList[i];
 
             var kr = Math.sqrt(Math.pow(xList[i], 2) + Math.pow(zList[j], 2));
-            var wt = t * 10;
-            var coeff = Math.cos(kr) * Math.cos(wt) + Math.sin(kr) * Math.sin(wt);
+            var coeff = Math.cos(kr);
             if (-bw < cond && cond < bw) {
                 amp[i][j] = Math.abs(amplitude) * coeff;
             }
@@ -141,7 +134,7 @@ function createPlot() {
     var incidenthm = {
         x: leftX,
         y: upperZ,
-        z: generateLight(leftX, upperZ, incidentSlope, 1, 0),
+        z: generateLight(leftX, upperZ, incidentSlope, 1),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -151,7 +144,7 @@ function createPlot() {
     var reflecthm = {
         x: rightX,
         y: upperZ,
-        z: generateLight(rightX, upperZ, reflectSlope, 0.5, 0),
+        z: generateLight(rightX, upperZ, reflectSlope, 0.5),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -161,7 +154,7 @@ function createPlot() {
     var transmithm = {
         x: rightX,
         y: lowerZ,
-        z: generateLight(rightX, lowerZ, transmitSlope, 0.2, 0),
+        z: generateLight(rightX, lowerZ, transmitSlope, 0.2),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -171,7 +164,7 @@ function createPlot() {
     var empty = {
         x: leftX,
         y: lowerZ,
-        z: generateLight(leftX, lowerZ, 0, 0, 0),
+        z: generateLight(leftX, lowerZ, 0, 0),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: 0,
@@ -206,14 +199,12 @@ function createPlot() {
     Plotly.newPlot('plt0', data, layout);
 }
 
-function plotHeatmap(t) {
-    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1, t);
-    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0], t);
-    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1], t);
+function plotHeatmap() {
+    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1);
+    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0]);
+    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1]);
     Plotly.redraw(plt0);
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////
