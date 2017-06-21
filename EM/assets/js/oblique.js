@@ -91,7 +91,7 @@ function generateLight(xList, zList, slope, amplitude) {
     var bw;
 
     if (Math.abs(slope) > 3) {
-        bw = 0.20;
+        bw = 0.15;
     }
     else {
         bw = 0.10;
