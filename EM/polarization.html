@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>EM polarization</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/polarization.css" type="text/css">
+</head>
+<body>
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        EM polarization
+                    </h1>
+                </div>
+                <p>
+
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Polarization simulator
+        </h4>
+
+        <div class="row" id="plots">
+            <div class="col-sm-6">
+                <div id="plt0" class="plot"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="plt1" class="plot"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="phase" class="slideLables">\( \varphi \):</label>
+                            <span id="phaseSliderVal" class="sliderVal"></span>
+                            <input id="phase" data-slider-min="0" data-slider-max="3.14" data-slider-step="0.01"
+                                   data-slider-value="0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <ol>
+
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- User script -->
+<script type="text/javascript" src="assets/js/polarization.bundle.js"></script>
+
+
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+</body>
+</html>

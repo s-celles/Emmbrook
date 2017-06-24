@@ -9,6 +9,7 @@
 "use strict";
 // Import libraries
 var numeric = require("numeric");
+var meshgrid = require("ndarray-meshgrid");
 
 
 // Variables
@@ -70,50 +71,34 @@ window.onresize = function () {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var spatialX = 10;  // Spatial physical size
-var spatialZ = 10;  // Spatial physical size
-var nx = 200;  // Spatial grid size
-var nz = 200;  // Spatial grid size
-var leftX = numeric.linspace(0, -spatialX, nx);
-var rightX = numeric.linspace(0, spatialX, nx);
-var upperZ = numeric.linspace(0, spatialZ, nz);
-var lowerZ = numeric.linspace(0, -spatialZ, nz);
+var yCoord = numeric.linspace(0, 1, 250);
+var zCoord = numeric.linspace(0, 1, 250);
 var incidentSlope;
 var reflectSlope;
 var transmitSlope;
 
 
-function generateLight(xList, zList, slope, amplitude) {
+function updateIncidentAmplitude() {
     /*
-     Generate light amplitude for incident/reflective/transmitted light on a heatmap grid.
+     The incident E-field amplitude changes with x, y, z spatial coordinates, n1, n2, and thetaI.
+     k is the wave-vector, and kr means k dot r.
      */
-    var amp = [];
-    var bw;
-
-    if (Math.abs(slope) > 3) {
-        bw = 0.15;
-    }
-    else {
-        bw = 0.10;
+    function kr(yy, zz) {
+        var kx = 1, ky = 1, kz = 1;
+        return kx * zz * incidentSlope * Math.cos(Math.PI / 2 - thetaI) +  // x = z * incidentSlope
+            ky * yy +
+            kz * zz * Math.cos(Math.PI / 2 - thetaI);
     }
 
-    for (var i = 0; i < xList.length; i++) {
-        amp[i] = [];
-        for (var j = 0; j < zList.length; j++) {
-            var cond = zList[j] - slope * xList[i];
-
-            var kr = Math.sqrt(Math.pow(xList[i], 2) + Math.pow(zList[j], 2));
-            var coeff = Math.cos(kr);
-            if (-bw < cond && cond < bw) {
-                amp[i][j] = Math.abs(amplitude) * coeff;
-            }
-            else {
-                amp[i][j] = 0;
-            }
+    var inciamp = [];
+    for (var i = 0; i < yCoord.length; i++) {
+        inciamp[i] = [];
+        for (var j = 0; j < zCoord.length; j++) {
+            inciamp[i][j] = kr(yCoord[i], zCoord[j]);
         }
     }
 
-    return amp;
+    return inciamp;
 }
 
 function updateSlopes() {
@@ -127,83 +112,42 @@ function updateSlopes() {
     transmitSlope = -Math.tan(thetaT);
 }
 
+function plotHeatmap() {
+    plt0.data[0].z = updateIncidentAmplitude();
 
-// Plot
-function createPlot() {
+    Plotly.redraw(plt0);
+}
 
-    var incidenthm = {
-        x: leftX,
-        y: upperZ,
-        z: generateLight(leftX, upperZ, incidentSlope, 1),
+function createHeatmap() {
+    var upper = {
+        x: yCoord,
+        y: zCoord,
+        z: updateIncidentAmplitude(),
         type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: 0,
-        zmax: 1
+        colorscale: 'Viridis'
     };
-
-    var reflecthm = {
-        x: rightX,
-        y: upperZ,
-        z: generateLight(rightX, upperZ, reflectSlope, 0.5),
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: 0,
-        zmax: 1
-    };
-
-    var transmithm = {
-        x: rightX,
-        y: lowerZ,
-        z: generateLight(rightX, lowerZ, transmitSlope, 0.2),
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: 0,
-        zmax: 1
-    };
-
-    var empty = {
-        x: leftX,
-        y: lowerZ,
-        z: generateLight(leftX, lowerZ, 0, 0),
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: 0,
-        zmax: 1
-    };
-
-    var interfaceLine = {
-        x: [-spatialX, spatialX],
-        y: [0, 0],
-        mode: 'lines',
-        color: 'black'
-    };
-
-    var data = [incidenthm, reflecthm, transmithm, empty, interfaceLine];
 
     var layout = {
         title: 'E filed amplitude',
         xaxis: {
-            title: 'x',
-            fontsize: 18,
-            range: [-spatialX, spatialX],
-            domain: [0, 1]
+            title: 'y',
+            fontsize: 18
         },
-        yaxis: {
+        yaxis0: {
             title: 'z',
             fontsize: 18,
-            range: [-spatialZ, spatialZ],
-            domain: [0, 1]
+            domain: [0.55, 1]
+        },
+        yaxis1: {
+            title: 'z',
+            fontsize: 18,
+            domain: [0, 0.45]
         }
     };
 
-    Plotly.newPlot('plt0', data, layout);
-}
+    var data = [upper];
 
-function plotHeatmap() {
-    plt0.data[0].z = generateLight(leftX, upperZ, incidentSlope, 1);
-    plt0.data[1].z = generateLight(rightX, upperZ, reflectSlope, updateRatioValues(thetaI)[0]);
-    plt0.data[2].z = generateLight(rightX, lowerZ, transmitSlope, updateRatioValues(thetaI)[1]);
-    Plotly.redraw(plt0);
+    Plotly.newPlot('plt0', data, layout);
 }
 
 
@@ -331,7 +275,7 @@ $('#n1SliderVal').text(n1);
 $('#n2SliderVal').text(n2);
 // Left panel
 updateSlopes();
-createPlot();
+createHeatmap();
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
