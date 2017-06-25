@@ -9,21 +9,23 @@
 "use strict";
 // Import libraries
 var numeric = require("numeric");
-var meshgrid = require("ndarray-meshgrid");
+var ndarray = require("ndarray");
+var gemm = require("ndarray-gemm");
+var math = require('mathjs');
 
 
 // Variables
 var n1Slider = $('#n1').bootstrapSlider();
 var n2Slider = $('#n2').bootstrapSlider();
 var thetaISlider = $('#thetaI').bootstrapSlider();
-var n1 = n1Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-var n2 = n2Slider.bootstrapSlider('getValue');  // Get refraction index from slider bar
-var thetaI = thetaISlider.bootstrapSlider('getValue');  // Get incident angle from slider bar
+var n1 = n1Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
+var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
+var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 // Variables for calculation
-var epsilon1 = Math.pow(n1, 2);  // Permittivity
-var epsilon2 = Math.pow(n2, 2);  // Permittivity
+var epsilon1 = Math.pow(n1, 2); // Permittivity
+var epsilon2 = Math.pow(n2, 2); // Permittivity
 
 
 // Interactive interfaces
@@ -71,34 +73,53 @@ window.onresize = function () {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var yCoord = numeric.linspace(0, 1, 250);
-var zCoord = numeric.linspace(0, 1, 250);
+var yCoord = numeric.linspace(0, 5, 250);
+var zCoord = numeric.linspace(0, 5, 250);
 var incidentSlope;
 var reflectSlope;
 var transmitSlope;
 
 
+function kr(xx, yy, zz) {
+    /*
+     Wave vector times position vector.
+     */
+    var metricTensor = math.matrix([
+        [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
+        [0, 1, 0],
+        [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
+    ]);
+    return math.dot([1, 1, 1], math.multiply(metricTensor, [xx, yy, zz]));
+}
+
 function updateIncidentAmplitude() {
     /*
-     The incident E-field amplitude changes with x, y, z spatial coordinates, n1, n2, and thetaI.
-     k is the wave-vector, and kr means k dot r.
+     The incident E-field amplitude changes with x, y, z spatial coordinates, and thetaI.
      */
-    function kr(yy, zz) {
-        var kx = 1, ky = 1, kz = 1;
-        return kx * zz * incidentSlope * Math.cos(Math.PI / 2 - thetaI) +  // x = z * incidentSlope
-            ky * yy +
-            kz * zz * Math.cos(Math.PI / 2 - thetaI);
-    }
-
     var inciamp = [];
     for (var i = 0; i < yCoord.length; i++) {
         inciamp[i] = [];
         for (var j = 0; j < zCoord.length; j++) {
-            inciamp[i][j] = kr(yCoord[i], zCoord[j]);
+            inciamp[i][j] = kr(zCoord[j] * incidentSlope, yCoord[i], zCoord[j]);
         }
     }
 
     return inciamp;
+}
+
+function updateTransmitAmplitude() {
+    /*
+     The transmissive E-field amplitude changes with x, y, z spatial coordinates, n1, n2 and thetaI.
+     */
+    var transamp = [];
+    for (var i = 0; i < yCoord.length; i++) {
+        transamp[i] = [];
+        for (var j = 0; j < zCoord.length; j++) {
+            transamp[i][j] = kr(zCoord[j] * transmitSlope, yCoord[i], zCoord[j]);
+        }
+    }
+
+    return transamp;
 }
 
 function updateSlopes() {
@@ -106,14 +127,17 @@ function updateSlopes() {
      Update incident/reflective/transmitted light slopes according to slider motion.
      Those change when thetaI, n1, and n2 change.
      */
-    var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI));  // Transmission angle
+    var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmission angle
     incidentSlope = -Math.tan(thetaI);
     reflectSlope = Math.tan(thetaI);
     transmitSlope = -Math.tan(thetaT);
 }
 
+
+// Plot
 function plotHeatmap() {
     plt0.data[0].z = updateIncidentAmplitude();
+    plt0.data[1].z = updateTransmitAmplitude();
 
     Plotly.redraw(plt0);
 }
@@ -124,28 +148,37 @@ function createHeatmap() {
         y: zCoord,
         z: updateIncidentAmplitude(),
         type: 'heatmap',
-        colorscale: 'Viridis'
+        colorscale: 'Viridis',
+        zmin: -2,
+        zmax: 10
     };
+
+    var lower = {
+        x: yCoord,
+        y: zCoord,
+        z: updateTransmitAmplitude(),
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -2,
+        zmax: 10
+    };
+
+    var data = [upper, lower];
 
     var layout = {
         title: 'E filed amplitude',
-        xaxis: {
-            title: 'y',
-            fontsize: 18
+        yaxis: {
+            domain: [0.6, 1]
         },
-        yaxis0: {
-            title: 'z',
-            fontsize: 18,
-            domain: [0.55, 1]
+        yaxis2: {
+            domain: [0, 0.4]
         },
-        yaxis1: {
-            title: 'z',
-            fontsize: 18,
-            domain: [0, 0.45]
+        xaxis2: {
+            anchor: 'y2'
         }
     };
-
-    var data = [upper];
 
     Plotly.newPlot('plt0', data, layout);
 }
@@ -202,8 +235,8 @@ function plotRatioLists() {
      Re-plot 2 curves.
      */
     plt1.data[0].y = reflectRatioList;
-
     plt1.data[1].y = transmitRatioList;
+
     Plotly.redraw(plt1);
 }
 
@@ -232,14 +265,13 @@ function createRatioPlot() {
         }
     };
 
-    var data = [
-        {
-            x: thetaIList,
-            y: reflectRatioList,
-            type: 'scatter',
-            mode: 'lines',
-            name: 'r'
-        },
+    var data = [{
+        x: thetaIList,
+        y: reflectRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'r'
+    },
         {
             x: thetaIList,
             y: transmitRatioList,
