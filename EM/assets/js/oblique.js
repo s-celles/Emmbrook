@@ -265,13 +265,14 @@ function createRatioPlot() {
         }
     };
 
-    var data = [{
-        x: thetaIList,
-        y: reflectRatioList,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'r'
-    },
+    var data = [
+        {
+            x: thetaIList,
+            y: reflectRatioList,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'r'
+        },
         {
             x: thetaIList,
             y: transmitRatioList,
