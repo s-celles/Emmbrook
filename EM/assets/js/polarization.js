@@ -8,7 +8,7 @@
 /* jshint -W097 */
 "use strict";
 // Import libraries
-// var numeric = require("numeric");
+var linspace = require('ndarray-linspace');  // Fill an ndarray with equally spaced values.
 var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
 var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
 var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
@@ -16,28 +16,46 @@ var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of
 
 // Initialize variables
 // UI variables
-var varphiSlider = $('#varphi').bootstrapSlider({});
-var phase = varphiSlider.bootstrapSlider('getValue');
+var phiSlider = $('#phi').bootstrapSlider({});
+var phi = phiSlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+// Normal variables
+var nPoints = 200;
+var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
+var x = ndarray(new Float64Array(nPoints));
+var y = ndarray(new Float64Array(nPoints));
+var r;  // sqrt(x^2 + y^2)
 
-var z = ndarray(numeric.linspace(0, 10 * Math.PI, 200));
-var x = ndarray(new Float64Array(200));
-var y = ndarray(new Float64Array(200));
 
+// Basic interfaces
 function updateXValue() {
+    /*
+     x values will not change in this simulation.
+     */
     ops.sin(x, z);
 }
 
 function updateYValue() {
-    ops.adds(y, z, phase);
+    /*
+     y values will change if phase changes.
+     */
+    ops.adds(y, z, phi);
     ops.sineq(y);
+}
+
+function updateR() {
+    /*
+     r value changes when phase changes.
+     */
+    var h = 1;
+    r = Math.sqrt(Math.pow(Math.sin(h), 2) + Math.pow(Math.sin(h + phi), 2));
 }
 
 
 // Plot
 function createPlots() {
-    var layout = {
+    var layout0 = {
         margin: {
             t: 0,
             b: 0
@@ -67,6 +85,17 @@ function createPlots() {
         }
     };
 
+    var layout1 = {
+        margin: {
+            t: 50,
+            b: 50
+        },
+        domain: {
+            x: [-1, 1],
+            y: [-1, 1]
+        }
+    };
+
     var trace0 = {
         mode: 'lines',
         type: 'scatter3d',
@@ -80,16 +109,31 @@ function createPlots() {
         mode: 'lines',
         type: 'scatter',
         x: unpack(x),
-        y: unpack(y)
+        y: unpack(y),
+        name: 'polarization'
     };
 
-    Plotly.newPlot('plt0', [trace0], layout);
-    Plotly.newPlot('plt1', [trace1]);
+    var trace2 = {
+        mode: 'lines',
+        type: 'scatter',
+        x: [0, r * Math.cos(phi)],
+        y: [0, r * Math.sin(phi)],
+        name: 'Jones vector'
+    };
+
+    var data0 = [trace0];
+    var data1 = [trace1, trace2];
+
+    Plotly.newPlot('plt0', data0, layout0);
+    Plotly.newPlot('plt1', data1, layout1);
 }
 
 function plot() {
-    plt0.data.x = unpack(x);
-    plt0.data.y = unpack(y);
+    plt0.data[0].y = unpack(y);
+
+    plt1.data[0].y = unpack(y);
+    plt1.data[1].x = [0, r * Math.cos(phi)];
+    plt1.data[1].y = [0, r * Math.sin(phi)];
 
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
@@ -97,12 +141,13 @@ function plot() {
 
 
 // Interactive interfaces
-varphiSlider.on('change', function () {
-    phase = varphiSlider.bootstrapSlider('getValue');  // Change "global" value
+phiSlider.on('change', function () {
+    phi = phiSlider.bootstrapSlider('getValue');  // Change "global" value
     updateYValue();
+    updateR();
     plot();
 
-    $('#varphiSliderVal').text(phase);
+    $('#varphiSliderVal').text(phi);
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
