@@ -18,8 +18,10 @@ var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of
 // UI variables
 var phiSlider = $('#phi').bootstrapSlider({});
 var thetaSlider = $('#theta').bootstrapSlider({});
+var timeSlider = $('#time').bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
-var theta = thetaSlider.bootstrapSlider('getValue');  // z values in one cycle.
+var theta = thetaSlider.bootstrapSlider('getValue');
+var time = timeSlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 // Normal variables
@@ -33,17 +35,28 @@ var r;  // sqrt(x^2 + y^2)
 // Basic interfaces
 function updateXValue() {
     /*
-     x values will not change in this simulation.
+     x values will change if time changes.
+     x = sin(k * z - w * t)
      */
-    ops.sin(x, z);
+    ops.subs(x, z, time);  // x = z - t
+    ops.sineq(x);  // x = sin(x)
 }
 
 function updateYValue() {
     /*
-     y values will change if phase changes.
+     y values will change if phase or time change.
+     y = sin(k * z - w * t + phi)
      */
-    ops.adds(y, z, phi);
-    ops.sineq(y);
+    ops.adds(y, z, phi - time);  // y = z - t + phi
+    ops.sineq(y);  // y = sin(y)
+}
+
+function updateZValue() {
+    /*
+     z values will change if time changes.
+     */
+    var speed = 10;
+    z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
 }
 
 function updateR() {
@@ -92,8 +105,8 @@ function createPlots() {
             b: 50
         },
         domain: {
-            x: [-1, 1],
-            y: [-1, 1]
+            x: [-1.1, 1.1],
+            y: [-1.1, 1]
         }
     };
 
@@ -130,8 +143,11 @@ function createPlots() {
 }
 
 function plot() {
+    plt0.data[0].x = unpack(x);
     plt0.data[0].y = unpack(y);
+    plt0.data[0].z = unpack(z);
 
+    plt1.data[0].x = unpack(x);
     plt1.data[0].y = unpack(y);
     plt1.data[1].x = [0, r * Math.cos(theta)];
     plt1.data[1].y = [0, r * Math.sin(theta)];
@@ -156,6 +172,14 @@ thetaSlider.on('change', function () {
     plot();
 });
 
+timeSlider.on('change', function () {
+    time = timeSlider.bootstrapSlider('getValue');  // Change "global" value
+    updateXValue();
+    updateYValue();
+    updateZValue();
+    plot();
+});
+
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt0);
@@ -164,7 +188,6 @@ window.onresize = function () {
 
 
 // Initialize
-// createPlots();
 updateXValue();
 updateYValue();
 createPlots();
