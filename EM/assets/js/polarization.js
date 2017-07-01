@@ -17,7 +17,9 @@ var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of
 // Initialize variables
 // UI variables
 var phiSlider = $('#phi').bootstrapSlider({});
+var thetaSlider = $('#theta').bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
+var theta = thetaSlider.bootstrapSlider('getValue');  // z values in one cycle.
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 // Normal variables
@@ -46,10 +48,9 @@ function updateYValue() {
 
 function updateR() {
     /*
-     r value changes when phase changes.
+     r value changes when phase and theta changes.
      */
-    var h = 1;
-    r = Math.sqrt(Math.pow(Math.sin(h), 2) + Math.pow(Math.sin(h + phi), 2));
+    r = Math.sqrt(Math.pow(Math.sin(theta), 2) + Math.pow(Math.sin(theta + phi), 2));
 }
 
 
@@ -116,8 +117,8 @@ function createPlots() {
     var trace2 = {
         mode: 'lines',
         type: 'scatter',
-        x: [0, r * Math.cos(phi)],
-        y: [0, r * Math.sin(phi)],
+        x: [0, r * Math.cos(theta)],
+        y: [0, r * Math.sin(theta)],
         name: 'Jones vector'
     };
 
@@ -132,8 +133,8 @@ function plot() {
     plt0.data[0].y = unpack(y);
 
     plt1.data[0].y = unpack(y);
-    plt1.data[1].x = [0, r * Math.cos(phi)];
-    plt1.data[1].y = [0, r * Math.sin(phi)];
+    plt1.data[1].x = [0, r * Math.cos(theta)];
+    plt1.data[1].y = [0, r * Math.sin(theta)];
 
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
@@ -144,10 +145,15 @@ function plot() {
 phiSlider.on('change', function () {
     phi = phiSlider.bootstrapSlider('getValue');  // Change "global" value
     updateYValue();
-    updateR();
     plot();
 
     $('#varphiSliderVal').text(phi);
+});
+
+thetaSlider.on('change', function () {
+    theta = thetaSlider.bootstrapSlider('getValue');  // Change "global" value
+    updateR();
+    plot();
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
