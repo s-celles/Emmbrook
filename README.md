@@ -9,3 +9,4 @@ Todo:
 - [ ] Magnetic domain
 - [x] DFT simulation
 - [ ] Main page
+- [ ] Polarization
