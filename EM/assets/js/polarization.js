@@ -17,10 +17,8 @@ var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of
 // Initialize variables
 // UI variables
 var phiSlider = $('#phi').bootstrapSlider({});
-var thetaSlider = $('#theta').bootstrapSlider({});
 var timeSlider = $('#time').bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
-var theta = thetaSlider.bootstrapSlider('getValue');
 var time = timeSlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
@@ -29,6 +27,9 @@ var nPoints = 200;
 var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
+var L = 2 * Math.PI;  // Pitch
+var speed = 10;  // Wave speed
+var theta = z / L * 2 * Math.PI + time * speed;
 var r;  // sqrt(x^2 + y^2)
 
 
@@ -55,7 +56,6 @@ function updateZValue() {
     /*
      z values will change if time changes.
      */
-    var speed = 10;
     z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
 }
 
@@ -163,13 +163,7 @@ phiSlider.on('change', function () {
     updateYValue();
     plot();
 
-    $('#varphiSliderVal').text(phi);
-});
-
-thetaSlider.on('change', function () {
-    theta = thetaSlider.bootstrapSlider('getValue');  // Change "global" value
-    updateR();
-    plot();
+    $('#phiSliderVal').text(phi);
 });
 
 timeSlider.on('change', function () {
@@ -177,7 +171,10 @@ timeSlider.on('change', function () {
     updateXValue();
     updateYValue();
     updateZValue();
+    updateR();
     plot();
+
+    $('#timeSliderVal').text(time);
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
@@ -191,3 +188,5 @@ window.onresize = function () {
 updateXValue();
 updateYValue();
 createPlots();
+$('#phiSliderVal').text(phi);
+$('#timeSliderVal').text(time);
