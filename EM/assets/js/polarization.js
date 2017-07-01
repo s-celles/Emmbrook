@@ -27,14 +27,13 @@ var nPoints = 200;
 var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
-var L = 2 * Math.PI;  // Pitch
 var speed = 10;  // Wave speed
-var theta = z / L * 2 * Math.PI + time * speed;
+var theta = time * speed;
 var r;  // sqrt(x^2 + y^2)
 
 
 // Basic interfaces
-function updateXValue() {
+function updateX() {
     /*
      x values will change if time changes.
      x = sin(k * z - w * t)
@@ -43,7 +42,7 @@ function updateXValue() {
     ops.sineq(x);  // x = sin(x)
 }
 
-function updateYValue() {
+function updateY() {
     /*
      y values will change if phase or time change.
      y = sin(k * z - w * t + phi)
@@ -52,7 +51,7 @@ function updateYValue() {
     ops.sineq(y);  // y = sin(y)
 }
 
-function updateZValue() {
+function updateZ() {
     /*
      z values will change if time changes.
      */
@@ -66,6 +65,9 @@ function updateR() {
     r = Math.sqrt(Math.pow(Math.sin(theta), 2) + Math.pow(Math.sin(theta + phi), 2));
 }
 
+function updateTheta() {
+    theta = time * speed;
+}
 
 // Plot
 function createPlots() {
@@ -157,10 +159,34 @@ function plot() {
 }
 
 
+// Animation
+var t = 0;
+var nIntervId;
+
+function startEvolve() {
+    nIntervId = setInterval(frame, 10);
+}
+
+function frame() {
+    t += 1;
+    updateX();
+    updateY();
+    updateZ();
+    updateR();
+    updateTheta();
+    plot();
+
+    timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
+}
+
+function stopEvolve() {
+    clearInterval(nIntervId);
+}
+
 // Interactive interfaces
 phiSlider.on('change', function () {
     phi = phiSlider.bootstrapSlider('getValue');  // Change "global" value
-    updateYValue();
+    updateY();
     plot();
 
     $('#phiSliderVal').text(phi);
@@ -168,14 +194,20 @@ phiSlider.on('change', function () {
 
 timeSlider.on('change', function () {
     time = timeSlider.bootstrapSlider('getValue');  // Change "global" value
-    updateXValue();
-    updateYValue();
-    updateZValue();
+    updateX();
+    updateY();
+    updateZ();
     updateR();
+    updateTheta();
     plot();
 
     $('#timeSliderVal').text(time);
 });
+
+// $(document).ready(function () {
+//     $('#on').click(startEvolve());
+//     $('#off').click(stopEvolve());
+// });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -185,8 +217,9 @@ window.onresize = function () {
 
 
 // Initialize
-updateXValue();
-updateYValue();
+updateX();
+updateY();
 createPlots();
 $('#phiSliderVal').text(phi);
 $('#timeSliderVal').text(time);
+startEvolve();

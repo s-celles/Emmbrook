@@ -101,8 +101,13 @@
                         <div class="col slider-row">
                             <label for="time" class="slideLables">\( t \):</label>
                             <span id="timeSliderVal" class="sliderVal"></span>
-                            <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.1"
+                            <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.01"
                                    data-slider-value="0">
+                        </div>
+
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" id="on" onclick="startEvolve()">On</button>
+                            <button type="button" class="btn btn-default" id="off" onclick="stopEvolve()">Off</button>
                         </div>
                     </div>
                 </div>
