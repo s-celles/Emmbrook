@@ -285,3 +285,5 @@ package-lock.json
 
 .idea/
 
+# browserify file
+*.bundle.js

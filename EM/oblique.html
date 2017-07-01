@@ -21,20 +21,55 @@
 
 <body>
 
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="polarization.html">Polarization</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
 <section>
     <div class="container">
         <div class="row">
             <div class="col">
                 <!-- Heading text-->
                 <div class="page-header">
-                    <h1>EM propagation at oblique incidence
+                    <h1>
+                        EM propagation at oblique incidence
                     </h1>
                 </div>
                 <p>
                     From EM-class we know
                     $$
                     \begin{align}
-                    E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_I, \\
+                    E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_T, \\
                     \epsilon_1 (-E_I \sin \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T,
                     \end{align}
                     $$
@@ -63,30 +98,10 @@
                     $$
                     \begin{align}
                     \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\
-                    \beta &= \arctan \theta_B,
+                    \beta &= \tan \theta_B,
                     \end{align}
                     $$
                     where \( \theta_B \) is called Brewster angle.
-                </p>
-                <p>
-                    For a <a href="https://www.wikiwand.com/en/Gaussian_beam#/">Gaussian beam</a>, the intensity
-                    distribution is
-                    $$
-                    I = I_0 \bigg( \frac{ w_0^2 }{ w(z)^2 } \bigg) \exp \bigg( -\frac{ 2r^2 }{ w(z)^2 } \bigg),
-                    $$
-                    where
-                    $$
-                    w(z)^2 = w_0^2 \bigg( 1 + \Big( \frac{ z }{ z_R } \Big)^2 \bigg)
-                    $$
-                    is the square of radial radius at which the field amplitudes fall to \( 1/ e \), \( w_0 \) is the
-                    waist radius, \( z_R = \pi w_0^2 / \lambda \), \( z \) is the axial distance, \( r \) is the radial
-                    distance.
-                </p>
-                <p>
-                    Here, for simplicity, we will assume
-                    $$
-                    I = I_0 \exp ( -r^2 ).
-                    $$
                 </p>
             </div>
         </div>
@@ -97,6 +112,7 @@
         <h4>
             Simulator
         </h4>
+
         <div class="row" id="plots">
             <div class="col-sm-6">
                 <div id="plt0" class="plot"></div>
@@ -115,7 +131,7 @@
                             <label for="thetaI" class="slideLables">\( \theta_I \):</label>
                             <span id="thetaISliderVal" class="sliderVal"></span>
                             <input id="thetaI" data-slider-min="0" data-slider-max="1.57" data-slider-step="0.01"
-                                   data-slider-value="0">
+                                   data-slider-value="0" reversed="true">
                         </div>
 
                         <div class="col slider-row">
@@ -125,7 +141,7 @@
                                    data-slider-value="1">
                         </div>
 
-                        <div class="row slider-row">
+                        <div class="col slider-row">
                             <label for="n2" class="slideLables">\( n_2 \):</label>
                             <span id="n2SliderVal" class="sliderVal"></span>
                             <input id="n2" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
@@ -133,6 +149,28 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <ol>
+                    <li>
+                        Observe Brewster angle. What is the relation between \( \theta_B \) and \( \theta_T \)
+                        when an unpolarized light is incident at this angle?
+                    </li>
+                    <li>
+                        Observe the amplitude of reflective and transmitted light. How do they change when
+                        \( \theta_I \), \( n_1 \), and \( n_2 \) change? How do reflected and transmitted intensity
+                        change?
+                    </li>
+                    <li>
+                        Observe total reflection phenomenon. What is the sufficient condition for this phenomenon?
+                    </li>
+                </ol>
             </div>
         </div>
     </div>
@@ -146,16 +184,15 @@
         crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- User script -->
+<script type="text/javascript" src="assets/js/oblique.bundle.js"></script>
+
+
+<!-- MathJax -->
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
-
-<!-- User script -->
-<script type="text/javascript" src="assets/js/oblique.main.js"></script>
-<script type="text/javascript" src="assets/js/oblique.propagate2.js"></script>
-<script type="text/javascript" src="assets/js/oblique.rt.js"></script>
 </body>
 </html>

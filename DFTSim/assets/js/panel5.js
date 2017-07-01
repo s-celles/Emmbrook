@@ -2,14 +2,19 @@
  * Created by Qi on 5/28/17.
  */
 
-// Variables
-var nCont = 1000;
-var xHi = 10;
-var xCont = new Array(nCont);  // Continuous value
-var yCont = new Array(nCont);  // Continuous value
-var yApprox = new Array(nCont);
-var fmin = 1.0 / xHi;
+// Import libraries
+var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
+var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var show = require("ndarray-show");  // For debugging
+var cwise = require("cwise");  // Elementwise operation
+var pool = require("ndarray-scratch");  // A simple wrapper for typedarray-pool.
+var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
+var fill = require("ndarray-fill");  // Initialize an ndarray with a function.
+var fft = require("ndarray-fft");  // A fast Fourier transform implementation for ndarrays.
 
+
+// Initialize variables
+// UI variables
 var sampleSlider = $('#mySamples').bootstrapSlider({});
 var t0Slider = $('#myT0').bootstrapSlider({});
 var b1Slider = $('#b1').bootstrapSlider();
@@ -24,37 +29,47 @@ var b5 = b5Slider.bootstrapSlider('getValue');
 var b7 = b7Slider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+// Basic variables
+var nCont = 1000;
+var xHi = 10;
+var xCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yCont = ndarray(new Float64Array(nCont));  // Continuous value
+var yApprox = ndarray(new Float64Array(nCont));
+var fmin = 1.0 / xHi;
+var xv = ndarray(new Float64Array(nSample));  // Sample points
+var yv = ndarray(new Float64Array(nSample));  // Sample points
 
-for (var i = 0; i < nCont; i++) {
+fill(xCont, function (i) {  // Initialize xCont
     /*
      xCont will not change in this simulation.
      */
-    xCont[i] = i / nCont * xHi - 0.5 * xHi
-}
+    return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
+});
+
 
 // Basic interfaces
 function xvUpdate() {
     /*
      xv will not change unless the number of samples changes.
      */
-    xv = new Array(nSample);  // Sample x coordinates
-    for (var i = 0; i < nSample; i++) {   // Samples range
-        xv[i] = (i / nSample - 0.5) * xHi
-    }
+    xv = ndarray(new Float64Array(nSample));  // Sample x coordinates
+    fill(xv, function (i) {
+        return (i / nSample - 0.5) * xHi;
+    });
 }
 
 function yvUpdate() {
     /*
      yv will change as the number of samples and t0 change.
      */
-    yv = new Array(nSample);
+    yv = ndarray(new Float64Array(nSample));
     for (var i = 0; i < nSample; i++) {  // Sample y coordinates
-        if (xv[i] > (t0 + 5.0)) {
-            yv[i] = -0.5
-        } else if (xv[i] > t0 || xv[i] < (t0 - 5.0)) {
-            yv[i] = 0.5
+        if (xv.get(i) > (t0 + 5.0)) {
+            yv.set(i, -0.5)
+        } else if (xv.get(i) > t0 || xv.get(i) < (t0 - 5.0)) {
+            yv.set(i, 0.5)
         } else {
-            yv[i] = -0.5
+            yv.set(i, -0.5)
         }
     }
 }
@@ -64,12 +79,12 @@ function yContUpdate() {
      yCount will change as the t0 changes.
      */
     for (var i = 0; i < nCont; i++) {
-        if (xCont[i] > (t0 + 5.0)) {
-            yCont[i] = -0.5
-        } else if (xCont[i] > t0 || xCont[i] < (t0 - 5.0)) {
-            yCont[i] = 0.5
+        if (xCont.get(i) > (t0 + 5.0)) {
+            yCont.set(i, -0.5);  // yCont[i] = -0.5
+        } else if (xCont.get(i) > t0 || xCont.get(i) < (t0 - 5.0)) {
+            yCont.set(i, 0.5);
         } else {
-            yCont[i] = -0.5
+            yCont.set(i, -0.5);
         }
     }
 }
@@ -78,95 +93,67 @@ function yApproxUpdate() {
     /*
      yApprox will change as t0, b1, b3, b5, b7 change.
      */
-    for (var i = 0; i < nCont; i++) {
-        yApprox[i] = b1 * Math.sin(0.62832 * (xCont[i] - t0)) +
-            b3 * Math.sin(3. * 0.62832 * (xCont[i] - t0)) +
-            b5 * Math.sin(5. * 0.62832 * (xCont[i] - t0)) +
-            b7 * Math.sin(7. * 0.62832 * (xCont[i] - t0))
-    }
+    fill(yApprox, function (i) {
+        return b1 * Math.sin(0.62832 * (xCont.get(i) - t0)) +
+            b3 * Math.sin(3. * 0.62832 * (xCont.get(i) - t0)) +
+            b5 * Math.sin(5. * 0.62832 * (xCont.get(i) - t0)) +
+            b7 * Math.sin(7. * 0.62832 * (xCont.get(i) - t0))
+    });
 }
 
 // FFT
-function miniFFT(re, im) {
-    var N = re.length;
-    for (var i = 0; i < N; i++) {
-        for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
-            j = (j << 1) | (h & 1);
-        if (j > i) {
-            re[j] = [re[i], re[i] = re[j]][0];
-            im[j] = [im[i], im[i] = im[j]][0]
-        }
-    }
-
-    for (var hN = 1; hN * 2 <= N; hN *= 2)
-        for (i = 0; i < N; i += hN * 2)
-            for (j = i; j < i + hN; j++) {
-                var cos = Math.cos(Math.PI * (j - i) / hN),
-                    sin = Math.sin(Math.PI * (j - i) / hN);
-                var tre = re[j + hN] * cos + im[j + hN] * sin,
-                    tim = -re[j + hN] * sin + im[j + hN] * cos;
-                re[j + hN] = re[j] - tre;
-                im[j + hN] = im[j] - tim;
-                re[j] += tre;
-                im[j] += tim;
-            }
-}
-
 function FFTUpdate() {
-    fv = new Array(nSample);  // Cannot add 'var'
-    fv_im = new Array(nSample);
-    xv_half = new Array(nSample / 2 + 1);
-    fv_half = new Array(nSample / 2 + 1);
-    fv_im_half = new Array(nSample / 2 + 1);
-    fv_abs_half = new Array(nSample / 2 + 1);
+    fv = pool.clone(yv);  // Real part, size: nSample
+    fv_im = pool.zeros([nSample], 'float64');  // Imaginary part
+    xv_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
+    fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
-    for (var i = 0; i < nSample; i++) {
-        fv[i] = yv[i];  // Real part
-        fv_im[i] = 0;
-    }
+    fft(1, fv, fv_im);  // Forward FFT
+    ops.mulseq(fv_im, -1);  // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
 
-    miniFFT(fv, fv_im);
+    fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
+        return i * fmin;
+    });
 
-    for (i = 0; i < nSample / 2 + 1; i++) {
-        xv_half[i] = i * fmin;   // \alpha_k
-        fv_half[i] = fv[i] * 2 / nSample;
-        fv_im_half[i] = fv_im[i] * 2 / nSample;
-        fv_abs_half[i] = Math.pow(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i], 0.5);
-    }
+    fill(fv_half, function (i) {  // fv_half[i] = fv[i] * 2 / nSample;
+        return fv.get(i) * 2 / nSample;
+    });
+
+    fill(fv_im_half, function (i) {  // fv_im_half[i] = fv_im[i] * 2 / nSample;
+        return fv_im.get(i) * 2 / nSample;
+    });
+
+    var p = ndarray(new Float64Array(nSample / 2 + 1));
+    var q = ndarray(new Float64Array(nSample / 2 + 1));
+    ops.sqrteq(ops.add(fv_abs_half, ops.pows(p, fv_im_half, 2), ops.pows(q, fv_half, 2)));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
 }
 
 // Plot
 function plotDataUpdate() {
-    var a = fv_half.map(function (x) {
-        return x * Math.cos(10 * t0)
-    });
-    var b = fv_im_half.map(function (x) {
-        return x * Math.sin(10 * t0)
-    });
-    var c = fv_im_half.map(function (x) {
-        return x * Math.cos(10 * t0)
-    });
-    var d = fv_half.map(function (x) {
-        return x * Math.sin(10 * t0)
-    });
-    m = new Array(a.length);
-    n = new Array(c.length);
-    for (var i = 0; i < a.length; i++) {
-        m[i] = a[i] + b[i];
-    }
-    for (var j = 0; j < c.length; j++) {
-        n[j] = c[j] - d[j];
-    }
-    plt0.data[0].x = xv;
-    plt0.data[0].y = yv;
-    plt0.data[1].y = yCont;
+    var a = pool.clone(fv_half);
+    var b = pool.clone(fv_im_half);
+    var c = pool.clone(fv_im_half);
+    var d = pool.clone(fv_half);
+    ops.mulseq(a, Math.cos(10 * t0));
+    ops.mulseq(b, Math.sin(10 * t0));
+    ops.mulseq(c, Math.cos(10 * t0));
+    ops.mulseq(d, Math.sin(10 * t0));
+    ops.addeq(a, b);  // a += b
+    ops.subeq(c, d);  // c -= d
 
-    plt1.data[0].x = xv_half;
-    plt1.data[0].y = m;
-    plt1.data[1].x = xv_half;
-    plt1.data[1].y = n;
-    plt1.data[2].x = xv_half;
-    plt1.data[2].y = fv_abs_half;
+    plt0.data[0].x = unpack(xv);
+    plt0.data[0].y = unpack(yv);
+    plt0.data[1].y = unpack(yCont);
+    plt0.data[2].y = unpack(yApprox);
+
+    plt1.data[0].x = unpack(xv_half);
+    plt1.data[0].y = unpack(a);
+    plt1.data[1].x = unpack(xv_half);
+    plt1.data[1].y = unpack(c);
+    plt1.data[2].x = unpack(xv_half);
+    plt1.data[2].y = unpack(fv_abs_half);
 }
 
 function plotsRedraw() {
@@ -219,8 +206,8 @@ function createPlots() {
 
     var data0 = [
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'scatter',
             mode: 'markers',
             marker: {
@@ -229,15 +216,15 @@ function createPlots() {
             name: 'samples'
         },
         {
-            x: xCont,
-            y: yCont,
+            x: unpack(xCont),
+            y: unpack(yCont),
             type: 'scatter',
             mode: 'lines',
             name: 'continuous'
         },
         {
-            x: xCont,
-            y: yApprox,
+            x: unpack(xCont),
+            y: unpack(yApprox),
             type: 'scatter',
             mode: 'lines',
             name: 'approx'
@@ -246,22 +233,22 @@ function createPlots() {
 
     var data1 = [
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'Real'
         },
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'Imag'
         },
         {
-            x: xv,
-            y: yv,
+            x: unpack(xv),
+            y: unpack(yv),
             type: 'bar',
             mode: 'markers',
             name: 'abs'
@@ -347,7 +334,6 @@ xvUpdate();
 yvUpdate();
 yContUpdate();
 yApproxUpdate();
-FFTUpdate();
 createPlots();
 $('#samplesSliderVal').text(nSample);
 $('#t0SliderVal').text(t0);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,6 +19,7 @@
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/aliasing.css" type="text/css">
 </head>
+
 <body>
 
 <!-- Navigation bar -->
@@ -41,10 +43,13 @@
     <div class="collapse navbar-collapse" id="panels">
         <ul class="nav navbar-nav">
             <li>
-                <a class="nav-link active" href="index.html">Home</a>
+                <a class="nav-link" href="../index.html">Home</a>
             </li>
             <li>
-                <a class="nav-link" href="bloch.html">Bloch theorem</a>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="bloch.html">Bloch</a>
             </li>
         </ul>
     </div>
@@ -65,54 +70,44 @@
                     This is an illustration of <strong>aliasing</strong> in a discrete sample.
                 </p>
                 <p>
-                <p>
                     Recall that for a sample of \( N \) points, \( \mathbf x = [x_0,x_1...x_{N-1}] \), the discrete
                     Fourier transform (DFT) \( \mathbf X \) will also have \( N \) points. The frequencies \( k \),
-                    given in the implicit units \( \Delta\alpha = \frac {2\pi}{Na} \), so \( \alpha_k = k\Delta\alpha
-                    \),
-                    where \( a \) is the spacing of samples \( x \), are on the range
-                    $$
-                    -\frac {N}{2} + 1 \le k \le \frac {N}{2}.
-                    $$
+                    given in the implicit units \( \Delta\alpha = \frac {2\pi}{Na}
+                    \), so \( \alpha_k = k\Delta\alpha \), where \( a \) is the spacing of samples \( x \), are on the
+                    range $$ -\frac {N}{2} + 1 \le k \le \frac {N}{2}. $$
                 </p>
                 <p>
                     These \( N \) DFT frequencies are equivalent to the frequencies contained in the <em>first
-                    Brillouin zone</em>, derived in the context of diffraction:
-                    $$
-                    -\frac {\pi}{a} \le a \le \frac {\pi}{a}.
-                    $$
+                    Brillouin zone</em>, derived in the context of diffraction: $$ -\frac {\pi}{a} \le a \le \frac
+                    {\pi}{a}. $$
                 </p>
                 <p>
                     The only difference here being that we exclude \( k = 0 \) in the BZ and consider the negative
                     Nyquist component.
                 </p>
                 <p>
-                    The highest-frequency component (Nyquist frequency) will have a frequency \( \frac {N}{2} \),
-                    with units of \( \frac {2\pi}{L} = \frac {2\pi}{Na} \) where \( a \) is the (implicit) spacing
-                    between the sample points.
+                    The highest-frequency component (Nyquist frequency) will have a frequency \( \frac {N}{2} \), with
+                    units of \( \frac {2\pi}{L} = \frac {2\pi}{Na} \) where \( a \) is the (implicit) spacing between
+                    the sample points.
                 </p>
                 <p>
-                    We can represent a Fourier component as
-                    $$
-                    x_k = X_ke^{i\alpha_kx}.
-                    $$
+                    We can represent a Fourier component as $$ x_k = X_ke^{i\alpha_kx}. $$
                 </p>
                 <p>
-                    We will examine what happens if we try to sample a signal with a frequency greater than the
-                    Nyquist frequency \( \frac {N}{2} \). Below we show a sample of \( 20 \) points, \( N = 20 \), over
-                    the
-                    range \( x = 0, 1, \ldots \), at frequency \( k \), taking unit amplitude \( X_k = 1 \). The highest
-                    frequencies that this sample can represent are \( k = \pm10 \), or \( k = \pm \frac{N}{2} \) .
-                    Higher
-                    frequencies will be aliased, or undersampled (by not enough sampling points.)
+                    We will examine what happens if we try to sample a signal with a frequency greater than the Nyquist
+                    frequency \( \frac {N}{2} \). Below we show a sample of \( 20 \) points, \( N = 20 \), over the
+                    range \( x = 0, 1, \ldots \), at frequency \( k \), taking
+                    unit amplitude \( X_k = 1 \). The highest frequencies that this sample can represent are \( k =
+                    \pm10 \), or \( k = \pm \frac{N}{2} \) . Higher frequencies will be aliased, or undersampled (by not
+                    enough sampling points.)
                 </p>
                 <p>
                     The slider controls the frequency \( k \) of the cosine wave we try to represent using the discrete
                     samples. The samples represent the wave accurately if we keep \( −10 \le k \le 10 \). However, if we
-                    try to represent a frequency beyond this value, \( \frac{N}{2} \), on the positive or negative
-                    side---so
-                    outside the first BZ--the waveform is represented equally well, and in many case more obviously,
-                    by its "alias", on the range \( -\frac {N}{2} \le k \le \frac {N}{2} \).
+                    try to represent a frequency beyond this value, \(
+                    \frac{N}{2} \), on the positive or negative side---so outside the first BZ--the waveform is
+                    represented equally well, and in many case more obviously, by its "alias", on the range \( -\frac
+                    {N}{2} \le k \le \frac {N}{2} \).
                 </p>
                 <p>
                     The aliasing effect can be seen most clearly for \( k = \pm 19 \). This frequency "aliases" to the
@@ -120,45 +115,35 @@
                 </p>
                 <p>
                     Aliasing is easy to understand mathematically. Consider that we would like to represent a unit
-                    waveform with frequency \( x_{k \pm N} \). We will then have
-                    $$
-                    \begin{align}
-                    x_{k \pm N} &= e^{i \frac{2\pi}{N}j(k \pm N)}, \\
-                    x_{k \pm N} &= e^{i \frac{2\pi}{N}jk \pm i 2\pi j}.
-                    \end{align}
-                    $$
+                    waveform with frequency \( x_{k \pm N} \). We will then have $$ \begin{align} x_{k \pm N} &= e^{i
+                    \frac{2\pi}{N}j(k \pm N)}, \\ x_{k \pm N} &= e^{i \frac{2\pi}{N}jk
+                    \pm i 2\pi j}. \end{align} $$
                 </p>
                 <p>
-                    But since \( j \) is an integer,
-                    $$
-                    \begin{align}
-                    x_{k \pm N} &= e^{i \frac{2\pi}{N}jk}, \\
-                    x_{k \pm N} &= x_k,
-                    \end{align}
-                    $$
-                    i.e., the waveform is exactly the same for frequency \( k \) and frequency \( k+N \). The same
-                    reasoning would hold if we try to represent \( x_{k \pm 2N},x_{k \pm 3N} \), etc.
+                    But since \( j \) is an integer, $$ \begin{align} x_{k \pm N} &= e^{i \frac{2\pi}{N}jk}, \\ x_{k \pm
+                    N} &= x_k, \end{align} $$ i.e., the waveform is exactly the same for frequency \( k \) and frequency
+                    \( k+N \). The same reasoning would hold if we try
+                    to represent \( x_{k \pm 2N},x_{k \pm 3N} \), etc.
                 </p>
                 <p>
                     There are several, related conclusions:
-                <ul>
+                </p>
+                <ul class="inner-ul">
                     <li>
                         The frequency range \( −\frac{N}{2} \le k \le \frac {N}{2} \) (first BZ) is a complete
                         representation of the possible frequencies contained in the signal.
                     </li>
                     <li>
                         Any signal with a higher frequency has a discrete waveform which is completely identical to a
-                        that of a frequency in the first BZ. We can then always shift these frequencies
-                        \( x_k \to x_{k+N} \) to those in the first BZ.
+                        that of a frequency in the first BZ. We can then always shift these frequencies \( x_k \to
+                        x_{k+N} \) to those in the first BZ.
                     </li>
                 </ul>
-                </p>
                 <p>
                     We will see that these second two statements are equivalent to the <strong>Bloch theorem</strong>.
-                    We
-                    can represent all possible electron waves in a solid with the same frequency basis,
-                    \( −\frac{N}{2} \le k \le \frac {N}{2} \), where now \( N \) are the number of formula units in any
-                    direction.
+                    We can represent all possible electron waves in a solid with the same frequency basis, \(
+                    −\frac{N}{2} \le k \le \frac {N}{2} \), where now
+                    \( N \) are the number of formula units in any direction.
                 </p>
             </div>
         </div>
@@ -199,13 +184,16 @@
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.13.1/numjs.js"></script>
 
 <!-- User script -->
 <script type="text/javascript" src="assets/js/aliasing.js"></script>
+
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 </body>
+
 </html>
