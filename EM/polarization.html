@@ -65,7 +65,21 @@
                     </h1>
                 </div>
                 <p>
-
+                    The \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector of an electromagnetic wave
+                    form a plane perpendicular to the direction of wave propagation, i.e., \( \hat{\mathbf{ k }} \).
+                    In the mean time, \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector are also
+                    perpendicular to each other.
+                    Here we assume
+                    $$
+                    \begin{align}
+                    E_x = E &= \sin ( \mathbf{ k } \cdot \mathbf{ z } - \omega t ), \\
+                    B_y = B &= \sin ( \mathbf{ k } \cdot \mathbf{ z } - \omega t + \phi ), \\
+                    \end{align}
+                    $$
+                    i.e., there is a phase difference \( \phi \) between E- and B-field.
+                    If \( \phi = 0 \), the EM wave is called linear-polarized or plane-polarized.
+                    If \( \phi = \pm \pi / 2 \), the EM wave is called circular-polarized,
+                    otherwise it is called elliptic-polarized.
                 </p>
             </div>
         </div>
@@ -107,7 +121,9 @@
 
                         <div class="btn-group" role="group">
                             <button type="button" class="btn btn-default" id="on" onclick="startEvolve()">On</button>
-                            <button type="button" class="btn btn-default" id="off" onclick="clearInterval(nIntervId)">Off</button>
+                            <button type="button" class="btn btn-default" id="off" onclick="clearInterval(nIntervId)">
+                                Off
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -120,7 +136,9 @@
             <div class="col">
                 <h3>Questions</h3>
                 <ol>
-
+                    <li>
+                        Could you use the knowledge of polarization to explain the physical cause of Brewster angle?
+                    </li>
                 </ol>
             </div>
         </div>
