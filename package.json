@@ -1,0 +1,27 @@
+{
+  "name": "Emmbrook",
+  "version": "0.0.1",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "bootstrap-slider": "^9.8.0",
+    "cwise": "^1.0.10",
+    "function-plot": "^1.17.3",
+    "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1",
+    "mathjax-node": "^1.1.0",
+    "mathjs": "^3.14.1",
+    "ndarray": "^1.0.18",
+    "ndarray-fft": "^1.0.3",
+    "ndarray-fill": "^1.0.2",
+    "ndarray-gemm": "^1.0.0",
+    "ndarray-linspace": "^2.0.3",
+    "ndarray-meshgrid": "^1.0.1",
+    "ndarray-ops": "^1.2.2",
+    "ndarray-scratch": "^1.2.0",
+    "ndarray-show": "^2.0.0",
+    "ndarray-unpack": "^1.0.0",
+    "numeric": "^1.2.6",
+    "plotly": "^1.0.6",
+    "underscore": "^1.8.3"
+  }
+}
