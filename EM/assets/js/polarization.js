@@ -158,30 +158,79 @@ function plot() {
     Plotly.redraw(plt1);
 }
 
-
 // Animation
-var t = 0;
-var nIntervId;
+function animatePlot0() {
+    var dt = 2;
+    ops.subs(x, z, dt);
+    ops.sineq(x);
+    ops.adds(y, z, phi - dt);  // y = z - t + phi
+    ops.sineq(y);  // y = sin(y)
+    z = linspace(ndarray([], [nPoints]), dt * speed, 10 * Math.PI + dt * speed);
+    console.log(plt0.data);
 
-function startEvolve() {
-    nIntervId = setInterval(frame, 10);
+    Plotly.animate('plt0',
+        {
+            data: {
+                x: unpack(x),
+                y: unpack(y),
+                z: unpack(z)
+            }
+        },
+        {
+            transition: {
+                duration: 0
+            },
+            frame: {
+                duration: 0,
+                redraw: false
+            }
+        }
+    );
+
+    requestAnimationFrame(animatePlot0);
 }
 
-function frame() {
-    t += 1;
-    updateX();
-    updateY();
-    updateZ();
-    updateR();
-    updateTheta();
-    plot();
+requestAnimationFrame(animatePlot0);
 
-    timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
+function compute() {
+    var dt = 1;
+    var alpha = 10;
+    theta += alpha * dt;
+    var r = 1;
+
 }
 
-function stopEvolve() {
-    clearInterval(nIntervId);
+function animatePlot() {
+    // updateX();
+    // updateY();
+    // updateZ();
+    // updateR();
+    // updateTheta();
+    ops.sineq(x);
+    ops.taneq(y);
+
+    // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
+    Plotly.animate('plt1',
+        {
+            data: [{
+                x: unpack(x),
+                y: unpack(y)
+            }]
+        },
+        {
+            transition: {
+                duration: 0
+            },
+            frame: {
+                duration: 0,
+                redraw: false
+            }
+        });
+
+    requestAnimationFrame(animatePlot);
 }
+
+// requestAnimationFrame(animatePlot);
 
 // Interactive interfaces
 phiSlider.on('change', function () {
@@ -204,11 +253,6 @@ timeSlider.on('change', function () {
     $('#timeSliderVal').text(time);
 });
 
-// $(document).ready(function () {
-//     $('#on').click(startEvolve());
-//     $('#off').click(stopEvolve());
-// });
-
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt0);
@@ -222,4 +266,5 @@ updateY();
 createPlots();
 $('#phiSliderVal').text(phi);
 $('#timeSliderVal').text(time);
-startEvolve();
+
+
