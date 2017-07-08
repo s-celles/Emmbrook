@@ -34,6 +34,66 @@ var theta = time * speed;
 var r; // sqrt(x^2 + y^2)
 
 
+// Interactive interfaces
+phiSlider.on('change', function () {
+    phi = phiSlider.bootstrapSlider('getValue'); // Change "global" value
+    updateY();
+    plot();
+
+    $('#phiSliderVal').text(phi);
+});
+
+timeSlider.on('change', function () {
+    time = timeSlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
+    updateY();
+    updateZ();
+    updateR();
+    updateTheta();
+    plot();
+
+    $('#timeSliderVal').text(time);
+});
+
+BoverASlider.on('change', function () {
+    BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
+    updateY();
+    updateZ();
+    plot();
+
+    $('#BoverASliderVal').text(BoverA);
+});
+
+$('#on').on('click', function startAnimation() {
+    requestAnimationFrame(animatePlot0);
+});
+
+$('#off').on('click', function stopAnimation() {
+    Plotly.animate('plt0', {}, {
+        mode: 'none'
+    });
+});
+
+// Adjust Plotly's plotRatios size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt0);
+    Plotly.Plots.resize(plt1);
+};
+
+
+// Initialize
+updateX();
+updateY();
+createPlots();
+$('#phiSliderVal').text(phi);
+$('#timeSliderVal').text(time);
+$('#BoverASliderVal').text(BoverA);
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////// Static plots ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 // Basic interfaces
 function updateX() {
     /*
@@ -157,7 +217,10 @@ function plot() {
     Plotly.redraw(plt1);
 }
 
-// Animation
+
+///////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Animation /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 function compute() {
     /*
      Update z every frame and simultaneously update x and y.
@@ -212,59 +275,3 @@ function animatePlot1() {
 
     requestAnimationFrame(animatePlot1);
 }
-
-// Interactive interfaces
-phiSlider.on('change', function () {
-    phi = phiSlider.bootstrapSlider('getValue'); // Change "global" value
-    updateY();
-    plot();
-
-    $('#phiSliderVal').text(phi);
-});
-
-timeSlider.on('change', function () {
-    time = timeSlider.bootstrapSlider('getValue'); // Change "global" value
-    updateX();
-    updateY();
-    updateZ();
-    updateR();
-    updateTheta();
-    plot();
-
-    $('#timeSliderVal').text(time);
-});
-
-BoverASlider.on('change', function () {
-    BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
-    updateX();
-    updateY();
-    updateZ();
-    plot();
-
-    $('#BoverASliderVal').text(BoverA);
-});
-
-$('#on').on('click', function startAnimation() {
-    requestAnimationFrame(animatePlot0);
-});
-
-$('#off').on('click', function stopAnimation() {
-    Plotly.animate('plt0', {}, {
-        mode: 'none'
-    });
-});
-
-// Adjust Plotly's plotRatios size responsively according to window motion
-window.onresize = function () {
-    Plotly.Plots.resize(plt0);
-    Plotly.Plots.resize(plt1);
-};
-
-
-// Initialize
-updateX();
-updateY();
-createPlots();
-$('#phiSliderVal').text(phi);
-$('#timeSliderVal').text(time);
-$('#BoverASliderVal').text(BoverA);
