@@ -200,7 +200,7 @@ function stopAnimation() {
 function animatePlot() {
     ops.sineq(x);
     ops.taneq(y);
-
+    1;
     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
     Plotly.animate('plt1', {
         data: [{
