@@ -18,8 +18,10 @@ var unpack = require("ndarray-unpack"); // Converts an ndarray into an array-of-
 // UI variables
 var phiSlider = $('#phi').bootstrapSlider({});
 var timeSlider = $('#time').bootstrapSlider({});
+var BoverASlider = $('#BoverA').bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
 var time = timeSlider.bootstrapSlider('getValue');
+var BoverA = BoverASlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 // Normal variables
@@ -49,6 +51,7 @@ function updateY() {
      */
     ops.adds(y, z, phi - time); // y = z - t + phi
     ops.sineq(y); // y = sin(z - t + phi)
+    ops.mulseq(y, BoverA);
 }
 
 function updateZ() {
@@ -190,9 +193,7 @@ function animatePlot0() {
 }
 
 function animatePlot1() {
-    ops.sineq(x);
-    ops.taneq(y);
-
+    var dt = 0.1;
     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
     Plotly.animate('plt1', {
         data: [{
@@ -211,7 +212,6 @@ function animatePlot1() {
 
     requestAnimationFrame(animatePlot1);
 }
-
 
 // Interactive interfaces
 phiSlider.on('change', function () {
@@ -232,6 +232,16 @@ timeSlider.on('change', function () {
     plot();
 
     $('#timeSliderVal').text(time);
+});
+
+BoverASlider.on('change', function () {
+    BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
+    updateY();
+    updateZ();
+    plot();
+
+    $('#BoverASliderVal').text(BoverA);
 });
 
 $('#on').on('click', function startAnimation() {
@@ -257,3 +267,4 @@ updateY();
 createPlots();
 $('#phiSliderVal').text(phi);
 $('#timeSliderVal').text(time);
+$('#BoverASliderVal').text(BoverA);
