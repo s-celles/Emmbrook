@@ -57,23 +57,21 @@ timeSlider.on('change', function () {
 
 BoverASlider.on('change', function () {
     BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
-    updateX();
     updateY();
-    updateZ();
     plot();
 
     $('#BoverASliderVal').text(BoverA);
 });
 
-$('#on').on('click', function startAnimation() {
-    requestAnimationFrame(animatePlot0);
-});
+// $('#on').on('click', function startAnimation() {
+//     requestAnimationFrame(animatePlot0);
+// });
 
-$('#off').on('click', function stopAnimation() {
-    Plotly.animate('plt0', {}, {
-        mode: 'none'
-    });
-});
+// $('#off').on('click', function stopAnimation() {
+//     Plotly.animate('plt0', {}, {
+//         mode: 'none'
+//     });
+// });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -121,6 +119,13 @@ function updateZ() {
     z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
 }
 
+function updateEx() {
+    /*
+     Update E-field in x direction, it will change if time changes.
+    */
+
+}
+
 function updateR() {
     /*
      r value changes when phase and theta changes.
@@ -135,26 +140,33 @@ function updateTheta() {
 // Plot
 function createPlots() {
     var layout0 = {
-        margin: {
-            t: 50,
-            b: 50
-        },
-        sce: {
+        scene: {
+            margin: {
+                t: 0,
+                b: 0
+            },
+            xaxis: {
+                range: [-1, 1]
+            },
+            yaxis: {
+                range: [-1, 1]
+            },
+            // Set view angle
             camera: {
                 center: {
-                    x: 1,
-                    y: 2,
+                    x: 0,
+                    y: 0,
                     z: 0
                 },
                 eye: {
-                    x: 2,
+                    x: 3,
                     y: 3,
-                    z: 1
+                    z: 2
                 },
                 up: {
-                    x: 1,
+                    x: 0,
                     y: 0,
-                    z: 1
+                    z: 0
                 }
             }
         }
@@ -165,9 +177,11 @@ function createPlots() {
             t: 50,
             b: 50
         },
-        domain: {
-            x: [-1.1, 1.1],
-            y: [-1.1, 1]
+        xaxis: {
+            range: [-1, 1]
+        },
+        yaxis: {
+            range: [-1, 1]
         }
     };
 
@@ -177,7 +191,7 @@ function createPlots() {
         x: unpack(x),
         y: unpack(y),
         z: unpack(z),
-        scene: 'sce'
+        scene: 'scene'
     };
 
     var trace1 = {
@@ -221,57 +235,57 @@ function plot() {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-function compute() {
-    /*
-     Update z every frame and simultaneously update x and y.
-     */
-    var dt = 0.1;
-    ops.subs(x, z, dt);
-    ops.sineq(x);
-    ops.adds(y, z, phi - dt);
-    ops.sineq(y);
-    ops.addseq(z, dt);
-}
+// function compute() {
+//     /*
+//      Update z every frame and simultaneously update x and y.
+//      */
+//     var dt = 0.1;
+//     ops.subs(x, z, dt);
+//     ops.sineq(x);
+//     ops.adds(y, z, phi - dt);
+//     ops.sineq(y);
+//     ops.addseq(z, dt);
+// }
 
-function animatePlot0() {
-    compute();
+// function animatePlot0() {
+//     compute();
 
-    Plotly.animate('plt0', {
-        data: [{
-            x: unpack(x),
-            y: unpack(y),
-            z: unpack(z)
-        }]
-    }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
+//     Plotly.animate('plt0', {
+//         data: [{
+//             x: unpack(x),
+//             y: unpack(y),
+//             z: unpack(z)
+//         }]
+//     }, {
+//         transition: {
+//             duration: 0
+//         },
+//         frame: {
+//             duration: 0,
+//             redraw: false
+//         }
+//     });
 
-    requestAnimationFrame(animatePlot0);
-}
+//     requestAnimationFrame(animatePlot0);
+// }
 
-function animatePlot1() {
-    var dt = 0.1;
-    // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
-    Plotly.animate('plt1', {
-        data: [{
-            x: unpack(x),
-            y: unpack(y)
-        }]
-    }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
+// function animatePlot1() {
+//     var dt = 0.1;
+//     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
+//     Plotly.animate('plt1', {
+//         data: [{
+//             x: unpack(x),
+//             y: unpack(y)
+//         }]
+//     }, {
+//         transition: {
+//             duration: 0
+//         },
+//         frame: {
+//             duration: 0,
+//             redraw: false
+//         }
+//     });
 
-    requestAnimationFrame(animatePlot1);
-}
+//     requestAnimationFrame(animatePlot1);
+// }
