@@ -138,6 +138,7 @@ function updateTheta() {
 // Plot
 function createPlots() {
     var layout0 = {
+        title: '3D view',
         scene: {
             margin: {
                 t: 0,
@@ -153,14 +154,17 @@ function createPlots() {
     };
 
     var layout1 = {
+        title: '2D bird-view',
         margin: {
             t: 50,
             b: 50
         },
         xaxis: {
+            title: 'x',
             range: [-1, 1]
         },
         yaxis: {
+            title: 'y',
             range: [-1, 1]
         }
     };
