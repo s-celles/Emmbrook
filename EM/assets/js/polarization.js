@@ -39,7 +39,7 @@ function updateX() {
      x = sin(k * z - w * t)
      */
     ops.subs(x, z, time); // x = z - t
-    ops.sineq(x);   // x = sin(z - t)
+    ops.sineq(x); // x = sin(z - t)
 }
 
 function updateY() {
@@ -47,8 +47,8 @@ function updateY() {
      y values will change if phase or time change.
      y = sin(k * z - w * t + phi)
      */
-    ops.adds(y, z, phi - time);  // y = z - t + phi
-    ops.sineq(y);  // y = sin(z - t + phi)
+    ops.adds(y, z, phi - time); // y = z - t + phi
+    ops.sineq(y); // y = sin(z - t + phi)
 }
 
 function updateZ() {
@@ -73,27 +73,23 @@ function updateTheta() {
 function createPlots() {
     var layout0 = {
         margin: {
-            t: 0,
-            b: 0
+            t: 50,
+            b: 50
         },
         sce: {
-            domain: {
-                x: [-2, 2],
-                y: [-2, 2]
-            },
             camera: {
                 center: {
-                    x: 0,
-                    y: 0,
+                    x: 1,
+                    y: 2,
                     z: 0
                 },
                 eye: {
                     x: 2,
                     y: 3,
-                    z: 20
+                    z: 1
                 },
                 up: {
-                    x: 0,
+                    x: 1,
                     y: 0,
                     z: 1
                 }
@@ -193,14 +189,10 @@ function animatePlot0() {
     requestAnimationFrame(animatePlot0);
 }
 
-function stopAnimation() {
-    Plotly.animate('plt0', {}, {mode: 'next'});
-}
-
-function animatePlot() {
+function animatePlot1() {
     ops.sineq(x);
     ops.taneq(y);
-    1;
+
     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
     Plotly.animate('plt1', {
         data: [{
@@ -217,10 +209,9 @@ function animatePlot() {
         }
     });
 
-    requestAnimationFrame(animatePlot);
+    requestAnimationFrame(animatePlot1);
 }
 
-// requestAnimationFrame(animatePlot);
 
 // Interactive interfaces
 phiSlider.on('change', function () {
@@ -243,11 +234,15 @@ timeSlider.on('change', function () {
     $('#timeSliderVal').text(time);
 });
 
-// $('#on').on('click', function startAnimation() {
-//     requestAnimationFrame(animatePlot0);
-// });
-//
-// $('#off').on('click', stopAnimation());
+$('#on').on('click', function startAnimation() {
+    requestAnimationFrame(animatePlot0);
+});
+
+$('#off').on('click', function stopAnimation() {
+    Plotly.animate('plt0', {}, {
+        mode: 'none'
+    });
+});
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {

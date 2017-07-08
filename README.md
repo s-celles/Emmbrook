@@ -2,17 +2,17 @@
 
 [TOC]
 
-This is a simulation project for classes MSAE-E4206 and MSAE-E4215, i.e., *E&M* and *Mechanical behavior*, so I name it "EMMB"rook.
-
 Todo:
 - [ ] EM oblique incidence
 - [x] Diffraction
 - [ ] Aliasing
-- [ ] Magnetic domain
 - [x] DFT simulation
 - [ ] Main page
 - [ ] Polarization
 
+---
+
+This is a simulation project for classes MSAE-E4206 and MSAE-E4215, i.e., *E&M* and *Mechanical behavior*, so I name it "EMMB"rook.
 
 This `README` will tell you basically how to use bootstrap and JS in this project. In this file I will write what you need to know to edit these files.
 
@@ -232,7 +232,7 @@ The first is directly include what you want at the end of your HTML file like th
 
 This will load `Plotly` into your namespace. 
 
-You can find most CDN link for your JS libraries [here](https://cdnjs.com), just type in the library name and copy the link.
+You can find most CDN link for your JS libraries [here](https://cdnjs.com) or [here](https://unpkg.org/), just type in the library name and copy the link.
 
 ### npm + browserify
 

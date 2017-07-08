@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,24 +10,23 @@
     <title>EM polarization</title>
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
 
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/polarization.css" type="text/css">
 </head>
+
 <body>
 
-<!-- Navigation bar -->
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
-                    aria-expanded="false">
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels" aria-expanded="false">
                 <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
                 <span class="sr-only">Toggle navigation</span>
                 <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
@@ -34,132 +34,121 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="panels">
-        <ul class="nav navbar-nav">
-            <li>
-                <a class="nav-link" href="../index.html">Home</a>
-            </li>
-            <li>
-                <a class="nav-link active" href="index.html">Main page</a>
-            </li>
-            <li>
-                <a class="nav-link" href="oblique.html">Oblique incidence</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="panels">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a class="nav-link" href="../index.html">Home</a>
+                </li>
+                <li>
+                    <a class="nav-link active" href="index.html">Main page</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="oblique.html">Oblique incidence</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
 
-<section>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <!-- Heading text-->
-                <div class="page-header">
-                    <h1>
-                        EM polarization
-                    </h1>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <!-- Heading text-->
+                    <div class="page-header">
+                        <h1>
+                            EM polarization
+                        </h1>
+                    </div>
+                    <p>
+                        The \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector of an electromagnetic wave form a plane perpendicular
+                        to the direction of wave propagation, i.e., \( \hat{\mathbf{ k }} \). In the mean time, \( \mathbf{E}
+                        \) field vector and \( \mathbf{B} \) field vector are also perpendicular to each other. Here we assume
+                        $$ \begin{align} E_x = E &= \sin ( \mathbf{ k } \cdot \mathbf{ z } - \omega t ), \\ B_y = B &= \sin
+                        ( \mathbf{ k } \cdot \mathbf{ z } - \omega t + \phi ), \\ \end{align} $$ i.e., there is a phase difference
+                        \( \phi \) between E- and B-field. If \( \phi = 0 \), the EM wave is called linear-polarized or plane-polarized.
+                        If \( \phi = \pm \pi / 2 \), the EM wave is called circular-polarized, otherwise it is called elliptic-polarized.
+                    </p>
                 </div>
-                <p>
-                    The \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector of an electromagnetic wave
-                    form a plane perpendicular to the direction of wave propagation, i.e., \( \hat{\mathbf{ k }} \).
-                    In the mean time, \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector are also
-                    perpendicular to each other.
-                    Here we assume
-                    $$
-                    \begin{align}
-                    E_x = E &= \sin ( \mathbf{ k } \cdot \mathbf{ z } - \omega t ), \\
-                    B_y = B &= \sin ( \mathbf{ k } \cdot \mathbf{ z } - \omega t + \phi ), \\
-                    \end{align}
-                    $$
-                    i.e., there is a phase difference \( \phi \) between E- and B-field.
-                    If \( \phi = 0 \), the EM wave is called linear-polarized or plane-polarized.
-                    If \( \phi = \pm \pi / 2 \), the EM wave is called circular-polarized,
-                    otherwise it is called elliptic-polarized.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- The simulator -->
-    <div class="container" id="app-div">
-        <h4>
-            Polarization simulator
-        </h4>
-
-        <div class="row" id="plots">
-            <div class="col-sm-6">
-                <div id="plt0" class="plot"></div>
-            </div>
-            <div class="col-sm-6">
-                <div id="plt1" class="plot"></div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col" id="control-panel">
-                <div id="sliders">
-                    <!-- Slide bars -->
-                    <div class="row">
-                        <div class="col slider-row">
-                            <label for="phi" class="slideLables">\( \phi \):</label>
-                            <span id="phiSliderVal" class="sliderVal"></span>
-                            <input id="phi" data-slider-min="0" data-slider-max="3.14" data-slider-step="0.01"
-                                   data-slider-value="0">
-                        </div>
+        <!-- The simulator -->
+        <div class="container" id="app-div">
+            <h4>
+                Polarization simulator
+            </h4>
 
-                        <div class="col slider-row">
-                            <label for="time" class="slideLables">\( t \):</label>
-                            <span id="timeSliderVal" class="sliderVal"></span>
-                            <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.01"
-                                   data-slider-value="0">
-                        </div>
+            <div class="row" id="plots">
+                <div class="col-sm-6">
+                    <div id="plt0" class="plot"></div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="plt1" class="plot"></div>
+                </div>
+            </div>
 
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" id="on" onclick="requestAnimationFrame(animatePlot0);">On</button>
-                            <button type="button" class="btn btn-default" id="off">
+            <div class="row">
+                <div class="col" id="control-panel">
+                    <div id="sliders">
+                        <!-- Slide bars -->
+                        <div class="row">
+                            <div class="col slider-row">
+                                <label for="phi" class="slideLables">\( \phi \):</label>
+                                <span id="phiSliderVal" class="sliderVal"></span>
+                                <input id="phi" data-slider-min="0" data-slider-max="3.14" data-slider-step="0.01" data-slider-value="0">
+                            </div>
+
+                            <div class="col slider-row">
+                                <label for="time" class="slideLables">\( t \):</label>
+                                <span id="timeSliderVal" class="sliderVal"></span>
+                                <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.01" data-slider-value="0">
+                            </div>
+
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default" id="on">On</button>
+                                <button type="button" class="btn btn-default" id="off">
                                 Off
                             </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h3>Questions</h3>
-                <ol>
-                    <li>
-                        Could you use the knowledge of polarization to explain the physical cause of Brewster angle?
-                    </li>
-                </ol>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3>Questions</h3>
+                    <ol>
+                        <li>
+                            Could you use the knowledge of polarization to explain the physical cause of Brewster angle?
+                        </li>
+                    </ol>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<!-- User script -->
-<script type="text/javascript" src="assets/js/polarization.bundle.js"></script>
+    <!-- User script -->
+    <script type="text/javascript" src="assets/js/polarization.bundle.js"></script>
 
-<!-- MathJax -->
-<script type="text/javascript" async
-        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
-</script>
+    <!-- MathJax -->
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
 </body>
+
 </html>
