@@ -12,6 +12,7 @@ var linspace = require('ndarray-linspace'); // Fill an ndarray with equally spac
 var ndarray = require("ndarray"); // Modular multidimensional arrays for JavaScript.
 var ops = require("ndarray-ops"); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
 var unpack = require("ndarray-unpack"); // Converts an ndarray into an array-of-native-arrays.
+var pool = require("ndarray-scratch"); // A simple wrapper for typedarray-pool.
 
 
 // Initialize variables
@@ -37,7 +38,9 @@ var r; // sqrt(x^2 + y^2)
 // Interactive interfaces
 phiSlider.on('change', function () {
     phi = phiSlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
     updateY();
+    updateZ();
     plot();
 
     $('#phiSliderVal').text(phi);
@@ -48,8 +51,8 @@ timeSlider.on('change', function () {
     updateX();
     updateY();
     updateZ();
-    updateR();
-    updateTheta();
+    // updateR();
+    // updateTheta();
     plot();
 
     $('#timeSliderVal').text(time);
@@ -57,21 +60,23 @@ timeSlider.on('change', function () {
 
 BoverASlider.on('change', function () {
     BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
     updateY();
+    updateZ();
     plot();
 
     $('#BoverASliderVal').text(BoverA);
 });
 
-// $('#on').on('click', function startAnimation() {
-//     requestAnimationFrame(animatePlot0);
-// });
+$('#on').on('click', function startAnimation() {
+    requestAnimationFrame(animatePlot0);
+});
 
-// $('#off').on('click', function stopAnimation() {
-//     Plotly.animate('plt0', {}, {
-//         mode: 'none'
-//     });
-// });
+$('#off').on('click', function stopAnimation() {
+    Plotly.animate('plt0', {}, {
+        mode: 'none'
+    });
+});
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -119,13 +124,6 @@ function updateZ() {
     z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
 }
 
-function updateEx() {
-    /*
-     Update E-field in x direction, it will change if time changes.
-    */
-
-}
-
 function updateR() {
     /*
      r value changes when phase and theta changes.
@@ -150,24 +148,6 @@ function createPlots() {
             },
             yaxis: {
                 range: [-1, 1]
-            },
-            // Set view angle
-            camera: {
-                center: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                eye: {
-                    x: 3,
-                    y: 3,
-                    z: 2
-                },
-                up: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                }
             }
         }
     };
@@ -191,10 +171,29 @@ function createPlots() {
         x: unpack(x),
         y: unpack(y),
         z: unpack(z),
+        name: 'E+B',
         scene: 'scene'
     };
 
     var trace1 = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: unpack(x),
+        y: unpack(pool.zeros([nPoints])),
+        z: unpack(z),
+        name: 'E-field'
+    }
+
+    var trace2 = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: unpack(pool.zeros([nPoints])),
+        y: unpack(y),
+        z: unpack(z),
+        name: 'B-field'
+    }
+
+    var trace3 = {
         mode: 'lines',
         type: 'scatter',
         x: unpack(x),
@@ -202,7 +201,7 @@ function createPlots() {
         name: 'polarization'
     };
 
-    var trace2 = {
+    var trace4 = {
         mode: 'lines',
         type: 'scatter',
         x: [0, r * Math.cos(theta)],
@@ -210,8 +209,8 @@ function createPlots() {
         name: 'Jones vector'
     };
 
-    var data0 = [trace0];
-    var data1 = [trace1, trace2];
+    var data0 = [trace0, trace1, trace2];
+    var data1 = [trace3, trace4];
 
     Plotly.newPlot('plt0', data0, layout0);
     Plotly.newPlot('plt1', data1, layout1);
@@ -221,6 +220,10 @@ function plot() {
     plt0.data[0].x = unpack(x);
     plt0.data[0].y = unpack(y);
     plt0.data[0].z = unpack(z);
+    plt0.data[1].x = unpack(x);
+    plt0.data[1].z = unpack(z);
+    plt0.data[2].y = unpack(y);
+    plt0.data[2].z = unpack(z);
 
     plt1.data[0].x = unpack(x);
     plt1.data[0].y = unpack(y);
@@ -235,57 +238,68 @@ function plot() {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-// function compute() {
-//     /*
-//      Update z every frame and simultaneously update x and y.
-//      */
-//     var dt = 0.1;
-//     ops.subs(x, z, dt);
-//     ops.sineq(x);
-//     ops.adds(y, z, phi - dt);
-//     ops.sineq(y);
-//     ops.addseq(z, dt);
-// }
+function compute() {
+    /*
+     Update z every frame and simultaneously update x and y.
+     */
+    var dt = 0.1;
+    ops.subs(x, z, dt);
+    ops.sineq(x);
+    ops.adds(y, z, phi - dt);
+    ops.sineq(y);
+    ops.addseq(z, dt);
+}
 
-// function animatePlot0() {
-//     compute();
+function animatePlot0() {
+    compute();
 
-//     Plotly.animate('plt0', {
-//         data: [{
-//             x: unpack(x),
-//             y: unpack(y),
-//             z: unpack(z)
-//         }]
-//     }, {
-//         transition: {
-//             duration: 0
-//         },
-//         frame: {
-//             duration: 0,
-//             redraw: false
-//         }
-//     });
+    Plotly.animate('plt0', {
+        data: [{
+                x: unpack(x),
+                y: unpack(y),
+                z: unpack(z)
+            },
+            {
+                x: unpack(x),
+                y: unpack(pool.zeros([nPoints])),
+                z: unpack(z)
+            },
+            {
+                x: unpack(pool.zeros([nPoints])),
+                y: unpack(y),
+                z: unpack(z)
+            }
+        ]
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
 
-//     requestAnimationFrame(animatePlot0);
-// }
+    requestAnimationFrame(animatePlot0);
+}
 
-// function animatePlot1() {
-//     var dt = 0.1;
-//     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
-//     Plotly.animate('plt1', {
-//         data: [{
-//             x: unpack(x),
-//             y: unpack(y)
-//         }]
-//     }, {
-//         transition: {
-//             duration: 0
-//         },
-//         frame: {
-//             duration: 0,
-//             redraw: false
-//         }
-//     });
+function animatePlot1() {
+    var dt = 0.1;
+    // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
+    Plotly.animate('plt1', {
+        data: [{
+            x: unpack(x),
+            y: unpack(y)
+        }]
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
 
-//     requestAnimationFrame(animatePlot1);
-// }
+    requestAnimationFrame(animatePlot1);
+}
