@@ -8,10 +8,10 @@
 /* jshint -W097 */
 "use strict";
 // Import libraries
-var linspace = require('ndarray-linspace');  // Fill an ndarray with equally spaced values.
-var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
-var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
-var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
+var linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values.
+var ndarray = require("ndarray"); // Modular multidimensional arrays for JavaScript.
+var ops = require("ndarray-ops"); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var unpack = require("ndarray-unpack"); // Converts an ndarray into an array-of-native-arrays.
 
 
 // Initialize variables
@@ -27,9 +27,9 @@ var nPoints = 200;
 var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
-var speed = 10;  // Wave speed
+var speed = 10; // Wave speed
 var theta = time * speed;
-var r;  // sqrt(x^2 + y^2)
+var r; // sqrt(x^2 + y^2)
 
 
 // Basic interfaces
@@ -38,8 +38,8 @@ function updateX() {
      x values will change if time changes.
      x = sin(k * z - w * t)
      */
-    ops.subs(x, z, time);  // x = z - t
-    ops.sineq(x);  // x = sin(x)
+    ops.subs(x, z, time); // x = z - t
+    ops.sineq(x); // x = sin(x)
 }
 
 function updateY() {
@@ -47,8 +47,8 @@ function updateY() {
      y values will change if phase or time change.
      y = sin(k * z - w * t + phi)
      */
-    ops.adds(y, z, phi - time);  // y = z - t + phi
-    ops.sineq(y);  // y = sin(y)
+    ops.adds(y, z, phi - time); // y = z - t + phi
+    ops.sineq(y); // y = sin(y)
 }
 
 function updateZ() {
@@ -159,46 +159,39 @@ function plot() {
 }
 
 // Animation
-function animatePlot0() {
-    var dt = 2;
+function compute() {
+    var dt = 4;
     ops.subs(x, z, dt);
     ops.sineq(x);
-    ops.adds(y, z, phi - dt);  // y = z - t + phi
-    ops.sineq(y);  // y = sin(y)
+    ops.adds(y, z, phi - dt); // y = z - t + phi
+    ops.sineq(y); // y = sin(y)
     z = linspace(ndarray([], [nPoints]), dt * speed, 10 * Math.PI + dt * speed);
-    console.log(plt0.data);
+    console.log(unpack(x)[2])
+}
 
-    Plotly.animate('plt0',
-        {
-            data: {
-                x: unpack(x),
-                y: unpack(y),
-                z: unpack(z)
-            }
+function animatePlot0() {
+    compute();
+
+    Plotly.animate('plt0', {
+        data: [{
+            x: unpack(x),
+            y: unpack(y),
+            z: unpack(z)
+        }]
+    }, {
+        transition: {
+            duration: 0
         },
-        {
-            transition: {
-                duration: 0
-            },
-            frame: {
-                duration: 0,
-                redraw: false
-            }
+        frame: {
+            duration: 0,
+            redraw: false
         }
-    );
+    });
 
     requestAnimationFrame(animatePlot0);
 }
 
 requestAnimationFrame(animatePlot0);
-
-function compute() {
-    var dt = 1;
-    var alpha = 10;
-    theta += alpha * dt;
-    var r = 1;
-
-}
 
 function animatePlot() {
     // updateX();
@@ -210,22 +203,20 @@ function animatePlot() {
     ops.taneq(y);
 
     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
-    Plotly.animate('plt1',
-        {
-            data: [{
-                x: unpack(x),
-                y: unpack(y)
-            }]
+    Plotly.animate('plt1', {
+        data: [{
+            x: unpack(x),
+            y: unpack(y)
+        }]
+    }, {
+        transition: {
+            duration: 0
         },
-        {
-            transition: {
-                duration: 0
-            },
-            frame: {
-                duration: 0,
-                redraw: false
-            }
-        });
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
 
     requestAnimationFrame(animatePlot);
 }
@@ -234,7 +225,7 @@ function animatePlot() {
 
 // Interactive interfaces
 phiSlider.on('change', function () {
-    phi = phiSlider.bootstrapSlider('getValue');  // Change "global" value
+    phi = phiSlider.bootstrapSlider('getValue'); // Change "global" value
     updateY();
     plot();
 
@@ -242,7 +233,7 @@ phiSlider.on('change', function () {
 });
 
 timeSlider.on('change', function () {
-    time = timeSlider.bootstrapSlider('getValue');  // Change "global" value
+    time = timeSlider.bootstrapSlider('getValue'); // Change "global" value
     updateX();
     updateY();
     updateZ();
@@ -266,5 +257,3 @@ updateY();
 createPlots();
 $('#phiSliderVal').text(phi);
 $('#timeSliderVal').text(time);
-
-
