@@ -24,7 +24,7 @@ var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 // Normal variables
 var nPoints = 200;
-var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
+var z = linspace(ndarray([], [nPoints]), 0, 8 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
 var speed = 10; // Wave speed
@@ -39,7 +39,7 @@ function updateX() {
      x = sin(k * z - w * t)
      */
     ops.subs(x, z, time); // x = z - t
-    ops.sineq(x); // x = sin(x)
+    ops.sineq(x);   // x = sin(z - t)
 }
 
 function updateY() {
@@ -47,8 +47,8 @@ function updateY() {
      y values will change if phase or time change.
      y = sin(k * z - w * t + phi)
      */
-    ops.adds(y, z, phi - time); // y = z - t + phi
-    ops.sineq(y); // y = sin(y)
+    ops.adds(y, z, phi - time);  // y = z - t + phi
+    ops.sineq(y);  // y = sin(z - t + phi)
 }
 
 function updateZ() {
@@ -160,13 +160,15 @@ function plot() {
 
 // Animation
 function compute() {
-    var dt = 4;
+    /*
+     Update z every frame and simultaneously update x and y.
+     */
+    var dt = 0.1;
     ops.subs(x, z, dt);
     ops.sineq(x);
-    ops.adds(y, z, phi - dt); // y = z - t + phi
-    ops.sineq(y); // y = sin(y)
-    z = linspace(ndarray([], [nPoints]), dt * speed, 10 * Math.PI + dt * speed);
-    console.log(unpack(x)[2])
+    ops.adds(y, z, phi - dt);
+    ops.sineq(y);
+    ops.addseq(z, dt);
 }
 
 function animatePlot0() {
@@ -191,14 +193,11 @@ function animatePlot0() {
     requestAnimationFrame(animatePlot0);
 }
 
-requestAnimationFrame(animatePlot0);
+function stopAnimation() {
+    Plotly.animate('plt0', {}, {mode: 'next'});
+}
 
 function animatePlot() {
-    // updateX();
-    // updateY();
-    // updateZ();
-    // updateR();
-    // updateTheta();
     ops.sineq(x);
     ops.taneq(y);
 
@@ -243,6 +242,12 @@ timeSlider.on('change', function () {
 
     $('#timeSliderVal').text(time);
 });
+
+// $('#on').on('click', function startAnimation() {
+//     requestAnimationFrame(animatePlot0);
+// });
+//
+// $('#off').on('click', stopAnimation());
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
