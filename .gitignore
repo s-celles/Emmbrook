@@ -284,6 +284,7 @@ package-lock.json
 *.css.map
 
 .idea/
+.vscode/
 
 # browserify file
 *.bundle.js
