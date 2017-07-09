@@ -30,8 +30,6 @@ var z = linspace(ndarray([], [nPoints]), 0, 8 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
 var speed = 10; // Wave speed
-var theta = time * speed;
-var r; // sqrt(x^2 + y^2)
 
 
 // Interactive interfaces
@@ -123,16 +121,6 @@ function updateZ() {
     z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
 }
 
-function updateR() {
-    /*
-     r value changes when phase and theta changes.
-     */
-    r = Math.sqrt(Math.pow(Math.sin(theta), 2) + Math.pow(Math.sin(theta + phi), 2));
-}
-
-function updateTheta() {
-    theta = time * speed;
-}
 
 // Plot
 function createPlots() {
@@ -203,14 +191,6 @@ function createPlots() {
         y: unpack(y)
     };
 
-    // var trace4 = {
-    //     mode: 'lines',
-    //     type: 'scatter',
-    //     x: [0, r * Math.cos(theta)],
-    //     y: [0, r * Math.sin(theta)],
-    //     name: 'Jones vector'
-    // };
-
     var data0 = [trace0, trace1, trace2];
     var data1 = [trace3];
 
@@ -229,8 +209,6 @@ function plot() {
 
     plt1.data[0].x = unpack(x);
     plt1.data[0].y = unpack(y);
-    // plt1.data[1].x = [0, r * Math.cos(theta)];
-    // plt1.data[1].y = [0, r * Math.sin(theta)];
 
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
