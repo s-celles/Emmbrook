@@ -5,7 +5,6 @@
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main part ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-/* jshint -W097 */
 "use strict";
 // Import libraries
 var linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values.
@@ -186,7 +185,7 @@ function createPlots() {
         y: unpack(pool.zeros([nPoints])),
         z: unpack(z),
         name: 'Ex'
-    }
+    };
 
     var trace2 = {
         mode: 'lines',
@@ -195,7 +194,7 @@ function createPlots() {
         y: unpack(y),
         z: unpack(z),
         name: 'Ey'
-    }
+    };
 
     var trace3 = {
         mode: 'lines',
@@ -261,33 +260,29 @@ function animatePlot0() {
             x: unpack(x),
             y: unpack(y),
             z: unpack(z)
-        },
-        {
+        }, {
             x: unpack(x),
             y: unpack(pool.zeros([nPoints])),
             z: unpack(z)
-        },
-        {
+        }, {
             x: unpack(pool.zeros([nPoints])),
             y: unpack(y),
             z: unpack(z)
-        }
-        ]
+        }]
     }, {
-            transition: {
-                duration: 0
-            },
-            frame: {
-                duration: 0,
-                redraw: false
-            }
-        });
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
 
     requestAnimationFrame(animatePlot0);
 }
 
 function animatePlot1() {
-    var dt = 0.1;
     // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
     Plotly.animate('plt1', {
         data: [{
@@ -295,14 +290,14 @@ function animatePlot1() {
             y: unpack(y)
         }]
     }, {
-            transition: {
-                duration: 0
-            },
-            frame: {
-                duration: 0,
-                redraw: false
-            }
-        });
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
 
     requestAnimationFrame(animatePlot1);
 }

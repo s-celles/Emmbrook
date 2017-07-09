@@ -265,8 +265,7 @@ function createRatioPlot() {
         }
     };
 
-    var data = [
-        {
+    var data = [{
             x: thetaIList,
             y: reflectRatioList,
             type: 'scatter',
