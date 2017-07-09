@@ -24,12 +24,17 @@ var time = timeSlider.bootstrapSlider('getValue');
 var BoverA = BoverASlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+// Start and stop animation
+var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+var reqId; // Cancels an animation frame request previously scheduled through a call to window.requestAnimationFrame().
 // Normal variables
 var nPoints = 200;
 var z = linspace(ndarray([], [nPoints]), 0, 8 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
-var speed = 10; // Wave speed
+var speed = 1; // Wave speed
 
 
 // Interactive interfaces
@@ -48,8 +53,6 @@ timeSlider.on('change', function () {
     updateX();
     updateY();
     updateZ();
-    // updateR();
-    // updateTheta();
     plot();
 
     $('#timeSliderVal').text(time);
@@ -66,13 +69,11 @@ BoverASlider.on('change', function () {
 });
 
 $('#on').on('click', function startAnimation() {
-    requestAnimationFrame(animatePlot0);
+    reqId = requestAnimationFrame(animatePlot0);
 });
 
 $('#off').on('click', function stopAnimation() {
-    Plotly.animate('plt0', {}, {
-        mode: 'none'
-    });
+    cancelAnimationFrame(reqId);
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
@@ -222,11 +223,12 @@ function compute() {
     /*
      Update z every frame and simultaneously update x and y.
      */
-    var dt = 0.1;
+    var dt = 0.05;
     ops.subs(x, z, dt);
     ops.sineq(x);
     ops.adds(y, z, phi - dt);
     ops.sineq(y);
+    ops.mulseq(y, BoverA);
     ops.addseq(z, dt);
 }
 
@@ -257,25 +259,5 @@ function animatePlot0() {
         }
     });
 
-    requestAnimationFrame(animatePlot0);
-}
-
-function animatePlot1() {
-    // timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
-    Plotly.animate('plt1', {
-        data: [{
-            x: unpack(x),
-            y: unpack(y)
-        }]
-    }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
-
-    requestAnimationFrame(animatePlot1);
+    reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
 }
