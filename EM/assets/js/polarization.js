@@ -175,7 +175,7 @@ function createPlots() {
         x: unpack(x),
         y: unpack(y),
         z: unpack(z),
-        name: 'E+B',
+        name: 'E',
         scene: 'scene'
     };
 
@@ -185,7 +185,7 @@ function createPlots() {
         x: unpack(x),
         y: unpack(pool.zeros([nPoints])),
         z: unpack(z),
-        name: 'E-field'
+        name: 'Ex'
     }
 
     var trace2 = {
@@ -194,27 +194,26 @@ function createPlots() {
         x: unpack(pool.zeros([nPoints])),
         y: unpack(y),
         z: unpack(z),
-        name: 'B-field'
+        name: 'Ey'
     }
 
     var trace3 = {
         mode: 'lines',
         type: 'scatter',
         x: unpack(x),
-        y: unpack(y),
-        name: 'polarization'
+        y: unpack(y)
     };
 
-    var trace4 = {
-        mode: 'lines',
-        type: 'scatter',
-        x: [0, r * Math.cos(theta)],
-        y: [0, r * Math.sin(theta)],
-        name: 'Jones vector'
-    };
+    // var trace4 = {
+    //     mode: 'lines',
+    //     type: 'scatter',
+    //     x: [0, r * Math.cos(theta)],
+    //     y: [0, r * Math.sin(theta)],
+    //     name: 'Jones vector'
+    // };
 
     var data0 = [trace0, trace1, trace2];
-    var data1 = [trace3, trace4];
+    var data1 = [trace3];
 
     Plotly.newPlot('plt0', data0, layout0);
     Plotly.newPlot('plt1', data1, layout1);
@@ -231,8 +230,8 @@ function plot() {
 
     plt1.data[0].x = unpack(x);
     plt1.data[0].y = unpack(y);
-    plt1.data[1].x = [0, r * Math.cos(theta)];
-    plt1.data[1].y = [0, r * Math.sin(theta)];
+    // plt1.data[1].x = [0, r * Math.cos(theta)];
+    // plt1.data[1].y = [0, r * Math.sin(theta)];
 
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
@@ -259,30 +258,30 @@ function animatePlot0() {
 
     Plotly.animate('plt0', {
         data: [{
-                x: unpack(x),
-                y: unpack(y),
-                z: unpack(z)
-            },
-            {
-                x: unpack(x),
-                y: unpack(pool.zeros([nPoints])),
-                z: unpack(z)
-            },
-            {
-                x: unpack(pool.zeros([nPoints])),
-                y: unpack(y),
-                z: unpack(z)
-            }
+            x: unpack(x),
+            y: unpack(y),
+            z: unpack(z)
+        },
+        {
+            x: unpack(x),
+            y: unpack(pool.zeros([nPoints])),
+            z: unpack(z)
+        },
+        {
+            x: unpack(pool.zeros([nPoints])),
+            y: unpack(y),
+            z: unpack(z)
+        }
         ]
     }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
+            transition: {
+                duration: 0
+            },
+            frame: {
+                duration: 0,
+                redraw: false
+            }
+        });
 
     requestAnimationFrame(animatePlot0);
 }
@@ -296,14 +295,14 @@ function animatePlot1() {
             y: unpack(y)
         }]
     }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
+            transition: {
+                duration: 0
+            },
+            frame: {
+                duration: 0,
+                redraw: false
+            }
+        });
 
     requestAnimationFrame(animatePlot1);
 }
