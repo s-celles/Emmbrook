@@ -8,7 +8,7 @@ Todo:
 - [ ] Aliasing
 - [x] DFT simulation
 - [ ] Main page
-- [ ] Polarization
+- [x] Polarization
 
 ---
 
