@@ -68,13 +68,19 @@ BoverASlider.on('change', function () {
     $('#BoverASliderVal').text(BoverA);
 });
 
-$('#on').on('click', function startAnimation() {
-    reqId = requestAnimationFrame(animatePlot0);
-});
-
-$('#off').on('click', function stopAnimation() {
-    cancelAnimationFrame(reqId);
-});
+var isAnimationOff = true; // No animation as default
+$('#animate').click(function () {
+    var $this = $(this);
+    if (isAnimationOff) { // If no animation, a click starts it.
+        isAnimationOff = false;
+        $this.text('Off');
+        reqId = requestAnimationFrame(animatePlot0); // Start animation
+    } else { // If is already in animation, a click stop it.
+        isAnimationOff = true;
+        $this.text('On');
+        cancelAnimationFrame(reqId); // Stop animation
+    }
+})
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {

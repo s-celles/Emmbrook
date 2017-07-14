@@ -38,6 +38,9 @@
   background-image: linear-gradient(to bottom, #e5e5e5 0, white 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
 
+.btn-default {
+  display: inline-block; }
+
 section {
   margin-bottom: 30px;
   padding-top: 30px; }
