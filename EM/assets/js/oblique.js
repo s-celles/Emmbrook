@@ -71,120 +71,6 @@ window.onresize = function () {
 
 
 ///////////////////////////////////////////////////////////////////////////
-//////////////////// EM oblique incidence on media ////////////////////////
-///////////////////////////////////////////////////////////////////////////
-var yCoord = numeric.linspace(0, 5, 250);
-var zCoord = numeric.linspace(0, 5, 250);
-var incidentSlope;
-var reflectSlope;
-var transmitSlope;
-
-
-function kr(xx, yy, zz) {
-    /*
-     Wave vector times position vector.
-     */
-    var metricTensor = math.matrix([
-        [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
-        [0, 1, 0],
-        [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
-    ]);
-    return math.dot([1, 1, 1], math.multiply(metricTensor, [xx, yy, zz]));
-}
-
-function updateIncidentAmplitude() {
-    /*
-     The incident E-field amplitude changes with x, y, z spatial coordinates, and thetaI.
-     */
-    var inciamp = [];
-    for (var i = 0; i < yCoord.length; i++) {
-        inciamp[i] = [];
-        for (var j = 0; j < zCoord.length; j++) {
-            inciamp[i][j] = kr(zCoord[j] * incidentSlope, yCoord[i], zCoord[j]);
-        }
-    }
-
-    return inciamp;
-}
-
-function updateTransmitAmplitude() {
-    /*
-     The transmissive E-field amplitude changes with x, y, z spatial coordinates, n1, n2 and thetaI.
-     */
-    var transamp = [];
-    for (var i = 0; i < yCoord.length; i++) {
-        transamp[i] = [];
-        for (var j = 0; j < zCoord.length; j++) {
-            transamp[i][j] = kr(zCoord[j] * transmitSlope, yCoord[i], zCoord[j]);
-        }
-    }
-
-    return transamp;
-}
-
-function updateSlopes() {
-    /*
-     Update incident/reflective/transmitted light slopes according to slider motion.
-     Those change when thetaI, n1, and n2 change.
-     */
-    var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmission angle
-    incidentSlope = -Math.tan(thetaI);
-    reflectSlope = Math.tan(thetaI);
-    transmitSlope = -Math.tan(thetaT);
-}
-
-
-// Plot
-function plotHeatmap() {
-    plt0.data[0].z = updateIncidentAmplitude();
-    plt0.data[1].z = updateTransmitAmplitude();
-
-    Plotly.redraw(plt0);
-}
-
-function createHeatmap() {
-    var upper = {
-        x: yCoord,
-        y: zCoord,
-        z: updateIncidentAmplitude(),
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: -2,
-        zmax: 10
-    };
-
-    var lower = {
-        x: yCoord,
-        y: zCoord,
-        z: updateTransmitAmplitude(),
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: -2,
-        zmax: 10
-    };
-
-    var data = [upper, lower];
-
-    var layout = {
-        title: 'E filed amplitude',
-        yaxis: {
-            domain: [0.6, 1]
-        },
-        yaxis2: {
-            domain: [0, 0.4]
-        },
-        xaxis2: {
-            anchor: 'y2'
-        }
-    };
-
-    Plotly.newPlot('plt0', data, layout);
-}
-
-
-///////////////////////////////////////////////////////////////////////////
 ////////////////// Reflection and transmission ratios /////////////////////
 ///////////////////////////////////////////////////////////////////////////
 var reflectRatioList, transmitRatioList;
@@ -296,6 +182,122 @@ function createRatioPlot() {
     ];
 
     Plotly.newPlot(plt1, data, layout);
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+//////////////////// EM oblique incidence on media ////////////////////////
+///////////////////////////////////////////////////////////////////////////
+var yCoord = numeric.linspace(0, 5, 250);
+var zCoord = numeric.linspace(0, 5, 250);
+var incidentSlope;
+var reflectSlope;
+var transmitSlope;
+
+
+function kr(xx, yy, zz) {
+    /*
+     Wave vector times position vector. Input Cartesian coordinates xx, yy, and zz,
+     then function will return scalar value of $\mathbf{k} \cdot \mathbf{r}$, where
+     $\mathbf{r} = (xx, yy, zz)$.
+     */
+    var metricTensor = math.matrix([
+        [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
+        [0, 1, 0],
+        [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
+    ]);
+    return math.dot([1, 0, 1], math.multiply(metricTensor, [xx, yy, zz]));
+}
+
+function updateIncidentAmplitude() {
+    /*
+     The incident E-field amplitude changes with x, y, z spatial coordinates, and thetaI.
+     */
+    var inciamp = [];
+    for (var i = 0; i < yCoord.length; i++) {
+        inciamp[i] = [];
+        for (var j = 0; j < zCoord.length; j++) {
+            inciamp[i][j] = kr(zCoord[j] * incidentSlope, yCoord[i], zCoord[j]);
+        }
+    }
+
+    return inciamp;
+}
+
+function updateTransmitAmplitude() {
+    /*
+     The transmissive E-field amplitude changes with x, y, z spatial coordinates, n1, n2 and thetaI.
+     */
+    var transamp = [];
+    for (var i = 0; i < yCoord.length; i++) {
+        transamp[i] = [];
+        for (var j = 0; j < zCoord.length; j++) {
+            transamp[i][j] = updateRatioValues(thetaI)[1];
+        }
+    }
+
+    return transamp;
+}
+
+function updateSlopes() {
+    /*
+     Update incident/reflective/transmitted light slopes according to slider motion.
+     Those change when thetaI, n1, and n2 change.
+     */
+    var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmission angle
+    incidentSlope = -Math.tan(thetaI);
+    reflectSlope = Math.tan(thetaI);
+    transmitSlope = -Math.tan(thetaT);
+}
+
+
+// Plot
+function plotHeatmap() {
+    plt0.data[0].z = updateIncidentAmplitude();
+    plt0.data[1].z = updateTransmitAmplitude();
+
+    Plotly.redraw(plt0);
+}
+
+function createHeatmap() {
+    var upper = {
+        x: yCoord,
+        y: zCoord,
+        z: updateIncidentAmplitude(),
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -2,
+        zmax: 10
+    };
+
+    var lower = {
+        x: yCoord,
+        y: zCoord,
+        z: updateTransmitAmplitude(),
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'heatmap',
+        colorscale: 'Viridis',
+        zmin: -2,
+        zmax: 10
+    };
+
+    var data = [upper, lower];
+
+    var layout = {
+        title: 'E filed amplitude',
+        yaxis: {
+            domain: [0.6, 1]
+        },
+        yaxis2: {
+            domain: [0, 0.4]
+        },
+        xaxis2: {
+            anchor: 'y2'
+        }
+    };
+
+    Plotly.newPlot('plt0', data, layout);
 }
 
 
