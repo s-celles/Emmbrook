@@ -288,3 +288,7 @@ package-lock.json
 
 # browserify file
 *.bundle.js
+
+# eslint
+.eslintrc.json
+=*

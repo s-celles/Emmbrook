@@ -195,33 +195,41 @@ var reflectSlope;
 var transmitSlope;
 
 
-function kr(xx, yy, zz) {
+function kr(kx, ky, kz, x, y, z) {
     /*
      Wave vector times position vector. Input Cartesian coordinates xx, yy, and zz,
      then function will return scalar value of $\mathbf{k} \cdot \mathbf{r}$, where
-     $\mathbf{r} = (xx, yy, zz)$.
+     $\mathbf{k} = (kx, ky, kz)$, $\mathbf{r} = (x, y, z)$.
      */
     var metricTensor = math.matrix([
         [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
         [0, 1, 0],
         [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
     ]);
-    return math.dot([1, 0, 1], math.multiply(metricTensor, [xx, yy, zz]));
+    return math.dot([kx, ky, kz], math.multiply(metricTensor, [x, y, z]));
 }
 
-function updateIncidentAmplitude() {
+function updateUpperAmplitude() {
     /*
      The incident E-field amplitude changes with x, y, z spatial coordinates, and thetaI.
      */
-    var inciamp = [];
+    var amp = [];
+    var r = updateRatioValues(thetaI)[0];
     for (var i = 0; i < yCoord.length; i++) {
-        inciamp[i] = [];
+        amp[i] = [];
         for (var j = 0; j < zCoord.length; j++) {
-            inciamp[i][j] = kr(zCoord[j] * incidentSlope, yCoord[i], zCoord[j]);
+            var kDotR = kr(1, 0, 1, zCoord[j], 0, yCoord[i]);
+            var kpDotR = kr(1, 0, -1, zCoord[j], 0, yCoord[i]);
+            amp[i][j] = Math.sqrt(
+                Math.pow(1 * Math.cos(thetaI) * Math.cos(kDotR) +
+                    r * 1 * Math.cos(thetaI) * Math.cos(kpDotR), 2) +
+                Math.pow(-1 * Math.sin(thetaI) * Math.cos(kDotR) +
+                    r * 1 * Math.sin(thetaI) * Math.cos(kpDotR), 2)
+            )
         }
     }
 
-    return inciamp;
+    return amp;
 }
 
 function updateTransmitAmplitude() {
@@ -253,7 +261,7 @@ function updateSlopes() {
 
 // Plot
 function plotHeatmap() {
-    plt0.data[0].z = updateIncidentAmplitude();
+    plt0.data[0].z = updateUpperAmplitude();
     plt0.data[1].z = updateTransmitAmplitude();
 
     Plotly.redraw(plt0);
@@ -263,7 +271,7 @@ function createHeatmap() {
     var upper = {
         x: yCoord,
         y: zCoord,
-        z: updateIncidentAmplitude(),
+        z: updateUpperAmplitude(),
         type: 'heatmap',
         colorscale: 'Viridis',
         zmin: -2,
@@ -290,10 +298,12 @@ function createHeatmap() {
             domain: [0.6, 1]
         },
         yaxis2: {
-            domain: [0, 0.4]
+            domain: [0, 0.4],
+            title: 'y'
         },
         xaxis2: {
-            anchor: 'y2'
+            anchor: 'y2',
+            title: 'z'
         }
     };
 
