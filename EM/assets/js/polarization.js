@@ -5,13 +5,13 @@
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main part ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-"use strict";
+'use strict';
 // Import libraries
 var linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values.
-var ndarray = require("ndarray"); // Modular multidimensional arrays for JavaScript.
-var ops = require("ndarray-ops"); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
-var unpack = require("ndarray-unpack"); // Converts an ndarray into an array-of-native-arrays.
-var pool = require("ndarray-scratch"); // A simple wrapper for typedarray-pool.
+var ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+var ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
+var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
 
 
 // Initialize variables
@@ -80,7 +80,7 @@ $('#animate').click(function () {
         $this.text('On');
         cancelAnimationFrame(reqId); // Stop animation
     }
-})
+});
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -125,7 +125,8 @@ function updateZ() {
     /*
      z values will change if time changes.
      */
-    z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
+    z = linspace(ndarray([], [nPoints]),
+        time * speed, 10 * Math.PI + time * speed);
 }
 
 

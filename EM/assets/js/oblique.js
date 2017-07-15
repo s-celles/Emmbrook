@@ -6,12 +6,10 @@
 ///////////////////////////// Main part ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 /* jshint -W097 */
-"use strict";
+'use strict';
 // Import libraries
-var numeric = require("numeric");
-var ndarray = require("ndarray");
-var gemm = require("ndarray-gemm");
-var math = require('mathjs');
+var numeric = require('numeric');
+var ndarray = require('ndarray');
 
 
 // Variables
@@ -74,7 +72,7 @@ window.onresize = function () {
 ////////////////// Reflection and transmission ratios /////////////////////
 ///////////////////////////////////////////////////////////////////////////
 var reflectRatioList, transmitRatioList;
-var thetaIList = numeric.linspace(0, Math.PI / 2, 200);
+var thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
 // Main interfaces
@@ -152,12 +150,12 @@ function createRatioPlot() {
     };
 
     var data = [{
-            x: thetaIList,
-            y: reflectRatioList,
-            type: 'scatter',
-            mode: 'lines',
-            name: 'r'
-        },
+        x: thetaIList,
+        y: reflectRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'r'
+    },
         {
             x: thetaIList,
             y: transmitRatioList,
@@ -188,12 +186,13 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var yCoord = numeric.linspace(0, 5, 250);
-var zCoord = numeric.linspace(0, 5, 250);
+var yCoord = numeric.linspace(-5, 5, 250);
+var zUpperCoord = numeric.linspace(5, 0, 125);
+var zLowerCoord = numeric.linspace(0, -5, 125);
 var incidentSlope;
 var reflectSlope;
 var transmitSlope;
-
+console.log(zUpperCoord);
 
 function kr(kx, ky, kz, x, y, z) {
     /*
@@ -201,12 +200,12 @@ function kr(kx, ky, kz, x, y, z) {
      then function will return scalar value of $\mathbf{k} \cdot \mathbf{r}$, where
      $\mathbf{k} = (kx, ky, kz)$, $\mathbf{r} = (x, y, z)$.
      */
-    var metricTensor = math.matrix([
+    var metricTensor = [
         [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
         [0, 1, 0],
         [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
-    ]);
-    return math.dot([kx, ky, kz], math.multiply(metricTensor, [x, y, z]));
+    ];
+    return numeric.dot([kx, ky, kz], numeric.dot(metricTensor, [x, y, z]));
 }
 
 function updateUpperAmplitude() {
@@ -217,9 +216,9 @@ function updateUpperAmplitude() {
     var r = updateRatioValues(thetaI)[0];
     for (var i = 0; i < yCoord.length; i++) {
         amp[i] = [];
-        for (var j = 0; j < zCoord.length; j++) {
-            var kDotR = kr(1, 0, 1, zCoord[j], 0, yCoord[i]);
-            var kpDotR = kr(1, 0, -1, zCoord[j], 0, yCoord[i]);
+        for (var j = 0; j < zUpperCoord.length; j++) {
+            var kDotR = kr(1, 0, 1, zUpperCoord[j], 0, yCoord[i]);
+            var kpDotR = kr(1, 0, -1, zUpperCoord[j], 0, yCoord[i]);
             amp[i][j] = Math.sqrt(
                 Math.pow(1 * Math.cos(thetaI) * Math.cos(kDotR) +
                     r * 1 * Math.cos(thetaI) * Math.cos(kpDotR), 2) +
@@ -239,7 +238,7 @@ function updateTransmitAmplitude() {
     var transamp = [];
     for (var i = 0; i < yCoord.length; i++) {
         transamp[i] = [];
-        for (var j = 0; j < zCoord.length; j++) {
+        for (var j = 0; j < zLowerCoord.length; j++) {
             transamp[i][j] = updateRatioValues(thetaI)[1];
         }
     }
@@ -267,10 +266,13 @@ function plotHeatmap() {
     Plotly.redraw(plt0);
 }
 
+// console.log(updateUpperAmplitude().concat(updateTransmitAmplitude()))
+
+
 function createHeatmap() {
     var upper = {
         x: yCoord,
-        y: zCoord,
+        y: zUpperCoord.concat(zLowerCoord),
         z: updateUpperAmplitude(),
         type: 'heatmap',
         colorscale: 'Viridis',
@@ -278,19 +280,7 @@ function createHeatmap() {
         zmax: 10
     };
 
-    var lower = {
-        x: yCoord,
-        y: zCoord,
-        z: updateTransmitAmplitude(),
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'heatmap',
-        colorscale: 'Viridis',
-        zmin: -2,
-        zmax: 10
-    };
-
-    var data = [upper, lower];
+    var data = [upper];
 
     var layout = {
         title: 'E filed amplitude',
@@ -299,11 +289,11 @@ function createHeatmap() {
         },
         yaxis2: {
             domain: [0, 0.4],
-            title: 'y'
+            title: 'z'
         },
         xaxis2: {
             anchor: 'y2',
-            title: 'z'
+            title: 'y'
         }
     };
 
