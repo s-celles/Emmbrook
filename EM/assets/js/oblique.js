@@ -10,6 +10,7 @@
 // Import libraries
 var numeric = require('numeric');
 var ndarray = require('ndarray');
+var nj = require('numjs');
 
 
 // Variables
@@ -156,27 +157,27 @@ function createRatioPlot() {
         mode: 'lines',
         name: 'r'
     },
-        {
-            x: thetaIList,
-            y: transmitRatioList,
-            type: 'scatter',
-            mode: 'lines',
-            name: 't'
-        },
-        {
-            x: [thetaI, thetaI],
-            y: updateRatioValues(thetaI),
-            type: 'scatter',
-            mode: 'markers',
-            name: 'ratios'
-        },
-        {
-            x: [updateBrewsterAngle()],
-            y: [0],
-            type: 'scatter',
-            mode: 'markers',
-            name: 'Brewster angle'
-        }
+    {
+        x: thetaIList,
+        y: transmitRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 't'
+    },
+    {
+        x: [thetaI, thetaI],
+        y: updateRatioValues(thetaI),
+        type: 'scatter',
+        mode: 'markers',
+        name: 'ratios'
+    },
+    {
+        x: [updateBrewsterAngle()],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Brewster angle'
+    }
     ];
 
     Plotly.newPlot(plt1, data, layout);
@@ -186,13 +187,13 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var yCoord = numeric.linspace(-5, 5, 250);
-var zUpperCoord = numeric.linspace(5, 0, 125);
-var zLowerCoord = numeric.linspace(0, -5, 125);
+var yCoord = numeric.linspace(-10, 10, 250);
+var zUpperCoord = numeric.linspace(10, 0, 125);
+var zLowerCoord = numeric.linspace(0, -10, 125);
 var incidentSlope;
 var reflectSlope;
 var transmitSlope;
-console.log(zUpperCoord);
+
 
 function kr(kx, ky, kz, x, y, z) {
     /*
@@ -217,13 +218,13 @@ function updateUpperAmplitude() {
     for (var i = 0; i < yCoord.length; i++) {
         amp[i] = [];
         for (var j = 0; j < zUpperCoord.length; j++) {
-            var kDotR = kr(1, 0, 1, zUpperCoord[j], 0, yCoord[i]);
-            var kpDotR = kr(1, 0, -1, zUpperCoord[j], 0, yCoord[i]);
+            var kDotR = kr(1, 0, 1, 0, yCoord[i], zUpperCoord[j]);
+            var kpDotR = kr(1, 0, -1, 0, yCoord[i], zUpperCoord[j]);
             amp[i][j] = Math.sqrt(
-                Math.pow(1 * Math.cos(thetaI) * Math.cos(kDotR) +
-                    r * 1 * Math.cos(thetaI) * Math.cos(kpDotR), 2) +
-                Math.pow(-1 * Math.sin(thetaI) * Math.cos(kDotR) +
-                    r * 1 * Math.sin(thetaI) * Math.cos(kpDotR), 2)
+                Math.pow(Math.cos(thetaI) * Math.cos(kDotR) +
+                    r * Math.cos(thetaI) * Math.cos(kpDotR), 2) +
+                Math.pow(-Math.sin(thetaI) * Math.cos(kDotR) +
+                    r * Math.sin(thetaI) * Math.cos(kpDotR), 2)
             )
         }
     }
@@ -246,6 +247,10 @@ function updateTransmitAmplitude() {
     return transamp;
 }
 
+function updateAmplitudes() {
+    return nj.concatenate(updateUpperAmplitude(), updateTransmitAmplitude()).transpose().tolist();
+}
+
 function updateSlopes() {
     /*
      Update incident/reflective/transmitted light slopes according to slider motion.
@@ -260,40 +265,41 @@ function updateSlopes() {
 
 // Plot
 function plotHeatmap() {
-    plt0.data[0].z = updateUpperAmplitude();
-    plt0.data[1].z = updateTransmitAmplitude();
+    plt0.data[0].z = updateAmplitudes();
 
     Plotly.redraw(plt0);
 }
 
-// console.log(updateUpperAmplitude().concat(updateTransmitAmplitude()))
-
-
 function createHeatmap() {
-    var upper = {
+    var trace = {
         x: yCoord,
         y: zUpperCoord.concat(zLowerCoord),
-        z: updateUpperAmplitude(),
+        z: updateAmplitudes(),
         type: 'heatmap',
         colorscale: 'Viridis',
-        zmin: -2,
-        zmax: 10
+        zmin: 0,
+        zmax: 2
     };
 
-    var data = [upper];
+    var texts = {
+        x: [-8, -8],
+        y: [5, -5],
+        text: ['medium 1', 'medium 2'],
+        mode: 'text',
+        textfont: {
+            color: '#ffffff'
+        }
+    }
+    var data = [trace, texts];
 
     var layout = {
         title: 'E filed amplitude',
         yaxis: {
-            domain: [0.6, 1]
-        },
-        yaxis2: {
-            domain: [0, 0.4],
             title: 'z'
         },
-        xaxis2: {
-            anchor: 'y2',
-            title: 'y'
+        xaxis: {
+            title: 'y',
+            autorange: 'reversed'
         }
     };
 
