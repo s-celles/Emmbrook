@@ -151,33 +151,33 @@ function createRatioPlot() {
     };
 
     var data = [{
-        x: thetaIList,
-        y: reflectRatioList,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'r'
-    },
-    {
-        x: thetaIList,
-        y: transmitRatioList,
-        type: 'scatter',
-        mode: 'lines',
-        name: 't'
-    },
-    {
-        x: [thetaI, thetaI],
-        y: updateRatioValues(thetaI),
-        type: 'scatter',
-        mode: 'markers',
-        name: 'ratios'
-    },
-    {
-        x: [updateBrewsterAngle()],
-        y: [0],
-        type: 'scatter',
-        mode: 'markers',
-        name: 'Brewster angle'
-    }
+            x: thetaIList,
+            y: reflectRatioList,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'r'
+        },
+        {
+            x: thetaIList,
+            y: transmitRatioList,
+            type: 'scatter',
+            mode: 'lines',
+            name: 't'
+        },
+        {
+            x: [thetaI, thetaI],
+            y: updateRatioValues(thetaI),
+            type: 'scatter',
+            mode: 'markers',
+            name: 'ratios'
+        },
+        {
+            x: [updateBrewsterAngle()],
+            y: [0],
+            type: 'scatter',
+            mode: 'markers',
+            name: 'Brewster angle'
+        }
     ];
 
     Plotly.newPlot(plt1, data, layout);
@@ -276,7 +276,6 @@ function createHeatmap() {
         y: zUpperCoord.concat(zLowerCoord),
         z: updateAmplitudes(),
         type: 'heatmap',
-        colorscale: 'Viridis',
         zmin: 0,
         zmax: 2
     };
@@ -289,7 +288,8 @@ function createHeatmap() {
         textfont: {
             color: '#ffffff'
         }
-    }
+    };
+
     var data = [trace, texts];
 
     var layout = {
