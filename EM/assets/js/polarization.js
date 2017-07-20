@@ -144,8 +144,9 @@ function createPlots() {
         title: '3D view',
         scene: {
             margin: {
-                t: 0,
-                b: 0
+                t: 50,
+                b: 50,
+                pad: -50
             },
             xaxis: {
                 range: [-1, 1]

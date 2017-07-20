@@ -38,8 +38,8 @@
   background-image: linear-gradient(to bottom, #e5e5e5 0, white 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
 
-.btn-default {
-  display: inline-block; }
+.col-md-1, .col-md-10 {
+  display: inline; }
 
 section {
   margin-bottom: 30px;
