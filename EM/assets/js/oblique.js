@@ -40,9 +40,9 @@ thetaISlider.on('change', function () {
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
+    // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotBrewsterAngle();
     updateSlopes();
     plotHeatmap();
 
@@ -52,9 +52,9 @@ n1Slider.on('change', function () {
 n2Slider.on('change', function () {
     n2 = n2Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
+    // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotBrewsterAngle();
     updateSlopes();
     plotHeatmap();
 
@@ -101,7 +101,7 @@ function updateBrewsterAngle() {
      */
     epsilon1 = Math.pow(n1, 2);
     epsilon2 = Math.pow(n2, 2);
-    return Math.atan(n1 / n2 * epsilon2 / epsilon1);
+    return (n1 / n2 * epsilon2 / epsilon1);
 }
 
 
@@ -140,7 +140,8 @@ function createRatioPlot() {
             },
             tickmode: 'array',
             tickvals: [0, Math.PI / 12, Math.PI / 6, Math.PI / 4, Math.PI / 3, Math.PI / 2],
-            ticktext: ['0', 'pi/12', 'pi/6', 'pi/4', 'pi/3', 'pi/2']
+            ticktext: ['0', 'pi/12', 'pi/6', 'pi/4', 'pi/3', 'pi/2'],
+            range: [0, Math.PI / 2]
         },
         yaxis: {
             title: 'Ratio',
@@ -150,35 +151,39 @@ function createRatioPlot() {
         }
     };
 
-    var data = [{
-            x: thetaIList,
-            y: reflectRatioList,
-            type: 'scatter',
-            mode: 'lines',
-            name: 'r'
-        },
-        {
-            x: thetaIList,
-            y: transmitRatioList,
-            type: 'scatter',
-            mode: 'lines',
-            name: 't'
-        },
-        {
-            x: [thetaI, thetaI],
-            y: updateRatioValues(thetaI),
-            type: 'scatter',
-            mode: 'markers',
-            name: 'ratios'
-        },
-        {
-            x: [updateBrewsterAngle()],
-            y: [0],
-            type: 'scatter',
-            mode: 'markers',
-            name: 'Brewster angle'
-        }
-    ];
+    var trace0 = {
+        x: thetaIList,
+        y: reflectRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'r'
+    };
+
+    var trace1 = {
+        x: thetaIList,
+        y: transmitRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 't'
+    };
+
+    var trace2 = {
+        x: [thetaI, thetaI],
+        y: updateRatioValues(thetaI),
+        type: 'scatter',
+        mode: 'markers',
+        name: 'ratios'
+    };
+
+    var trace3 = {
+        x: [1],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Brewster angle'
+    };
+
+    var data = [trace0, trace1, trace2];
 
     Plotly.newPlot(plt1, data, layout);
 }
@@ -187,7 +192,7 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var yCoord = numeric.linspace(-10, 10, 250);
+var xCoord = numeric.linspace(-10, 10, 250);
 var zUpperCoord = numeric.linspace(10, 0, 125);
 var zLowerCoord = numeric.linspace(0, -10, 125);
 var incidentSlope;
@@ -215,11 +220,13 @@ function updateUpperAmplitude() {
      */
     var amp = [];
     var r = updateRatioValues(thetaI)[0];
-    for (var i = 0; i < yCoord.length; i++) {
+    for (var i = 0; i < xCoord.length; i++) {
         amp[i] = [];
         for (var j = 0; j < zUpperCoord.length; j++) {
-            var kDotR = kr(1, 0, 1, 0, yCoord[i], zUpperCoord[j]);
-            var kpDotR = kr(1, 0, -1, 0, yCoord[i], zUpperCoord[j]);
+            var normalizeK = 1 / Math.sqrt(1 + Math.pow(-1 / incidentSlope, 2));
+            var normailizeKp = 1 / Math.sqrt(1 + Math.pow(-1 / reflectSlope, 2));
+            var kDotR = kr(normalizeK, 0, -normalizeK / incidentSlope, xCoord[i], 0, zUpperCoord[j]);
+            var kpDotR = kr(normailizeKp, 0, -normailizeKp / reflectSlope, xCoord[i], 0, zUpperCoord[j]);
             amp[i][j] = Math.sqrt(
                 Math.pow(Math.cos(thetaI) * Math.cos(kDotR) +
                     r * Math.cos(thetaI) * Math.cos(kpDotR), 2) +
@@ -237,7 +244,7 @@ function updateTransmitAmplitude() {
      The transmissive E-field amplitude changes with x, y, z spatial coordinates, n1, n2 and thetaI.
      */
     var transamp = [];
-    for (var i = 0; i < yCoord.length; i++) {
+    for (var i = 0; i < xCoord.length; i++) {
         transamp[i] = [];
         for (var j = 0; j < zLowerCoord.length; j++) {
             transamp[i][j] = updateRatioValues(thetaI)[1];
@@ -272,7 +279,7 @@ function plotHeatmap() {
 
 function createHeatmap() {
     var trace = {
-        x: yCoord,
+        x: xCoord,
         y: zUpperCoord.concat(zLowerCoord),
         z: updateAmplitudes(),
         type: 'heatmap',
@@ -298,8 +305,7 @@ function createHeatmap() {
             title: 'z'
         },
         xaxis: {
-            title: 'y',
-            autorange: 'reversed'
+            title: 'x'
         }
     };
 
