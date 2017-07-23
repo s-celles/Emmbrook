@@ -291,3 +291,6 @@ package-lock.json
 # eslint
 .eslintrc.json
 =*
+
+# macOS
+.DS_Store
