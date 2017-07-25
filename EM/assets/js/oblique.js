@@ -207,9 +207,9 @@ function kr(kx, ky, kz, x, y, z) {
      $\mathbf{k} = (kx, ky, kz)$, $\mathbf{r} = (x, y, z)$.
      */
     var metricTensor = [
-        [Math.cos(Math.PI / 2 - thetaI), 0, Math.cos(thetaI)],
-        [0, 1, 0],
-        [Math.cos(thetaI), 0, Math.cos(Math.PI / 2 - thetaI)]
+        [1, 0, 0],
+        [0, 0, 0],
+        [0, 0, 1]
     ];
     return numeric.dot([kx, ky, kz], numeric.dot(metricTensor, [x, y, z]));
 }
