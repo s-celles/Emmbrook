@@ -348,16 +348,20 @@ function selectField(option) {
 function generateInstantaneousIntensity(option) {
     var fieldRe, fieldIm;
     [fieldRe, fieldIm] = selectField(option);
-    console.log(fieldRe);
     ops.powseq(fieldRe, 2);
     ops.powseq(fieldIm, 2);
     ops.subeq(fieldRe, fieldIm);
     return fieldRe;
 }
 
-generateInstantaneousIntensity(3);
-
-
+function generateAveragedIntensity(option) {
+    var fieldRe, fieldIm;
+    [fieldRe, fieldIm] = selectField(option);
+    ops.powseq(fieldRe, 2);
+    ops.powseq(fieldIm, 2);
+    ops.addeq(fieldRe, fieldIm);
+    return fieldRe;
+}
 
 // // Plot
 // function plotHeatmap() {
@@ -366,14 +370,16 @@ generateInstantaneousIntensity(3);
 //     Plotly.redraw(plt0);
 // }
 
-function createHeatmap(option) {
+function createHeatmap() {
+    var instant = generateAveragedIntensity(0);
+
     var trace = {
-        x: xCoord,
-        y: zCoord,
-        z: generateInstantaneousIntensity(option),
-        type: 'heatmap'
-        // zmin: 0,
-        // zmax: 2
+        x: zCoord,
+        y: xCoord,
+        z: unpack(instant),
+        type: 'heatmap',
+        zmin: 0,
+        zmax: 1
     };
 
     // var texts = {
@@ -391,10 +397,10 @@ function createHeatmap(option) {
     var layout = {
         title: 'E filed intensity',
         yaxis: {
-            title: 'z'
+            title: 'x'
         },
         xaxis: {
-            title: 'x'
+            title: 'z'
         }
     };
 
@@ -413,7 +419,7 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-createHeatmap(0);
+createHeatmap();
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
