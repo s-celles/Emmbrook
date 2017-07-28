@@ -38,7 +38,6 @@ var epsilon2 = Math.pow(n2, 2); // Permittivity
 thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
-    updateSlopes();
     plotHeatmap();
 
     $('#thetaISliderVal')
@@ -51,7 +50,6 @@ n1Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    updateSlopes();
     plotHeatmap();
 
     $('#n1SliderVal')
@@ -64,7 +62,6 @@ n2Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    updateSlopes();
     plotHeatmap();
 
     $('#n2SliderVal')
@@ -86,7 +83,6 @@ var reflectRatioList, transmitRatioList;
 var thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
-// Main interfaces
 function updateRatioValues(tI) {
     /*
      Accept an incident angle tI, return the reflection ratio and transmission ratio.
@@ -204,8 +200,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 var zNum = 250;
 var xNum = 125;
-var zCoord = numeric.linspace(-10, 10, zNum);
-var xCoord = numeric.linspace(0, 10, xNum);
+var zCoord = numeric.linspace(-10, 10, zNum + 1);
+var xCoord = numeric.linspace(0, 10, xNum + 1);
 var zStep = (zCoord[zCoord.length - 1] - zCoord[0]) / zNum;
 var xStep = (xCoord[xCoord.length - 1] - xCoord[0]) / xNum;
 var optionIndices = numeric.linspace(0, 2, 3);
@@ -213,6 +209,7 @@ var lambda = 1;
 // Something similar to np.meshgrid, but less straightforward to see, thus
 // you should check the documentation detaily on
 // http://scijs.net/packages/#scijs/ndarray.
+// We fix mesh in this simulation.
 var mesh = meshgrid([-10, 10, zStep], [0, 10, xStep], [0, 2, 1]);
 var zMesh = mesh.pick(null, 0); // Pick the first column of mesh
 var xMesh = mesh.pick(null, 1); // Pick the second column of mesh
@@ -222,9 +219,10 @@ xMesh = ndarray(xMesh, [zNum + 1, xNum + 1, 3]); // Reshape xMesh to (xNum + 1, 
 iMesh = ndarray(iMesh, [zNum + 1, xNum + 1, 3]); // Reshape iMesh to (zNum + 1, xNum + 1, 3)
 
 
-function generateKVector(params) {
+function updateKVector() {
     /*
      kVector = k0 * [n1, n1, n2]
+     kVector will change if n1 or n2 change.
      */
     var k0 = 2 * Math.PI / lambda; // Free-space wavenumber
     var kVector = ndarray(new Float64Array(3)); // Wavenumbers for incident, reflected, transmitted waves
@@ -232,12 +230,13 @@ function generateKVector(params) {
     return kVector;
 }
 
-function generateKxAndKz() {
+function updateKxAndKz() {
     /*
      Calculate z component for incident, reflected, and transmitted wave's k vector,
      and x component for incident, reflected, and transmitted wave's k vector.
+     kZ and kX will change if thetaI, n1 or n2 change.
      */
-    var kVector = generateKVector();
+    var kVector = updateKVector();
     var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmitted angle from Snell's law
     var kZ = ndarray(new Float64Array(3)); // Incident, reflected, transmit wave's kz
     var kX = ndarray(new Float64Array(3)); // Incident, reflected, transmit wave's kx
@@ -246,9 +245,10 @@ function generateKxAndKz() {
     return [kZ, kX];
 }
 
-function generateMask() {
+function updateMask() {
     /*
      Masks regions: z<0 for I, R; z>0 for T
+     greaterEqualThan0 and lessThan0 will not change in this simulation.
      */
     // 1 for positive z, 0 otherwise
     var greaterEqualThan0 = pool.malloc(iMesh.shape);
@@ -279,10 +279,10 @@ function generateGeneralAmplitude() {
     ops.addeq(A, ops.mulseq(aux, t)); // A += np.equal(iMesh, 2) * t
 
     var greaterEqualThan0, lessThan0;
-    [greaterEqualThan0, lessThan0] = generateMask();
+    [greaterEqualThan0, lessThan0] = updateMask();
     ops.muleq(A.pick(null, null, 0), lessThan0.pick(null, null, 0)); // A[:, :, 0] *= lessThan0[:, :, 0]
     ops.muleq(A.pick(null, null, 1), lessThan0.pick(null, null, 1)); // A[:, :, 1] *= lessThan0[:, :, 1]
-    ops.muleq(A.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2)); // A[:, :, 0] *= greaterEqualThan0[:, :, 0]
+    ops.muleq(A.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2)); // A[:, :, 2] *= greaterEqualThan0[:, :, 2]
     return A;
 }
 
@@ -290,8 +290,7 @@ function tensorContraction(mesh, vec) {
     /*
      Only work for this case, do not use it generally!
      */
-    var meshshape = mesh.shape;
-    meshshape.pop(); // Discard the last axis
+    var meshshape = [251, 126]; // Discard the last axis
     var tensorSum = pool.zeros(meshshape);
     for (var i = 0; i < vec.shape[0]; i++) {
         ops.addeq(tensorSum, ops.mulseq(mesh.pick(null, null, i), vec.get(i)));
@@ -306,7 +305,7 @@ function generateEachAmplitude() {
     var time = 0;
     var A = generateGeneralAmplitude();
     var kZ, kX;
-    [kZ, kX] = generateKxAndKz();
+    [kZ, kX] = updateKxAndKz();
     var kzz = tensorContraction(zMesh, kZ); // kzz = kz * z
     var kxx = tensorContraction(xMesh, kX); // kxx = kx * x
     ops.addeq(kxx, kzz); // kxx = kx * x + kz * z
@@ -364,33 +363,29 @@ function generateAveragedIntensity(option) {
 }
 
 // // Plot
-// function plotHeatmap() {
-//     plt0.data[0].z = updateAmplitudes();
+function plotHeatmap() {
+    plt0.data[0].z = unpack(generateAveragedIntensity(0));
 
-//     Plotly.redraw(plt0);
-// }
+    Plotly.redraw(plt0);
+}
 
 function createHeatmap() {
-    var instant = generateAveragedIntensity(0);
-
     var trace = {
-        x: zCoord,
-        y: xCoord,
-        z: unpack(instant),
-        type: 'heatmap',
-        zmin: 0,
-        zmax: 1
+        // x: zCoord,
+        // y: xCoord,
+        z: unpack(generateAveragedIntensity(0)),
+        type: 'heatmap'
     };
 
-    // var texts = {
-    //     x: [-8, -8],
-    //     y: [5, -5],
-    //     text: ['medium 1', 'medium 2'],
-    //     mode: 'text',
-    //     textfont: {
-    //         color: '#ffffff'
-    //     }
-    // };
+    var texts = {
+        x: [-8, 8],
+        y: [5, 5],
+        text: ['medium 1', 'medium 2'],
+        mode: 'text',
+        textfont: {
+            color: '#ffffff'
+        }
+    };
 
     var data = [trace];
 
