@@ -13,10 +13,8 @@ var ndarray = require('ndarray');
 var meshgrid = require('ndarray-meshgrid');
 var ops = require("ndarray-ops");
 var pool = require("ndarray-scratch");
-var nj = require("numjs");
 var unpack = require("ndarray-unpack");
 var cops = require("ndarray-complex"); // Complex arithmetic operations for ndarrays.
-var product = require('tensor-product');
 
 
 // Variables
@@ -288,15 +286,17 @@ function generateGeneralAmplitude() {
     return A;
 }
 
-function multiplication(a, b) {
-    return a * b
-}
-
 function tensorContraction(mesh, vec) {
     /*
-     This defines a tensor contraction.
+     Only work for this case, do not use it generally!
      */
-    return product.bind(multiplication, mesh.shape, vec.shape);
+    var meshshape = mesh.shape;
+    meshshape.pop(); // Discard the last axis
+    var tensorSum = pool.zeros(meshshape);
+    for (var i = 0; i < vec.shape[0]; i++) {
+        ops.addeq(tensorSum, ops.mulseq(mesh.pick(null, null, i), vec.get(i)));
+    }
+    return tensorSum;
 }
 
 function generateEachAmplitude() {
@@ -304,17 +304,58 @@ function generateEachAmplitude() {
      Generate individual wave amplitudes for incident, reflected, and transmitted.
      */
     var time = 0;
+    var A = generateGeneralAmplitude();
     var kZ, kX;
     [kZ, kX] = generateKxAndKz();
-    console.log(zMesh.shape, kZ.shape)
-    var A = generateGeneralAmplitude();
-    var kzz = tensorContraction(zMesh, kZ);
-    console.log(kzz)
+    var kzz = tensorContraction(zMesh, kZ); // kzz = kz * z
+    var kxx = tensorContraction(xMesh, kX); // kxx = kx * x
+    ops.addeq(kxx, kzz); // kxx = kx * x + kz * z
+    var re = pool.malloc(kxx.shape);
+    var im = pool.malloc(kxx.shape);
+    var aux = pool.malloc(kxx.shape);
+    cops.exp(re, im, aux, kxx); // phase = (re, im)
+    var inciAmpRe = A.pick(null, null, 0);
+    var inciAmpIm = pool.malloc(inciAmpRe.shape);
+    var reflAmpRe = A.pick(null, null, 1);
+    var reflAmpIm = pool.malloc(reflAmpRe.shape);
+    var transAmpRe = A.pick(null, null, 2);
+    var transAmpIm = pool.malloc(transAmpRe.shape);
+    cops.muleq(inciAmpRe, inciAmpIm, re, im); // inciAmp *= phase
+    cops.muleq(reflAmpRe, reflAmpIm, re, im); // reflAmp *= phase
+    cops.muleq(transAmpRe, transAmpIm, re, im); // transAmp *= phase
+    return [inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm];
 }
 
-generateEachAmplitude();
+function selectField(option) {
+    var inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm;
+    [inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm] = generateEachAmplitude();
+    switch (option) {
+    case 0:
+        return [inciAmpRe, inciAmpIm];
+    case 1:
+        return [reflAmpRe, reflAmpIm];
+    case 2:
+        return [transAmpRe, transAmpIm];
+    case 3:
+        {
+            cops.addeq(inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm);
+            cops.addeq(inciAmpRe, inciAmpIm, transAmpRe, transAmpIm);
+            return [inciAmpRe, inciAmpIm];
+        }
+    }
+}
 
+function generateInstantaneousIntensity(option) {
+    var fieldRe, fieldIm;
+    [fieldRe, fieldIm] = selectField(option);
+    console.log(fieldRe);
+    ops.powseq(fieldRe, 2);
+    ops.powseq(fieldIm, 2);
+    ops.subeq(fieldRe, fieldIm);
+    return fieldRe;
+}
 
+generateInstantaneousIntensity(3);
 
 
 
@@ -325,40 +366,40 @@ generateEachAmplitude();
 //     Plotly.redraw(plt0);
 // }
 
-// function createHeatmap() {
-//     var trace = {
-//         x: xCoord,
-//         y: zUpperCoord.concat(zLowerCoord),
-//         z: updateAmplitudes(),
-//         type: 'heatmap',
-//         zmin: 0,
-//         zmax: 2
-//     };
+function createHeatmap(option) {
+    var trace = {
+        x: xCoord,
+        y: zCoord,
+        z: generateInstantaneousIntensity(option),
+        type: 'heatmap'
+        // zmin: 0,
+        // zmax: 2
+    };
 
-//     var texts = {
-//         x: [-8, -8],
-//         y: [5, -5],
-//         text: ['medium 1', 'medium 2'],
-//         mode: 'text',
-//         textfont: {
-//             color: '#ffffff'
-//         }
-//     };
+    // var texts = {
+    //     x: [-8, -8],
+    //     y: [5, -5],
+    //     text: ['medium 1', 'medium 2'],
+    //     mode: 'text',
+    //     textfont: {
+    //         color: '#ffffff'
+    //     }
+    // };
 
-//     var data = [trace, texts];
+    var data = [trace];
 
-//     var layout = {
-//         title: 'E filed amplitude',
-//         yaxis: {
-//             title: 'z'
-//         },
-//         xaxis: {
-//             title: 'x'
-//         }
-//     };
+    var layout = {
+        title: 'E filed intensity',
+        yaxis: {
+            title: 'z'
+        },
+        xaxis: {
+            title: 'x'
+        }
+    };
 
-//     Plotly.newPlot('plt0', data, layout);
-// }
+    Plotly.newPlot('plt0', data, layout);
+}
 
 
 
@@ -372,6 +413,7 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
+createHeatmap(0);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();

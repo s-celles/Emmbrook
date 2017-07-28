@@ -17,9 +17,7 @@
         "ndarray-show": "^2.0.0",
         "ndarray-unpack": "^1.0.0",
         "numeric": "^1.2.6",
-        "numjs": "^0.13.2",
-        "plotly": "^1.0.6",
-        "tensor-product": "^0.2.0"
+        "numjs": "^0.13.2"
     },
     "devDependencies": {
         "eslint": "^4.3.0",
