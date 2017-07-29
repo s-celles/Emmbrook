@@ -228,6 +228,9 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
+thetaI = 0.5;
+n1 = 1;
+n2 = 2;
 var zNum = 200;
 var xNum = 100;
 var zCoord = numeric.linspace(-10, 10, zNum + 1);
@@ -257,6 +260,7 @@ function updateKVector() {
     var k0 = 2 * Math.PI / lambda; // Free-space wavenumber
     var kVector = ndarray(new Float64Array(3)); // Wavenumbers for incident, reflected, transmitted waves
     ops.muls(kVector, ndarray(new Float64Array([n1, n1, n2])), k0);
+    console.log(kVector)
     return kVector;
 }
 
@@ -383,29 +387,20 @@ function updateAveragedIntensity(option) {
 function plotHeatmap(option, style) {
     switch (style) {
     case 1:
-        plt0.data[0].z = unpack(updateAveragedIntensity(option));
+        plt0.data[0].z = unpack(updateAveragedIntensity(1));
         break;
     case 0:
-        plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
+        plt0.data[0].z = unpack(updateAveragedIntensity(1));
     };
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    // var intens;
-    // switch (style) {
-    // case 1:
-    //     intens = unpack(updateAveragedIntensity(0));
-    //     break;
-    // case 0:
-    //     intens = unpack(updateInstantaneousIntensity(0));
-    // };
-
     var trace = {
         // x: zCoord,
         // y: xCoord,
-        z: unpack(updateInstantaneousIntensity(0)),
+        z: unpack(updateAveragedIntensity(1)),
         type: 'heatmap'
     };
 
