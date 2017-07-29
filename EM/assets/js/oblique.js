@@ -198,8 +198,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 250;
-var xNum = 125;
+var zNum = 10;
+var xNum = 5;
 var zCoord = numeric.linspace(-10, 10, zNum + 1);
 var xCoord = numeric.linspace(0, 10, xNum + 1);
 var zStep = (zCoord[zCoord.length - 1] - zCoord[0]) / zNum;
@@ -286,16 +286,11 @@ function generateGeneralAmplitude() {
     return A;
 }
 
-function tensorContraction(mesh, vec) {
-    /*
-     Only work for this case, do not use it generally!
-     */
-    var meshshape = [251, 126]; // Discard the last axis
-    var tensorSum = pool.zeros(meshshape);
+function tensorProduct(mesh, vec) {
     for (var i = 0; i < vec.shape[0]; i++) {
-        ops.addeq(tensorSum, ops.mulseq(mesh.pick(null, null, i), vec.get(i)));
+        ops.mulseq(mesh.pick(null, null, i), vec.get(i));
     }
-    return tensorSum;
+    return mesh;
 }
 
 function generateEachAmplitude() {
@@ -306,24 +301,27 @@ function generateEachAmplitude() {
     var A = generateGeneralAmplitude();
     var kZ, kX;
     [kZ, kX] = updateKxAndKz();
-    var kzz = tensorContraction(zMesh, kZ); // kzz = kz * z
-    var kxx = tensorContraction(xMesh, kX); // kxx = kx * x
+    
+    var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
+    
+    var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
     ops.addeq(kxx, kzz); // kxx = kx * x + kz * z
-    var re = pool.malloc(kxx.shape);
-    var im = pool.malloc(kxx.shape);
-    var aux = pool.malloc(kxx.shape);
-    cops.exp(re, im, aux, kxx); // phase = (re, im)
+    // If we want to use ndarray-complex, we need to separate real and imaginary parts.
+    var rePhase = ops.coseq(kxx); // re( np.exp(1j * (kx * x + kz * z)) )
+    var imPhase = ops.sineq(kxx); // im( np.exp(1j * (kx * x + kz * z)) )
     var inciAmpRe = A.pick(null, null, 0);
-    var inciAmpIm = pool.malloc(inciAmpRe.shape);
+    var inciAmpIm = pool.zeros(inciAmpRe.shape);
     var reflAmpRe = A.pick(null, null, 1);
-    var reflAmpIm = pool.malloc(reflAmpRe.shape);
+    var reflAmpIm = pool.zeros(reflAmpRe.shape);
     var transAmpRe = A.pick(null, null, 2);
     var transAmpIm = pool.malloc(transAmpRe.shape);
-    cops.muleq(inciAmpRe, inciAmpIm, re, im); // inciAmp *= phase
-    cops.muleq(reflAmpRe, reflAmpIm, re, im); // reflAmp *= phase
-    cops.muleq(transAmpRe, transAmpIm, re, im); // transAmp *= phase
+    cops.muleq(inciAmpRe, inciAmpIm, rePhase, imPhase); // inciAmp *= phase
+    cops.muleq(reflAmpRe, reflAmpIm, rePhase, imPhase); // reflAmp *= phase
+    cops.muleq(transAmpRe, transAmpIm, rePhase, imPhase); // transAmp *= phase
     return [inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm];
 }
+
+generateEachAmplitude()
 
 function selectField(option) {
     var inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm;
@@ -347,24 +345,26 @@ function selectField(option) {
 function generateInstantaneousIntensity(option) {
     var fieldRe, fieldIm;
     [fieldRe, fieldIm] = selectField(option);
-    ops.powseq(fieldRe, 2);
-    ops.powseq(fieldIm, 2);
-    ops.subeq(fieldRe, fieldIm);
+    // Re((a + i b)*(a + i b)) = a^2 - b^2
+    ops.powseq(fieldRe, 2); // a^2
+    ops.powseq(fieldIm, 2); // b^2
+    ops.subeq(fieldRe, fieldIm); // a^2 - b^2
     return fieldRe;
 }
 
 function generateAveragedIntensity(option) {
     var fieldRe, fieldIm;
     [fieldRe, fieldIm] = selectField(option);
-    ops.powseq(fieldRe, 2);
-    ops.powseq(fieldIm, 2);
-    ops.addeq(fieldRe, fieldIm);
+    // Re((a + i b)*(a - i b)) = a^2 + b^2
+    ops.powseq(fieldRe, 2); // a^2
+    ops.powseq(fieldIm, 2); // b^2
+    ops.addeq(fieldRe, fieldIm); // a^2 - b^2
     return fieldRe;
 }
 
 // // Plot
 function plotHeatmap() {
-    plt0.data[0].z = unpack(generateAveragedIntensity(0));
+    plt0.data[0].z = unpack(generateAveragedIntensity(3));
 
     Plotly.redraw(plt0);
 }
@@ -373,7 +373,7 @@ function createHeatmap() {
     var trace = {
         // x: zCoord,
         // y: xCoord,
-        z: unpack(generateAveragedIntensity(0)),
+        z: unpack(generateAveragedIntensity(3)),
         type: 'heatmap'
     };
 
@@ -401,7 +401,6 @@ function createHeatmap() {
 
     Plotly.newPlot('plt0', data, layout);
 }
-
 
 
 ///////////////////////////////////////////////////////////////////////////
