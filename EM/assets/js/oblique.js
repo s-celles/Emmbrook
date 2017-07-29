@@ -29,6 +29,8 @@ var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slid
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+var option = 0;
+var style = 0;
 // Variables for calculation
 var epsilon1 = Math.pow(n1, 2); // Permittivity
 var epsilon2 = Math.pow(n2, 2); // Permittivity
@@ -38,7 +40,7 @@ var epsilon2 = Math.pow(n2, 2); // Permittivity
 thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
-    plotHeatmap();
+    plotHeatmap(option);
 
     $('#thetaISliderVal')
         .text(thetaI);
@@ -50,7 +52,7 @@ n1Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap();
+    plotHeatmap(option);
 
     $('#n1SliderVal')
         .text(n1);
@@ -62,12 +64,40 @@ n2Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap();
+    plotHeatmap(option);
 
     $('#n2SliderVal')
         .text(n2);
 });
 
+$('inci')
+    .click(function () {
+        option = 0;
+    });
+
+$('refl')
+    .click(function () {
+        option = 1;
+    });
+
+$('trans')
+    .click(function () {
+        option = 2;
+    });
+
+$('inst')
+    .click(function () {
+        console.log(option);
+        style = 0;
+        plotHeatmap(option, style);
+    });
+
+$('tav')
+    .click(function () {
+        console.log(option);
+        style = 1;
+        plotHeatmap(option, style);
+    });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -198,8 +228,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 10;
-var xNum = 5;
+var zNum = 200;
+var xNum = 100;
 var zCoord = numeric.linspace(-10, 10, zNum + 1);
 var xCoord = numeric.linspace(0, 10, xNum + 1);
 var zStep = (zCoord[zCoord.length - 1] - zCoord[0]) / zNum;
@@ -263,9 +293,11 @@ function updateMask() {
     return [greaterEqualThan0, lessThan0];
 }
 
-function generateGeneralAmplitude() {
+function updateGeneralAmplitude() {
     /* 
      Consider amplitudes for the three waves together.
+     Amplitude A has dimension (zNum + 1, xNum + 1, 3).
+     A changes when thetaI, n1, or n2 change.
      */
     var r, t;
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
@@ -293,56 +325,41 @@ function tensorProduct(mesh, vec) {
     return mesh;
 }
 
-function generateEachAmplitude() {
+function updateEachAmplitude() {
     /*
      Generate individual wave amplitudes for incident, reflected, and transmitted.
+     Real amplitude reA has dimension (zNum + 1, xNum + 1, 3).
+     Imaginary amplitude imA has dimension (zNum + 1, xNum + 1, 3).
      */
     var time = 0;
-    var A = generateGeneralAmplitude();
+    var reA = updateGeneralAmplitude();
+    var imA = pool.malloc(reA.shape);
     var kZ, kX;
     [kZ, kX] = updateKxAndKz();
-    
     var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
-    
     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
     ops.addeq(kxx, kzz); // kxx = kx * x + kz * z
     // If we want to use ndarray-complex, we need to separate real and imaginary parts.
     var rePhase = ops.coseq(kxx); // re( np.exp(1j * (kx * x + kz * z)) )
     var imPhase = ops.sineq(kxx); // im( np.exp(1j * (kx * x + kz * z)) )
-    var inciAmpRe = A.pick(null, null, 0);
-    var inciAmpIm = pool.zeros(inciAmpRe.shape);
-    var reflAmpRe = A.pick(null, null, 1);
-    var reflAmpIm = pool.zeros(reflAmpRe.shape);
-    var transAmpRe = A.pick(null, null, 2);
-    var transAmpIm = pool.malloc(transAmpRe.shape);
-    cops.muleq(inciAmpRe, inciAmpIm, rePhase, imPhase); // inciAmp *= phase
-    cops.muleq(reflAmpRe, reflAmpIm, rePhase, imPhase); // reflAmp *= phase
-    cops.muleq(transAmpRe, transAmpIm, rePhase, imPhase); // transAmp *= phase
-    return [inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm];
+    cops.muleq(reA, imA, rePhase, imPhase);
+    return [reA, imA];
 }
 
-generateEachAmplitude()
-
 function selectField(option) {
-    var inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm;
-    [inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm, transAmpRe, transAmpIm] = generateEachAmplitude();
+    var reA, imA;
+    [reA, imA] = updateEachAmplitude();
     switch (option) {
     case 0:
-        return [inciAmpRe, inciAmpIm];
+        return [reA.pick(null, null, 0), imA.pick(null, null, 0)];
     case 1:
-        return [reflAmpRe, reflAmpIm];
+        return [reA.pick(null, null, 1), imA.pick(null, null, 1)];
     case 2:
-        return [transAmpRe, transAmpIm];
-    case 3:
-        {
-            cops.addeq(inciAmpRe, inciAmpIm, reflAmpRe, reflAmpIm);
-            cops.addeq(inciAmpRe, inciAmpIm, transAmpRe, transAmpIm);
-            return [inciAmpRe, inciAmpIm];
-        }
+        return [reA.pick(null, null, 2), imA.pick(null, null, 2)];
     }
 }
 
-function generateInstantaneousIntensity(option) {
+function updateInstantaneousIntensity(option) {
     var fieldRe, fieldIm;
     [fieldRe, fieldIm] = selectField(option);
     // Re((a + i b)*(a + i b)) = a^2 - b^2
@@ -352,7 +369,7 @@ function generateInstantaneousIntensity(option) {
     return fieldRe;
 }
 
-function generateAveragedIntensity(option) {
+function updateAveragedIntensity(option) {
     var fieldRe, fieldIm;
     [fieldRe, fieldIm] = selectField(option);
     // Re((a + i b)*(a - i b)) = a^2 + b^2
@@ -362,18 +379,33 @@ function generateAveragedIntensity(option) {
     return fieldRe;
 }
 
-// // Plot
-function plotHeatmap() {
-    plt0.data[0].z = unpack(generateAveragedIntensity(3));
+// // // Plot
+function plotHeatmap(option, style) {
+    switch (style) {
+    case 1:
+        plt0.data[0].z = unpack(updateAveragedIntensity(option));
+        break;
+    default:
+        plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
+    };
 
     Plotly.redraw(plt0);
 }
 
-function createHeatmap() {
+function createHeatmap(option, style) {
+    var intens;
+    switch (style) {
+    case 1:
+        intens = unpack(updateAveragedIntensity(option));
+        break;
+    default:
+        intens = unpack(updateInstantaneousIntensity(option));
+    };
+
     var trace = {
         // x: zCoord,
         // y: xCoord,
-        z: unpack(generateAveragedIntensity(3)),
+        z: intens,
         type: 'heatmap'
     };
 
@@ -413,7 +445,7 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-createHeatmap();
+createHeatmap(2, 0);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
