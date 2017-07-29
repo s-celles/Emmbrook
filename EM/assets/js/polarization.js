@@ -5,209 +5,86 @@
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Main part ///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-/* jshint -W097 */
-"use strict";
+'use strict';
 // Import libraries
-var linspace = require('ndarray-linspace');  // Fill an ndarray with equally spaced values.
-var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
-var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
-var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
+var linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values.
+var ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+var ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
+var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
 
 
 // Initialize variables
 // UI variables
 var phiSlider = $('#phi').bootstrapSlider({});
 var timeSlider = $('#time').bootstrapSlider({});
+var BoverASlider = $('#BoverA').bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
 var time = timeSlider.bootstrapSlider('getValue');
+var BoverA = BoverASlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+// Start and stop animation
+var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+var reqId; // Cancels an animation frame request previously scheduled through a call to window.requestAnimationFrame().
 // Normal variables
-var nPoints = 200;
-var z = linspace(ndarray([], [nPoints]), 0, 10 * Math.PI);
+var nPoints = 500;
+var z = linspace(ndarray([], [nPoints]), 0, 8 * Math.PI);
 var x = ndarray(new Float64Array(nPoints));
 var y = ndarray(new Float64Array(nPoints));
-var speed = 10;  // Wave speed
-var theta = time * speed;
-var r;  // sqrt(x^2 + y^2)
+var auxX = ndarray(new Float64Array(nPoints)); // Auxiliary ndarray
+var auxY = ndarray(new Float64Array(nPoints)); // Auxiliary ndarray
+var k = 1; // Wave number
+var w = 1; // Angular frequency
+var speed = 0.05; // Evolution speed in z direction
 
-
-// Basic interfaces
-function updateX() {
-    /*
-     x values will change if time changes.
-     x = sin(k * z - w * t)
-     */
-    ops.subs(x, z, time);  // x = z - t
-    ops.sineq(x);  // x = sin(x)
-}
-
-function updateY() {
-    /*
-     y values will change if phase or time change.
-     y = sin(k * z - w * t + phi)
-     */
-    ops.adds(y, z, phi - time);  // y = z - t + phi
-    ops.sineq(y);  // y = sin(y)
-}
-
-function updateZ() {
-    /*
-     z values will change if time changes.
-     */
-    z = linspace(ndarray([], [nPoints]), time * speed, 10 * Math.PI + time * speed);
-}
-
-function updateR() {
-    /*
-     r value changes when phase and theta changes.
-     */
-    r = Math.sqrt(Math.pow(Math.sin(theta), 2) + Math.pow(Math.sin(theta + phi), 2));
-}
-
-function updateTheta() {
-    theta = time * speed;
-}
-
-// Plot
-function createPlots() {
-    var layout0 = {
-        margin: {
-            t: 0,
-            b: 0
-        },
-        sce: {
-            domain: {
-                x: [-2, 2],
-                y: [-2, 2]
-            },
-            camera: {
-                center: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                eye: {
-                    x: 2,
-                    y: 3,
-                    z: 20
-                },
-                up: {
-                    x: 0,
-                    y: 0,
-                    z: 1
-                }
-            }
-        }
-    };
-
-    var layout1 = {
-        margin: {
-            t: 50,
-            b: 50
-        },
-        domain: {
-            x: [-1.1, 1.1],
-            y: [-1.1, 1]
-        }
-    };
-
-    var trace0 = {
-        mode: 'lines',
-        type: 'scatter3d',
-        x: unpack(x),
-        y: unpack(y),
-        z: unpack(z),
-        scene: 'sce'
-    };
-
-    var trace1 = {
-        mode: 'lines',
-        type: 'scatter',
-        x: unpack(x),
-        y: unpack(y),
-        name: 'polarization'
-    };
-
-    var trace2 = {
-        mode: 'lines',
-        type: 'scatter',
-        x: [0, r * Math.cos(theta)],
-        y: [0, r * Math.sin(theta)],
-        name: 'Jones vector'
-    };
-
-    var data0 = [trace0];
-    var data1 = [trace1, trace2];
-
-    Plotly.newPlot('plt0', data0, layout0);
-    Plotly.newPlot('plt1', data1, layout1);
-}
-
-function plot() {
-    plt0.data[0].x = unpack(x);
-    plt0.data[0].y = unpack(y);
-    plt0.data[0].z = unpack(z);
-
-    plt1.data[0].x = unpack(x);
-    plt1.data[0].y = unpack(y);
-    plt1.data[1].x = [0, r * Math.cos(theta)];
-    plt1.data[1].y = [0, r * Math.sin(theta)];
-
-    Plotly.redraw(plt0);
-    Plotly.redraw(plt1);
-}
-
-
-// Animation
-var t = 0;
-var nIntervId;
-
-function startEvolve() {
-    nIntervId = setInterval(frame, 10);
-}
-
-function frame() {
-    t += 1;
-    updateX();
-    updateY();
-    updateZ();
-    updateR();
-    updateTheta();
-    plot();
-
-    timeSlider.bootstrapSlider('refresh');  // To make it synchronously changing
-}
-
-function stopEvolve() {
-    clearInterval(nIntervId);
-}
 
 // Interactive interfaces
 phiSlider.on('change', function () {
-    phi = phiSlider.bootstrapSlider('getValue');  // Change "global" value
+    phi = phiSlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
     updateY();
+    updateZ();
     plot();
 
     $('#phiSliderVal').text(phi);
 });
 
 timeSlider.on('change', function () {
-    time = timeSlider.bootstrapSlider('getValue');  // Change "global" value
+    time = timeSlider.bootstrapSlider('getValue'); // Change "global" value
     updateX();
     updateY();
     updateZ();
-    updateR();
-    updateTheta();
     plot();
 
     $('#timeSliderVal').text(time);
 });
 
-// $(document).ready(function () {
-//     $('#on').click(startEvolve());
-//     $('#off').click(stopEvolve());
-// });
+BoverASlider.on('change', function () {
+    BoverA = BoverASlider.bootstrapSlider('getValue'); // Change "global" value
+    updateX();
+    updateY();
+    updateZ();
+    plot();
+
+    $('#BoverASliderVal').text(BoverA);
+});
+
+var isAnimationOff = true; // No animation as default
+$('#animate').click(function () {
+    var $this = $(this);
+    if (isAnimationOff) { // If no animation, a click starts it.
+        isAnimationOff = false;
+        $this.text('Off');
+        reqId = requestAnimationFrame(animatePlot0); // Start animation
+    } else { // If is already in animation, a click stop it.
+        isAnimationOff = true;
+        $this.text('On');
+        cancelAnimationFrame(reqId); // Stop animation
+    }
+});
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -222,4 +99,182 @@ updateY();
 createPlots();
 $('#phiSliderVal').text(phi);
 $('#timeSliderVal').text(time);
-startEvolve();
+$('#BoverASliderVal').text(BoverA);
+
+
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////// Static plots ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// Basic interfaces
+function updateX() {
+    /*
+     x values will change if time changes.
+     x = sin(k * z - w * t)
+     For simplicity, k = 1, w = 1. So period T = 2 * pi.
+     */
+    ops.muls(auxX, z, k); // aux = k * z
+    ops.subs(x, auxX, w * time); // You cannot use ops.subs(x, ops.mulseq(z, k), w * time), it will cause problem.
+    ops.sineq(x); // x = sin(k * z - w * t), by default the amplitude of x is 1.
+}
+
+function updateY() {
+    /*
+     y values will change if phase or time change.
+     y = sin(k * z - w * t + phi)
+     For simplicity, k = 1, w = 1. So period T = 2 * pi.
+     */
+    ops.muls(auxY, z, k); // aux = k * z
+    ops.adds(y, auxY, phi - w * time); // You cannot use ops.subs(y, ops.mulseq(z, k), phi - w * time), it will cause problem.
+    ops.sineq(y); // y = sin(k * z - w * t + phi)
+    ops.mulseq(y, BoverA); // y = y * B / A, adjust y amplitude
+}
+
+function updateZ() {
+    /*
+     z values will change if time changes.
+     */
+    z = linspace(ndarray([], [nPoints]),
+        time * speed, 10 * Math.PI + time * speed); // There are 10/2=5 periods in z direction.
+}
+
+
+// Plot
+function createPlots() {
+    var layout0 = {
+        title: '3D view',
+        scene: {
+            margin: {
+                t: 50,
+                b: 50,
+                pad: -50
+            },
+            xaxis: {
+                range: [-1, 1]
+            },
+            yaxis: {
+                range: [-1, 1]
+            }
+        }
+    };
+
+    var layout1 = {
+        title: '2D bird-view',
+        margin: {
+            t: 50,
+            b: 50
+        },
+        xaxis: {
+            title: 'x',
+            range: [-1, 1]
+        },
+        yaxis: {
+            title: 'y',
+            range: [-1, 1]
+        }
+    };
+
+    var trace0 = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: unpack(x),
+        y: unpack(y),
+        z: unpack(z),
+        name: 'E',
+        scene: 'scene'
+    };
+
+    var trace1 = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: unpack(x),
+        y: unpack(pool.zeros([nPoints])),
+        z: unpack(z),
+        name: 'Ex'
+    };
+
+    var trace2 = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: unpack(pool.zeros([nPoints])),
+        y: unpack(y),
+        z: unpack(z),
+        name: 'Ey'
+    };
+
+    var trace3 = {
+        mode: 'lines',
+        type: 'scatter',
+        x: unpack(x),
+        y: unpack(y)
+    };
+
+    var data0 = [trace0, trace1, trace2];
+    var data1 = [trace3];
+
+    Plotly.newPlot('plt0', data0, layout0);
+    Plotly.newPlot('plt1', data1, layout1);
+}
+
+function plot() {
+    plt0.data[0].x = unpack(x);
+    plt0.data[0].y = unpack(y);
+    plt0.data[0].z = unpack(z);
+    plt0.data[1].x = unpack(x);
+    plt0.data[1].z = unpack(z);
+    plt0.data[2].y = unpack(y);
+    plt0.data[2].z = unpack(z);
+
+    plt1.data[0].x = unpack(x);
+    plt1.data[0].y = unpack(y);
+
+    Plotly.redraw(plt0);
+    Plotly.redraw(plt1);
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Animation /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+function compute() {
+    /*
+     Update z every frame and simultaneously update x and y.
+     This is simply a combination of updateX, updateY and updateZ.
+     */
+    var dt = 0.05;
+    ops.subs(x, ops.muls(auxX, z, k), w * dt);
+    ops.sineq(x);
+    ops.adds(y, ops.muls(auxY, z, k), phi - w * dt);
+    ops.sineq(y);
+    ops.mulseq(y, BoverA);
+    ops.addseq(z, dt);
+}
+
+function animatePlot0() {
+    compute();
+
+    Plotly.animate('plt0', {
+        data: [{
+            x: unpack(x),
+            y: unpack(y),
+            z: unpack(z)
+        }, {
+            x: unpack(x),
+            y: unpack(pool.zeros([nPoints])),
+            z: unpack(z)
+        }, {
+            x: unpack(pool.zeros([nPoints])),
+            y: unpack(y),
+            z: unpack(z)
+        }]
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
+
+    reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
+}

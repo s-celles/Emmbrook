@@ -8,64 +8,68 @@ $gradient2: rgb(255, 255, 255);
 $gradient3: rgb(210, 210, 210);
 
 #app-div {
-  background-image: linear-gradient(to bottom, $color2 0, $color2 100%);
-  border-radius: 10px;
-  box-shadow: inset 1px 2px 3px 1px $color1, 1px 2px 1px $color4;
-  margin-top: 15px;
-  opacity: .8;
-  text-align: center;
+    background-image: linear-gradient(to bottom, $color2 0, $color2 100%);
+    border-radius: 10px;
+    box-shadow: inset 1px 2px 3px 1px $color1, 1px 2px 1px $color4;
+    margin-top: 15px;
+    opacity: .8;
+    text-align: center;
 }
 
 #control-panel {
-  padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 #plots {
-  margin-bottom: 10px;
-  margin-top: 20px;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
 .plot {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 .main-svg {
-  border-radius: 7px;
-  box-shadow: inset 1px 2px 1px 1px $shadow1;
+    border-radius: 7px;
+    box-shadow: inset 1px 2px 1px 1px $shadow1;
 }
 
 .slider-row {
-  display: inline-block;
-  margin: 10px auto;
-  max-width: 40%;
+    display: inline-block;
+    margin: 10px auto;
+    max-width: 40%;
 }
 
 .slider.slider-horizontal {
-  display: block;
-  margin: 0 auto;
-  max-width: 70%;
+    display: block;
+    margin: 0 auto;
+    max-width: 70%;
 }
 
 .slider-selection {
-  background-image: linear-gradient(to bottom, $color2 0, $gradient3 100%);
-  box-shadow: inset 1px 1px 1px 0 $shadow1;
+    background-image: linear-gradient(to bottom, $color2 0, $gradient3 100%);
+    box-shadow: inset 1px 1px 1px 0 $shadow1;
 }
 
 .slider-track-high {
-  background-image: linear-gradient(to bottom, $gradient1 0, $gradient2 100%);
-  box-shadow: inset 1px 1px 1px 0 $shadow1;
+    background-image: linear-gradient(to bottom, $gradient1 0, $gradient2 100%);
+    box-shadow: inset 1px 1px 1px 0 $shadow1;
+}
+
+.col-md-1, .col-md-10 {
+    display: inline;
 }
 
 section {
-  margin-bottom: 30px;
-  padding-top: 30px;
+    margin-bottom: 30px;
+    padding-top: 30px;
 }
 
 p {
-  font-size: medium;
+    font-size: medium;
 }
 
 ol {
-  font-size: medium;
-  list-style-type: lower-alpha;
+    font-size: medium;
+    list-style-type: lower-alpha;
 }

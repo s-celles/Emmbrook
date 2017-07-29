@@ -287,3 +287,10 @@ package-lock.json
 
 # browserify file
 *.bundle.js
+
+# eslint
+.eslintrc.json
+=*
+
+# macOS
+.DS_Store
