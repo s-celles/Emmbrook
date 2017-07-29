@@ -40,7 +40,7 @@ var epsilon2 = Math.pow(n2, 2); // Permittivity
 thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
-    plotHeatmap(option);
+    plotHeatmap(option, style);
 
     $('#thetaISliderVal')
         .text(thetaI);
@@ -52,7 +52,7 @@ n1Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap(option);
+    plotHeatmap(option, style);
 
     $('#n1SliderVal')
         .text(n1);
@@ -64,40 +64,40 @@ n2Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap(option);
+    plotHeatmap(option, style);
 
     $('#n2SliderVal')
         .text(n2);
 });
 
-$('inci')
-    .click(function () {
-        option = 0;
-    });
+// $('inci')
+//     .click(function () {
+//         option = 0;
+//     });
 
-$('refl')
-    .click(function () {
-        option = 1;
-    });
+// $('refl')
+//     .click(function () {
+//         option = 1;
+//     });
 
-$('trans')
-    .click(function () {
-        option = 2;
-    });
+// $('trans')
+//     .click(function () {
+//         option = 2;
+//     });
 
-$('inst')
-    .click(function () {
-        console.log(option);
-        style = 0;
-        plotHeatmap(option, style);
-    });
+// $('inst')
+//     .click(function () {
+//         console.log(option);
+//         style = 0;
+//         plotHeatmap(option, style);
+//     });
 
-$('tav')
-    .click(function () {
-        console.log(option);
-        style = 1;
-        plotHeatmap(option, style);
-    });
+// $('tav')
+//     .click(function () {
+//         console.log(option);
+//         style = 1;
+//         plotHeatmap(option, style);
+//     });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -379,13 +379,13 @@ function updateAveragedIntensity(option) {
     return fieldRe;
 }
 
-// // // Plot
+// Plot
 function plotHeatmap(option, style) {
     switch (style) {
     case 1:
         plt0.data[0].z = unpack(updateAveragedIntensity(option));
         break;
-    default:
+    case 0:
         plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
     };
 
@@ -393,19 +393,19 @@ function plotHeatmap(option, style) {
 }
 
 function createHeatmap(option, style) {
-    var intens;
-    switch (style) {
-    case 1:
-        intens = unpack(updateAveragedIntensity(option));
-        break;
-    default:
-        intens = unpack(updateInstantaneousIntensity(option));
-    };
+    // var intens;
+    // switch (style) {
+    // case 1:
+    //     intens = unpack(updateAveragedIntensity(0));
+    //     break;
+    // case 0:
+    //     intens = unpack(updateInstantaneousIntensity(0));
+    // };
 
     var trace = {
         // x: zCoord,
         // y: xCoord,
-        z: intens,
+        z: unpack(updateInstantaneousIntensity(0)),
         type: 'heatmap'
     };
 
@@ -445,7 +445,7 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-createHeatmap(2, 0);
+createHeatmap(0, 0);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
