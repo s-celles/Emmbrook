@@ -19,6 +19,7 @@ var tile = require('ndarray-tile');
 
 
 // Variables
+// Interactive variables
 var n1Slider = $('#n1')
     .bootstrapSlider();
 var n2Slider = $('#n2')
@@ -30,8 +31,13 @@ var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slid
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-var option = 0;
-var style = 0;
+// Start and stop animation
+var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+var reqId; // Cancels an animation frame request previously scheduled through a call to window.requestAnimationFrame().
+var opt = 3; // For plotting incident, reflected, transmitted light intensity
+var sty = 0; // For plotting instantaneous or time-averaged intensiy
 // Variables for calculation
 var epsilon1 = Math.pow(n1, 2); // Permittivity
 var epsilon2 = Math.pow(n2, 2); // Permittivity
@@ -41,7 +47,7 @@ var epsilon2 = Math.pow(n2, 2); // Permittivity
 thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotRatios();
-    plotHeatmap(option, style);
+    plotHeatmap(opt, sty);
 
     $('#thetaISliderVal')
         .text(thetaI);
@@ -53,7 +59,7 @@ n1Slider.on('change', function () {
     // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap(option, style);
+    plotHeatmap(opt, sty);
 
     $('#n1SliderVal')
         .text(n1);
@@ -62,13 +68,26 @@ n1Slider.on('change', function () {
 n2Slider.on('change', function () {
     n2 = n2Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
-    // plotBrewsterAngle();
     plotRatios();
     plotRatioLists();
-    plotHeatmap(option, style);
+    plotHeatmap(opt, sty);
 
     $('#n2SliderVal')
         .text(n2);
+});
+
+var isAnimationOff = true; // No animation as default
+$('#animate').click(function () {
+    var $this = $(this);
+    if (isAnimationOff) { // If no animation, a click starts it.
+        isAnimationOff = false;
+        $this.text('Off');
+        reqId = requestAnimationFrame(animatePlot0(opt, sty)); // Start animation
+    } else { // If is already in animation, a click stop it.
+        isAnimationOff = true;
+        $this.text('On');
+        cancelAnimationFrame(reqId); // Stop animation
+    }
 });
 
 // $('inci')
@@ -236,9 +255,10 @@ var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
-var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]);
-var xMesh = tile(xCoord, [1, zNum + 1, 3]);
-var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1]).transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]);
+var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1]).transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+
 
 function reshape(oldNdarr, newShape) {
     /*
@@ -291,7 +311,7 @@ function updateMask() {
 function updateGeneralAmplitude() {
     /* 
      Consider amplitudes for the three waves together.
-     Amplitude A has dimension (zNum + 1, xNum + 1, 3).
+     Amplitude A has dimension [xNum + 1, zNum + 1, 3].
      A changes when thetaI, n1, or n2 change.
      */
     var r, t;
@@ -322,10 +342,9 @@ function tensorProduct(mesh, vec) {
 function updateEachAmplitude() {
     /*
      Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension (zNum + 1, xNum + 1, 3).
-     Imaginary amplitude imA has dimension (zNum + 1, xNum + 1, 3).
+     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
+     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
      */
-    var time = 0;
     var reA = updateGeneralAmplitude();
     var imA = pool.zeros(reA.shape);
     var kZ, kX;
@@ -347,65 +366,77 @@ function updateEachAmplitude() {
 function selectField(option) {
     var reA, imA;
     [reA, imA] = updateEachAmplitude();
-    switch (option) {
-        case 0:
-            return [reA.pick(null, null, 0), imA.pick(null, null, 0)];
-        case 1:
-            return [reA.pick(null, null, 1), imA.pick(null, null, 1)];
-        case 2:
-            return [reA.pick(null, null, 2), imA.pick(null, null, 2)];
+    if (option === 3) {
+        var reSum, imSum;
+        reSum = pool.zeros(reA.shape.slice(0, -1));
+        imSum = pool.zeros(imA.shape.slice(0, -1));
+        for (var i = 0; i < 3; i++) {
+            cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+        }
+        return [reSum, imSum];
+    } else {
+        return [reA.pick(null, null, option), imA.pick(null, null, option)];
     }
 }
 
 function updateInstantaneousIntensity(option) {
-    var fieldRe, fieldIm;
-    [fieldRe, fieldIm] = selectField(option);
-    // Re((a + i b)*(a + i b)) = a^2 - b^2
-    ops.powseq(fieldRe, 2); // a^2
-    ops.powseq(fieldIm, 2); // b^2
-    ops.subeq(fieldRe, fieldIm); // a^2 - b^2
-    return fieldRe;
+    var reField, imField;
+    [reField, imField] = selectField(option);
+    // re( (a + i b)*(a + i b) ) = a^2 - b^2
+    ops.powseq(reField, 2); // a^2
+    ops.powseq(imField, 2); // b^2
+    ops.subeq(reField, imField); // a^2 - b^2
+    return reField;
 }
 
 function updateAveragedIntensity(option) {
-    var fieldRe, fieldIm;
-    [fieldRe, fieldIm] = selectField(option);
-    // Re((a + i b)*(a - i b)) = a^2 + b^2
-    ops.powseq(fieldRe, 2); // a^2
-    ops.powseq(fieldIm, 2); // b^2
-    ops.addeq(fieldRe, fieldIm); // a^2 - b^2
-    return fieldRe;
+    var reField, imField;
+    [reField, imField] = selectField(option);
+    // re( (a + i b)*(a - i b) ) = a^2 + b^2
+    ops.powseq(reField, 2); // a^2
+    ops.powseq(imField, 2); // b^2
+    ops.addeq(reField, imField); // a^2 - b^2
+    return reField;
 }
 
 // Plot
-function plotHeatmap(option, style) {
+function chooseIntensity(option, style) {
+    /*
+     option: {0: incident, 1: reflected intensity, 2: transmitted intensity, 3: total intensity},
+     style: {0: instantaneous intensity, 1: time-averaged intensity}.
+     */
     switch (style) {
         case 1:
-            plt0.data[0].z = unpack(updateAveragedIntensity(option));
-            break;
+            return unpack(updateAveragedIntensity(option));
         case 0:
-            plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
+            return unpack(updateInstantaneousIntensity(option));
     };
+}
+
+function plotHeatmap(option, style) {
+    plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    var intens;
-    switch (style) {
-        case 1:
-            intens = unpack(updateAveragedIntensity(option));
-            break;
-        case 0:
-            intens = unpack(updateInstantaneousIntensity(option));
+    var trace0 = {
+        x: unpack(zCoord),
+        y: unpack(xCoord),
+        z: chooseIntensity(option, style),
+        type: 'heatmap',
+        zmin: -1,
+        zmax: 1
     };
 
-    var trace = {
-        // x: zCoord,
-        // y: xCoord,
-        z: intens,
-        type: 'heatmap'
-    };
+    var trace1 = {
+        x: [0, 0],
+        y: [0, 10],
+        mode: 'lines',
+        line: {
+            color: '#ff0000'
+        }
+    }
 
     var texts = {
         x: [-8, 8],
@@ -417,7 +448,7 @@ function createHeatmap(option, style) {
         }
     };
 
-    var data = [trace];
+    var data = [trace0, trace1, texts];
 
     var layout = {
         title: 'E filed intensity',
@@ -426,10 +457,87 @@ function createHeatmap(option, style) {
         },
         xaxis: {
             title: 'z'
-        }
+        },
+        showlegend: false
     };
 
     Plotly.newPlot('plt0', data, layout);
+}
+
+
+// Animation
+function updateFrame(option, style) {
+    /*
+     Generate individual wave amplitudes for incident, reflected, and transmitted.
+     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
+     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+     */
+    var time = 0;
+    var dt = 0.1;
+    var omega = Math.PI * 2;
+    var reA = updateGeneralAmplitude();
+    var imA = pool.zeros(reA.shape);
+    var kZ, kX;
+    [kZ, kX] = updateKxAndKz();
+    var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
+    var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
+    var aux = pool.zeros(kxx.shape);
+    ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+    ops.subseq(aux, omega * (time + dt)); // aux -= omega * (time + dt)
+    // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    var rePhase, imPhase;
+    rePhase = pool.zeros(aux.shape);
+    imPhase = pool.zeros(aux.shape);
+    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    cops.muleq(reA, imA, rePhase, imPhase);
+    var reSum, imSum;
+    if (option === 3) {
+        reSum = pool.zeros(reA.shape.slice(0, -1));
+        imSum = pool.zeros(imA.shape.slice(0, -1));
+        for (var i = 0; i < 3; i++) {
+            cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+        }
+    } else {
+        [reSum, imSum] = [reA.pick(null, null, option), imA.pick(null, null, option)];
+    }
+    switch (style) {
+        case 1:
+            ops.powseq(reSum, 2); // a^2
+            ops.powseq(imSum, 2); // b^2
+            ops.addeq(reSum, imSum); // a^2 - b^2
+        case 0:
+            ops.powseq(reSum, 2); // a^2
+            ops.powseq(imSum, 2); // b^2
+            ops.subeq(reSum, imSum); // a^2 - b^2
+    }
+    return reSum;
+}
+
+function animatePlot0(option, style) {
+    var reField;
+    reField = updateFrame(option, style);
+
+    Plotly.animate('plt0', {
+        data: [{
+            x: unpack(zCoord),
+            y: unpack(xCoord),
+            z: reField,
+            type: 'heatmap',
+            zmin: -1,
+            zmax: 1
+        }]
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
+
+    reqId = requestAnimationFrame(animatePlot0(option, style)); // Return the request id, that uniquely identifies the entry in the callback list.
 }
 
 
@@ -443,7 +551,7 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-createHeatmap(0, 0);
+createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
