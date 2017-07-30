@@ -10,11 +10,12 @@
 // Import libraries
 var numeric = require('numeric');
 var ndarray = require('ndarray');
-var meshgrid = require('ndarray-meshgrid');
-var ops = require("ndarray-ops");
-var pool = require("ndarray-scratch");
-var unpack = require("ndarray-unpack");
-var cops = require("ndarray-complex"); // Complex arithmetic operations for ndarrays.
+var ops = require('ndarray-ops');
+var pool = require('ndarray-scratch');
+var unpack = require('ndarray-unpack');
+var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
+var show = require('ndarray-show');
+var tile = require('ndarray-tile');
 
 
 // Variables
@@ -228,26 +229,23 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 200;
-var xNum = 100;
-var zCoord = numeric.linspace(-10, 10, zNum + 1);
-var xCoord = numeric.linspace(0, 10, xNum + 1);
-var zStep = (zCoord[zCoord.length - 1] - zCoord[0]) / zNum;
-var xStep = (xCoord[xCoord.length - 1] - xCoord[0]) / xNum;
-var optionIndices = numeric.linspace(0, 2, 3);
+var zNum = 100;
+var xNum = 50;
+var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
+var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
+var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
-// Something similar to np.meshgrid, but less straightforward to see, thus
-// you should check the documentation detaily on
-// http://scijs.net/packages/#scijs/ndarray.
-// We fix mesh in this simulation.
-var mesh = meshgrid([-10, 10, zStep], [0, 10, xStep], [0, 2, 1]);
-var zMesh = mesh.pick(null, 0); // Pick the first column of mesh
-var xMesh = mesh.pick(null, 1); // Pick the second column of mesh
-var iMesh = mesh.pick(null, 2); // Pick the third column of mesh
-zMesh = ndarray(zMesh, [zNum + 1, xNum + 1, 3]); // Reshape zMesh to (zNum + 1, xNum + 1, 3)
-xMesh = ndarray(xMesh, [zNum + 1, xNum + 1, 3]); // Reshape xMesh to (xNum + 1, xNum + 1, 3)
-iMesh = ndarray(iMesh, [zNum + 1, xNum + 1, 3]); // Reshape iMesh to (zNum + 1, xNum + 1, 3)
+// Generate a 3D mesh cotaining z, x and i coordinates for each point.
+var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]);
+var xMesh = tile(xCoord, [1, zNum + 1, 3]);
+var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1]).transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]);
 
+function reshape(oldNdarr, newShape) {
+    /*
+     Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
+     */
+    return ndarray(oldNdarr.data, newShape);
+}
 
 function updateKVector() {
     /*
@@ -277,19 +275,16 @@ function updateKxAndKz() {
 
 function updateMask() {
     /*
-     Masks regions: z<0 for I, R; z>0 for T
-     greaterEqualThan0 and lessThan0 will not change in this simulation.
+     Masks regions: z<0 for incident and reflected; z>=0 for transmitted.
+     Note greaterEqualThan0 and lessThan0 will not change in this simulation.
      */
     // 1 for positive z, 0 otherwise
     var greaterEqualThan0 = pool.malloc(iMesh.shape);
-    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a true/false grid.
-    ops.mulseq(greaterEqualThan0, 1); // You need to numerify it.
+    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a 1/0 grid.
 
     // 1 for negative z, 0 otherwise
     var lessThan0 = pool.malloc(iMesh.shape);
-    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a true/false grid.
-    ops.mulseq(lessThan0, 1); // You need to numerify it.
-
+    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a 1/0 grid.
     return [greaterEqualThan0, lessThan0];
 }
 
@@ -301,10 +296,9 @@ function updateGeneralAmplitude() {
      */
     var r, t;
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
-    var A = pool.malloc(iMesh.shape);
-    var aux = pool.malloc(iMesh.shape); // Auxiliary grid
-    ops.eqs(aux, iMesh, 0); // aux[i,j,k] = true if iMesh[i,j,k] === 0
-    ops.addeq(A, ops.mulseq(aux, 1)); // A += np.equal(iMesh, 0) * 1
+    var A = pool.zeros(iMesh.shape);
+    var aux = pool.zeros(iMesh.shape); // Auxiliary grid
+    ops.eqs(A, iMesh, 0); // aux[i,j,k] = 1 if iMesh[i,j,k] === 0
     ops.eqs(aux, iMesh, 1); // aux[i,j,k] = true if iMesh[i,j,k] === 1
     ops.addeq(A, ops.mulseq(aux, r)); // A += np.equal(iMesh, 1) * r
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
@@ -333,15 +327,19 @@ function updateEachAmplitude() {
      */
     var time = 0;
     var reA = updateGeneralAmplitude();
-    var imA = pool.malloc(reA.shape);
+    var imA = pool.zeros(reA.shape);
     var kZ, kX;
     [kZ, kX] = updateKxAndKz();
     var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-    ops.addeq(kxx, kzz); // kxx = kx * x + kz * z
-    // If we want to use ndarray-complex, we need to separate real and imaginary parts.
-    var rePhase = ops.coseq(kxx); // re( np.exp(1j * (kx * x + kz * z)) )
-    var imPhase = ops.sineq(kxx); // im( np.exp(1j * (kx * x + kz * z)) )
+    var aux = pool.zeros(kxx.shape);
+    ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+    // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    var rePhase, imPhase;
+    rePhase = pool.zeros(aux.shape);
+    imPhase = pool.zeros(aux.shape);
+    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
+    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
     cops.muleq(reA, imA, rePhase, imPhase);
     return [reA, imA];
 }
@@ -350,12 +348,12 @@ function selectField(option) {
     var reA, imA;
     [reA, imA] = updateEachAmplitude();
     switch (option) {
-    case 0:
-        return [reA.pick(null, null, 0), imA.pick(null, null, 0)];
-    case 1:
-        return [reA.pick(null, null, 1), imA.pick(null, null, 1)];
-    case 2:
-        return [reA.pick(null, null, 2), imA.pick(null, null, 2)];
+        case 0:
+            return [reA.pick(null, null, 0), imA.pick(null, null, 0)];
+        case 1:
+            return [reA.pick(null, null, 1), imA.pick(null, null, 1)];
+        case 2:
+            return [reA.pick(null, null, 2), imA.pick(null, null, 2)];
     }
 }
 
@@ -382,30 +380,30 @@ function updateAveragedIntensity(option) {
 // Plot
 function plotHeatmap(option, style) {
     switch (style) {
-    case 1:
-        plt0.data[0].z = unpack(updateAveragedIntensity(option));
-        break;
-    case 0:
-        plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
+        case 1:
+            plt0.data[0].z = unpack(updateAveragedIntensity(option));
+            break;
+        case 0:
+            plt0.data[0].z = unpack(updateInstantaneousIntensity(option));
     };
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    // var intens;
-    // switch (style) {
-    // case 1:
-    //     intens = unpack(updateAveragedIntensity(0));
-    //     break;
-    // case 0:
-    //     intens = unpack(updateInstantaneousIntensity(0));
-    // };
+    var intens;
+    switch (style) {
+        case 1:
+            intens = unpack(updateAveragedIntensity(option));
+            break;
+        case 0:
+            intens = unpack(updateInstantaneousIntensity(option));
+    };
 
     var trace = {
         // x: zCoord,
         // y: xCoord,
-        z: unpack(updateInstantaneousIntensity(0)),
+        z: intens,
         type: 'heatmap'
     };
 
