@@ -44,8 +44,8 @@ var epsilon2 = Math.pow(n2, 2); // Permittivity
 // Interactive interfaces
 thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
-    plotRatios();
     plotHeatmap(opt, sty);
+    plotRatios();
 
     $('#thetaISliderVal')
         .text(thetaI);
@@ -54,10 +54,9 @@ thetaISlider.on('change', function () {
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
-    // plotBrewsterAngle();
+    plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
-    plotHeatmap(opt, sty);
 
     $('#n1SliderVal')
         .text(n1);
@@ -66,9 +65,9 @@ n1Slider.on('change', function () {
 n2Slider.on('change', function () {
     n2 = n2Slider.bootstrapSlider('getValue');
     [reflectRatioList, transmitRatioList] = updateRatioLists();
+    plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
-    plotHeatmap(opt, sty);
 
     $('#n2SliderVal')
         .text(n2);
@@ -234,13 +233,6 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-thetaI = 0.5;
-n1 = 1;
-n2 = 2;
-var epsilon1 = Math.pow(n1, 2); // Permittivity
-var epsilon2 = Math.pow(n2, 2); // Permittivity
-// var zNum = 10;
-// var xNum = 5;
 var zNum = 250;
 var xNum = 125;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
@@ -304,7 +296,7 @@ function updateMask() {
     return [greaterEqualThan0, lessThan0];
 }
 
-function updateGeneralAmplitude() {
+function updateGeneralAmplitude() { // correct
     /* 
      Consider amplitudes for the three waves together.
      Amplitude A has dimension [xNum + 1, zNum + 1, 3].
@@ -329,10 +321,12 @@ function updateGeneralAmplitude() {
 }
 
 function tensorProduct(mesh, vec) {
+    var aux = pool.zeros(mesh.shape);
     for (var i = 0; i < vec.shape[0]; i++) {
-        ops.mulseq(mesh.pick(null, null, i), vec.get(i));
+        // You cannot use ops.mulseq for it will accumulate the sum and cause wrong result.
+        ops.muls(aux.pick(null, null, i), mesh.pick(null, null, i), vec.get(i));
     }
-    return mesh;
+    return aux;
 }
 
 function updateEachAmplitude() {
@@ -419,20 +413,19 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
-    plt0.data[0].z = chooseIntensity(option, style);
+    plt0.data[0].z = chooseIntensity(opt, sty);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    console.log(chooseIntensity(option, style))
     var trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
         type: 'heatmap',
-        zmin: -1,
-        zmax: 1
+        zmin: -2,
+        zmax: 2
     };
 
     var trace1 = {
