@@ -36,8 +36,6 @@ var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAni
     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 var cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 var reqId; // Cancels an animation frame request previously scheduled through a call to window.requestAnimationFrame().
-var opt = 3; // For plotting incident, reflected, transmitted light intensity
-var sty = 0; // For plotting instantaneous or time-averaged intensiy
 // Variables for calculation
 var epsilon1 = Math.pow(n1, 2); // Permittivity
 var epsilon2 = Math.pow(n2, 2); // Permittivity
@@ -77,18 +75,19 @@ n2Slider.on('change', function () {
 });
 
 var isAnimationOff = true; // No animation as default
-$('#animate').click(function () {
-    var $this = $(this);
-    if (isAnimationOff) { // If no animation, a click starts it.
-        isAnimationOff = false;
-        $this.text('Off');
-        reqId = requestAnimationFrame(animatePlot0(opt, sty)); // Start animation
-    } else { // If is already in animation, a click stop it.
-        isAnimationOff = true;
-        $this.text('On');
-        cancelAnimationFrame(reqId); // Stop animation
-    }
-});
+$('#animate')
+    .click(function () {
+        var $this = $(this);
+        if (isAnimationOff) { // If no animation, a click starts it.
+            isAnimationOff = false;
+            $this.text('Off');
+            reqId = requestAnimationFrame(animatePlot0); // Start animation
+        } else { // If is already in animation, a click stop it.
+            isAnimationOff = true;
+            $this.text('On');
+            cancelAnimationFrame(reqId); // Stop animation
+        }
+    });
 
 // $('inci')
 //     .click(function () {
@@ -181,11 +180,6 @@ function plotRatioLists() {
     Plotly.redraw(plt1);
 }
 
-function plotBrewsterAngle() {
-    plt1.data[3].x = [updateBrewsterAngle()];
-    Plotly.redraw(plt1);
-}
-
 function createRatioPlot() {
     var layout = {
         title: 'reflection and transmission ratio',
@@ -231,14 +225,6 @@ function createRatioPlot() {
         name: 'ratios'
     };
 
-    var trace3 = {
-        x: [1],
-        y: [0],
-        type: 'scatter',
-        mode: 'markers',
-        name: 'Brewster angle'
-    };
-
     var data = [trace0, trace1, trace2];
 
     Plotly.newPlot(plt1, data, layout);
@@ -248,16 +234,26 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 100;
-var xNum = 50;
+thetaI = 0.5;
+n1 = 1;
+n2 = 2;
+var epsilon1 = Math.pow(n1, 2); // Permittivity
+var epsilon2 = Math.pow(n2, 2); // Permittivity
+// var zNum = 10;
+// var xNum = 5;
+var zNum = 250;
+var xNum = 125;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
+var opt = 3; // For plotting incident, reflected, transmitted, or total light intensity
+var sty = 0; // For plotting instantaneous or time-averaged intensiy
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
 var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
-var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1]).transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
+    .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 
 
 function reshape(oldNdarr, newShape) {
@@ -366,16 +362,23 @@ function updateEachAmplitude() {
 function selectField(option) {
     var reA, imA;
     [reA, imA] = updateEachAmplitude();
-    if (option === 3) {
-        var reSum, imSum;
-        reSum = pool.zeros(reA.shape.slice(0, -1));
-        imSum = pool.zeros(imA.shape.slice(0, -1));
-        for (var i = 0; i < 3; i++) {
-            cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+    switch (option) {
+    case 3:
+        {
+            var reSum, imSum;
+            reSum = pool.zeros(reA.shape.slice(0, -1));
+            imSum = pool.zeros(imA.shape.slice(0, -1));
+            for (var i = 0; i < 3; i++) {
+                cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+            }
+            return [reSum, imSum];
         }
-        return [reSum, imSum];
-    } else {
+    case 0: // Fallthrough, incident field
+    case 1: // Fallthrough, reflected field
+    case 2: // Transmitted field
         return [reA.pick(null, null, option), imA.pick(null, null, option)];
+    default:
+        alert("You have inputted a wrong option!");
     }
 }
 
@@ -406,10 +409,12 @@ function chooseIntensity(option, style) {
      style: {0: instantaneous intensity, 1: time-averaged intensity}.
      */
     switch (style) {
-        case 1:
-            return unpack(updateAveragedIntensity(option));
-        case 0:
-            return unpack(updateInstantaneousIntensity(option));
+    case 0:
+        return unpack(updateInstantaneousIntensity(option));
+    case 1:
+        return unpack(updateAveragedIntensity(option));
+    default:
+        alert("You have inputted a wrong style!");
     };
 }
 
@@ -420,6 +425,7 @@ function plotHeatmap(option, style) {
 }
 
 function createHeatmap(option, style) {
+    console.log(chooseIntensity(option, style))
     var trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
@@ -466,79 +472,79 @@ function createHeatmap(option, style) {
 
 
 // Animation
-function updateFrame(option, style) {
-    /*
-     Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
-     */
-    var time = 0;
-    var dt = 0.1;
-    var omega = Math.PI * 2;
-    var reA = updateGeneralAmplitude();
-    var imA = pool.zeros(reA.shape);
-    var kZ, kX;
-    [kZ, kX] = updateKxAndKz();
-    var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
-    var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-    var aux = pool.zeros(kxx.shape);
-    ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
-    ops.subseq(aux, omega * (time + dt)); // aux -= omega * (time + dt)
-    // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    var rePhase, imPhase;
-    rePhase = pool.zeros(aux.shape);
-    imPhase = pool.zeros(aux.shape);
-    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-    cops.muleq(reA, imA, rePhase, imPhase);
-    var reSum, imSum;
-    if (option === 3) {
-        reSum = pool.zeros(reA.shape.slice(0, -1));
-        imSum = pool.zeros(imA.shape.slice(0, -1));
-        for (var i = 0; i < 3; i++) {
-            cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
-        }
-    } else {
-        [reSum, imSum] = [reA.pick(null, null, option), imA.pick(null, null, option)];
-    }
-    switch (style) {
-        case 1:
-            ops.powseq(reSum, 2); // a^2
-            ops.powseq(imSum, 2); // b^2
-            ops.addeq(reSum, imSum); // a^2 - b^2
-        case 0:
-            ops.powseq(reSum, 2); // a^2
-            ops.powseq(imSum, 2); // b^2
-            ops.subeq(reSum, imSum); // a^2 - b^2
-    }
-    return reSum;
-}
+// function updateFrame() {
+//     /*
+//      Generate individual wave amplitudes for incident, reflected, and transmitted.
+//      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
+//      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+//      */
+//     var time = 0;
+//     var dt = 0.1;
+//     var omega = Math.PI * 2;
+//     var reA = updateGeneralAmplitude();
+//     var imA = pool.zeros(reA.shape);
+//     var kZ, kX;
+//     [kZ, kX] = updateKxAndKz();
+//     var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
+//     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
+//     var aux = pool.zeros(kxx.shape);
+//     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+//     ops.subseq(aux, omega * (time + dt)); // aux -= omega * (time + dt)
+//     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+//     var rePhase, imPhase;
+//     rePhase = pool.zeros(aux.shape);
+//     imPhase = pool.zeros(aux.shape);
+//     ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+//     ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+//     cops.muleq(reA, imA, rePhase, imPhase);
+//     var reSum, imSum;
+//     if (opt === 3) {
+//         reSum = pool.zeros(reA.shape.slice(0, -1));
+//         imSum = pool.zeros(imA.shape.slice(0, -1));
+//         for (var i = 0; i < 3; i++) {
+//             cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+//         }
+//     } else {
+//         [reSum, imSum] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
+//     }
+//     switch (sty) {
+//     case 1:
+//         ops.powseq(reSum, 2); // a^2
+//         ops.powseq(imSum, 2); // b^2
+//         ops.addeq(reSum, imSum); // a^2 - b^2
+//     case 0:
+//         ops.powseq(reSum, 2); // a^2
+//         ops.powseq(imSum, 2); // b^2
+//         ops.subeq(reSum, imSum); // a^2 - b^2
+//     }
+//     return reSum;
+// }
 
-function animatePlot0(option, style) {
-    var reField;
-    reField = updateFrame(option, style);
+// function animatePlot0() {
+//     var reField;
+//     reField = updateFrame();
 
-    Plotly.animate('plt0', {
-        data: [{
-            x: unpack(zCoord),
-            y: unpack(xCoord),
-            z: reField,
-            type: 'heatmap',
-            zmin: -1,
-            zmax: 1
-        }]
-    }, {
-        transition: {
-            duration: 0
-        },
-        frame: {
-            duration: 0,
-            redraw: false
-        }
-    });
+//     Plotly.animate('plt0', {
+//         data: [{
+//             x: unpack(zCoord),
+//             y: unpack(xCoord),
+//             z: reField,
+//             type: 'heatmap',
+//             zmin: -1,
+//             zmax: 1
+//         }]
+//     }, {
+//         transition: {
+//             duration: 0
+//         },
+//         frame: {
+//             duration: 0,
+//             redraw: false
+//         }
+//     });
 
-    reqId = requestAnimationFrame(animatePlot0(option, style)); // Return the request id, that uniquely identifies the entry in the callback list.
-}
+//     reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
+// }
 
 
 ///////////////////////////////////////////////////////////////////////////

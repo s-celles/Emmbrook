@@ -117,7 +117,6 @@ function updateEachAmplitude() {
      Real amplitude reA has dimension (zNum + 1, xNum + 1, 3).
      Imaginary amplitude imA has dimension (zNum + 1, xNum + 1, 3).
      */
-    var time = 0;
     var reA = updateGeneralAmplitude();
     var imA = pool.zeros(reA.shape);
     var kZ, kX;
@@ -133,6 +132,7 @@ function updateEachAmplitude() {
     ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
     ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
     cops.muleq(reA, imA, rePhase, imPhase);
+    console.log(unpack(reA))
     return [reA, imA];
 }
 
@@ -168,3 +168,4 @@ function updateAveragedIntensity(option) {
     ops.addeq(fieldRe, fieldIm); // a^2 - b^2
     return fieldRe;
 }
+// console.log(unpack(updateInstantaneousIntensity(0)))
