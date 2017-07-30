@@ -17,7 +17,8 @@ var epsilon1 = Math.pow(n1, 2); // Permittivity
 var epsilon2 = Math.pow(n2, 2); // Permittivity
 var zNum = 10;
 var xNum = 5;
-zStep = 0.08; xStep =0.08;
+zStep = 0.08;
+xStep = 0.08;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
@@ -34,12 +35,27 @@ var lambda = 1;
 // zMesh = ndarray(zMesh, [3, xNum + 1, zNum + 1]) //.transpose(); // Reshape zMesh to (zNum + 1, xNum + 1, 3)
 // xMesh = ndarray(xMesh, [xNum + 1, zNum + 1, 3]) // Reshape xMesh to (xNum + 1, xNum + 1, 3)
 // iMesh = ndarray(iMesh, [3, xNum + 1, zNum + 1]) // Reshape iMesh to (zNum + 1, xNum + 1, 3)
-// function meshgrid(ndarr1, ndarr2, ndarr3) {
-//     return tile(ndarr1, [1].concat(ndarr2.shape).concat(ndarr3.shape));
-// }
-var zMesh = tile(zCoord, [6, 3])
-zMesh = ndarray(zMesh.data, [6, 11, 3]);
-console.log(unpack(zMesh))
+function meshgrid(ndarr1, ndarr2, ndarr3) {
+    var shape1 = ndarr1.shape;
+    var shape2 = ndarr2.shape;
+    var shape3 = ndarr3.shape;
+    var aux = tile(ndarr1, shape2.concat(shape3));
+    return ndarray(aux.data, shape2.concat(shape1)
+        .concat(shape3));
+}
+
+function reshape(oldNdarr, newShape) {
+    return ndarray(oldNdarr.data, newShape);
+}
+
+// var zMesh = tile(zCoord, [6, 3])
+// zMesh = ndarray(zMesh.data, [6, 11, 3]);
+var zMesh = meshgrid(zCoord, xCoord, optionIndices);
+var xMesh = tile(xCoord, [11, 3]);
+// var iMesh = meshgrid(optionIndices, xCoord, zCoord);
+var iMesh = tile(optionIndices, [11, 6]);
+iMesh = reshape(iMesh, [6, 11, 3]);
+console.log(unpack(iMesh));
 // var zMesh = meshgrid(zCoord, xCoord, optionIndices);
 
 // console.log((zMesh));
