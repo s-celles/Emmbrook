@@ -23,42 +23,14 @@ var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
-// Something similar to np.meshgrid, but less straightforward to see, thus
-// you should check the documentation detaily on
-// http://scijs.net/packages/#scijs/ndarray.
-// We fix mesh in this simulation.
-// var mesh = meshgrid([-10, 10, zStep], [0, 10, xStep], [0, 2, 1]);
-// var zMesh = mesh.pick(null, 0); // Pick the first column of mesh
-// var xMesh = mesh.pick(null, 1); // Pick the second column of mesh
-// var iMesh = mesh.pick(null, 2); // Pick the third column of mesh
-// console.log(zMesh)
-// zMesh = ndarray(zMesh, [3, xNum + 1, zNum + 1]) //.transpose(); // Reshape zMesh to (zNum + 1, xNum + 1, 3)
-// xMesh = ndarray(xMesh, [xNum + 1, zNum + 1, 3]) // Reshape xMesh to (xNum + 1, xNum + 1, 3)
-// iMesh = ndarray(iMesh, [3, xNum + 1, zNum + 1]) // Reshape iMesh to (zNum + 1, xNum + 1, 3)
-function meshgrid(ndarr1, ndarr2, ndarr3) {
-    var shape1 = ndarr1.shape;
-    var shape2 = ndarr2.shape;
-    var shape3 = ndarr3.shape;
-    var aux = tile(ndarr1, shape2.concat(shape3));
-    return ndarray(aux.data, shape2.concat(shape1)
-        .concat(shape3));
-}
 
 function reshape(oldNdarr, newShape) {
     return ndarray(oldNdarr.data, newShape);
 }
 
-// var zMesh = tile(zCoord, [6, 3])
-// zMesh = ndarray(zMesh.data, [6, 11, 3]);
-var zMesh = meshgrid(zCoord, xCoord, optionIndices);
-var xMesh = tile(xCoord, [11, 3]);
-// var iMesh = meshgrid(optionIndices, xCoord, zCoord);
-var iMesh = tile(optionIndices, [11, 6]);
-iMesh = reshape(iMesh, [6, 11, 3]);
-console.log(unpack(iMesh));
-// var zMesh = meshgrid(zCoord, xCoord, optionIndices);
-
-// console.log((zMesh));
+var zMesh = reshape(tile(zCoord, [6, 3]), [6, 11, 3]);
+var xMesh = tile(xCoord, [1, 11, 3]);
+var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, 11]).transpose(1, 0), [6]), [6, 11, 3]);
 
 // function updateRatioValues(tI) {
 //     /*
