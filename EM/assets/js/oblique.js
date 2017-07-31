@@ -25,12 +25,15 @@ var n2Slider = $('#n2')
     .bootstrapSlider();
 var thetaISlider = $('#thetaI')
     .bootstrapSlider();
+var lambdaSlider = $('#lambda')
+    .bootstrapSlider();
 var n1 = n1Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
 var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
+var lambda = lambdaSlider.bootstrapSlider('getValue'); // Get incident wave length from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-var opt = 0;
+var opt = 3;
 var sty = 0;
 // Start and stop animation
 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -51,6 +54,14 @@ thetaISlider.on('change', function () {
     $('#thetaISliderVal')
         .text(thetaI);
 });
+
+lambdaSlider.on('change', function () {
+    lambda = lambdaSlider.bootstrapSlider('getValue');
+    plotHeatmap(opt, sty);
+
+    $('#lambdaSliderVal')
+        .text(lambda);
+})
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
@@ -81,10 +92,8 @@ $('opt')
         switch (selectedValue) {
         case 'inci':
             opt = 0;
-            break;
         case 'refl':
             opt = 1;
-            break;
         case 'trans':
             opt = 2;
             break;
@@ -110,7 +119,7 @@ $('sty')
         default:
             console.log('lll');
         };
-        console.log(opt, sty)
+        console.log()
         plotHeatmap(opt, sty);
     });
 
@@ -287,12 +296,11 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 150;
-var xNum = 75;
+var zNum = 250;
+var xNum = 125;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
-var lambda = 1;
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
 var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
@@ -603,6 +611,8 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 $('#thetaISliderVal')
     .text(thetaI);
+$('#lambdaSliderVal')
+    .text(lambda);
 $('#n1SliderVal')
     .text(n1);
 $('#n2SliderVal')
