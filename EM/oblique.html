@@ -8,10 +8,10 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title>EM propagation at oblique incidence to an interface between dissimilar dielectric media.</title>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/oblique.css" type="text/css">
 </head>
@@ -58,15 +58,7 @@
                         </h1>
                     </div>
                     <p>
-                        From EM-class we know $$ \begin{align} E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_T, \\ \epsilon_1 (-E_I \sin
-                        \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T, \end{align} $$ this can be simplified
-                        to $$ \begin{align} 1 + r &= \alpha t, \\ 1 - r &= \beta t, \end{align} $$ where \( \alpha \) and
-                        \( \beta \) are defined as $$ \begin{align} \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I},
-                        \\ \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_1 }. \end{align} $$ From above
-                        we can derive $$ \begin{align} t &= \frac{ 2 }{ \alpha + \beta }, \\ r &= \frac{ \alpha - \beta }{\alpha
-                        + \beta }. \end{align} $$ We can even delve further that $$ \begin{align} \alpha &= \frac{ \sqrt{1
-                        - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\ \beta &= \tan \theta_B,
-                        \end{align} $$ where \( \theta_B \) is called Brewster angle.
+                        From EM-class we know $$ \begin{align} E_I \cos \theta_I + E_R \cos \theta_R &= E_T \cos \theta_T, \\ \epsilon_1 (-E_I \sin \theta_I + E_R \sin \theta_R) &= -\epsilon_2 E_T \sin \theta_T, \end{align} $$ this can be simplified to $$ \begin{align} 1 + r &= \alpha t, \\ 1 - r &= \beta t, \end{align} $$ where \( \alpha \) and \( \beta \) are defined as $$ \begin{align} \alpha &\equiv \frac{ \cos \theta_T }{ \cos \theta_I}, \\ \beta &\equiv \frac{ n_1 }{ n_2 } \frac{ \epsilon_2 }{ \epsilon_1 }. \end{align} $$ From above we can derive $$ \begin{align} t &= \frac{ 2 }{ \alpha + \beta }, \\ r &= \frac{ \alpha - \beta }{\alpha + \beta }. \end{align} $$ We can even delve further that $$ \begin{align} \alpha &= \frac{ \sqrt{1 - \big( \frac{ n_1 }{ n_2 } \big)^2 \sin^2 \theta_I} }{ \cos \theta_I }, \\ \beta &= \tan \theta_B, \end{align} $$ where \( \theta_B \) is called Brewster angle.
 
                     </p>
                 </div>
@@ -118,23 +110,36 @@
                                 <span id="n2SliderVal" class="sliderVal"></span>
                                 <input id="n2" data-slider-min="1" data-slider-max="4" data-slider-step="0.01" data-slider-value="2">
                             </div>
-                            <!-- <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="true">Dropdown<span class="caret"></span></button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                    <li><a href="#dropdownMenu1" id="inci">Incident</a></li>
-                                    <li><a href="#dropdownMenu1" id="refl">Reflected</a></li>
-                                    <li><a href="#dropdownMenu1" id="trans">Transmit</a></li>
+                            <!-- Single button -->
+                            <!-- <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="opt">Option<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#opt" id="inci">Incident</a></li>
+                                    <li><a href="#opt" id="refl">Reflected</a></li>
+                                    <li><a href="#opt" id="trans">Transmitted</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="#opt" id="total">Total</a></li>
                                 </ul>
                             </div>
-                            <div class="dropdown">
-                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="true">Dropdown<span class="caret"></span></button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                    <li><a href="#dropdownMenu2" id="inst">Instantaneous</a></li>
-                                    <li><a href="#dropdownMenu2" id="tav">Time averaged</a></li>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="sty">Style<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#sty" id="inst">Instantaneous intensity</a></li>
+                                    <li><a href="#sty" id="tav">Time averaged intensity</a></li>
                                 </ul>
                             </div> -->
+                            <select class="selectpicker" id="opt">
+                                <option val="inci">Incident</option>
+                                <option val="refl">Reflected</option>
+                                <option val="trans">Transmitted</option>
+                                <option val="total">Total</option>
+                            </select>
+                            <select class="selectpicker" id="sty">
+                                <option val="inst">Instantaneous intensity</option>
+                                <option val="tav">Time averaged intensity</option>
+                            </select>
                         </div>
                         <div class="col-md-1 col-md-offset-11">
                             <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false" autocomplete="off" id="animate">On</button>
@@ -151,12 +156,10 @@
                     <h3>Questions</h3>
                     <ol>
                         <li>
-                            Observe Brewster angle. What is the relation between \( \theta_B \) and \( \theta_T \) when an unpolarized light is incident
-                            at this angle?
+                            Observe Brewster angle. What is the relation between \( \theta_B \) and \( \theta_T \) when an unpolarized light is incident at this angle?
                         </li>
                         <li>
-                            Observe the amplitude of reflective and transmitted light. How do they change when \( \theta_I \), \( n_1 \), and \( n_2
-                            \) change? How do reflected and transmitted intensity change?
+                            Observe the amplitude of reflective and transmitted light. How do they change when \( \theta_I \), \( n_1 \), and \( n_2 \) change? How do reflected and transmitted intensity change?
                         </li>
                         <li>
                             Observe total reflection phenomenon. What is the sufficient condition for this phenomenon?
@@ -168,11 +171,11 @@
     </section>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
     <!-- User script -->
     <script type="text/javascript" src="assets/js/oblique.bundle.js"></script>
     <!-- MathJax -->

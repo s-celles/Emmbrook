@@ -30,6 +30,8 @@ var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slid
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+var opt = 0;
+var sty = 0;
 // Start and stop animation
 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -72,9 +74,49 @@ n2Slider.on('change', function () {
         .text(n2);
 });
 
+$('opt')
+    .on('changed.bs.select', function () {
+        var selectedValue = parseInt($(this)
+            .val());
+        switch (selectedValue) {
+        case 'inci':
+            opt = 0;
+            break;
+        case 'refl':
+            opt = 1;
+            break;
+        case 'trans':
+            opt = 2;
+            break;
+        case 'total':
+            opt = 3;
+        default:
+            console.log('hhh');
+        };
+        console.log(opt, sty)
+        plotHeatmap(opt, sty);
+    });
+
+$('sty')
+    .on('changed.bs.select', function () {
+        var selectedValue = parseInt($(this)
+            .val());
+        switch (selectedValue) {
+        case 'inst':
+            sty = 0;
+            break;
+        case 'tav':
+            sty = 1;
+        default:
+            console.log('lll');
+        };
+        console.log(opt, sty)
+        plotHeatmap(opt, sty);
+    });
+
 var isAnimationOff = true; // No animation as default
 $('#animate')
-    .click(function () {
+    .on('click', function () {
         var $this = $(this);
         if (isAnimationOff) { // If no animation, a click starts it.
             isAnimationOff = false;
@@ -88,32 +130,45 @@ $('#animate')
     });
 
 // $('inci')
-//     .click(function () {
-//         option = 0;
+//     .on('click', function () {
+//         opt = 0;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
 //     });
 
 // $('refl')
-//     .click(function () {
-//         option = 1;
+//     .on('click', function () {
+//         opt = 1;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
 //     });
 
 // $('trans')
-//     .click(function () {
-//         option = 2;
+//     .on('click', function () {
+//         opt = 2;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
+//     });
+
+// $('total')
+//     .on('click', function () {
+//         opt = 3;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
 //     });
 
 // $('inst')
-//     .click(function () {
-//         console.log(option);
-//         style = 0;
-//         plotHeatmap(option, style);
+//     .on('click', function () {
+//         sty = 0;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
 //     });
 
 // $('tav')
-//     .click(function () {
-//         console.log(option);
-//         style = 1;
-//         plotHeatmap(option, style);
+//     .on('click', function () {
+//         sty = 1;
+//         console.log(opt, sty)
+//         plotHeatmap(opt, sty);
 //     });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
@@ -232,14 +287,12 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 10;
-var xNum = 5;
+var zNum = 150;
+var xNum = 75;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
-var opt = 1; // For plotting incident, reflected, transmitted, or total light intensity
-var sty = 0; // For plotting instantaneous or time-averaged intensiy
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
 var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
@@ -357,13 +410,13 @@ function selectField(option) {
     switch (option) {
     case 3:
         {
-            var reSum, imSum;
-            reSum = pool.zeros(reA.shape.slice(0, -1));
-            imSum = pool.zeros(imA.shape.slice(0, -1));
+            var reField, imField;
+            reField = pool.zeros(reA.shape.slice(0, -1));
+            imField = pool.zeros(imA.shape.slice(0, -1));
             for (var i = 0; i < 3; i++) {
-                cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+                cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
             }
-            return [reSum, imSum];
+            return [reField, imField];
         }
     case 0: // Fallthrough, incident field
     case 1: // Fallthrough, reflected field
@@ -411,14 +464,12 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
-    console.log(chooseIntensity(option, style))
     plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    console.log(chooseIntensity(option, style))
     var trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
@@ -464,25 +515,30 @@ function createHeatmap(option, style) {
 }
 
 
-// Animation
+///////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Animation /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+// var reField, imField;
+// var dt = 0.1;
+// var omega = Math.PI * 2;
+// var aux = pool.zeros(kxx.shape);
+
+
 // function updateFrame() {
 //     /*
 //      Generate individual wave amplitudes for incident, reflected, and transmitted.
 //      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
 //      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
 //      */
-//     var time = 0;
-//     var dt = 0.1;
-//     var omega = Math.PI * 2;
 //     var reA = updateGeneralAmplitude();
 //     var imA = pool.zeros(reA.shape);
 //     var kZ, kX;
 //     [kZ, kX] = updateKxAndKz();
 //     var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
 //     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-//     var aux = pool.zeros(kxx.shape);
 //     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
-//     ops.subseq(aux, omega * (time + dt)); // aux -= omega * (time + dt)
+//     ops.subseq(aux, omega * dt); // aux -= omega * dt
+//     console.log(aux)
 //     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
 //     var rePhase, imPhase;
 //     rePhase = pool.zeros(aux.shape);
@@ -490,32 +546,34 @@ function createHeatmap(option, style) {
 //     ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
 //     ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
 //     cops.muleq(reA, imA, rePhase, imPhase);
-//     var reSum, imSum;
-//     if (opt === 3) {
-//         reSum = pool.zeros(reA.shape.slice(0, -1));
-//         imSum = pool.zeros(imA.shape.slice(0, -1));
-//         for (var i = 0; i < 3; i++) {
-//             cops.addeq(reSum, imSum, reA.pick(null, null, i), imA.pick(null, null, i));
+//     switch (opt) {
+//     case 3:
+//         {
+//             reField = pool.zeros(reA.shape.slice(0, -1));
+//             imField = pool.zeros(imA.shape.slice(0, -1));
+//             for (var i = 0; i < 3; i++) {
+//                 cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
+//             }
 //         }
-//     } else {
-//         [reSum, imSum] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
+//     case 0: // Fallthrough, incident field
+//     case 1: // Fallthrough, reflected field
+//     case 2: // Transmitted field
+//         [reField, imField] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
 //     }
 //     switch (sty) {
 //     case 1:
-//         ops.powseq(reSum, 2); // a^2
-//         ops.powseq(imSum, 2); // b^2
-//         ops.addeq(reSum, imSum); // a^2 - b^2
+//         ops.powseq(reField, 2); // a^2
+//         ops.powseq(imField, 2); // b^2
+//         ops.addeq(reField, imField); // a^2 - b^2
 //     case 0:
-//         ops.powseq(reSum, 2); // a^2
-//         ops.powseq(imSum, 2); // b^2
-//         ops.subeq(reSum, imSum); // a^2 - b^2
-//     }
-//     return reSum;
+//         ops.powseq(reField, 2); // a^2
+//         ops.powseq(imField, 2); // b^2
+//         ops.subeq(reField, imField); // a^2 - b^2
+//     };
 // }
 
 // function animatePlot0() {
-//     var reField;
-//     reField = updateFrame();
+//     updateFrame();
 
 //     Plotly.animate('plt0', {
 //         data: [{
@@ -523,8 +581,8 @@ function createHeatmap(option, style) {
 //             y: unpack(xCoord),
 //             z: reField,
 //             type: 'heatmap',
-//             zmin: -1,
-//             zmax: 1
+//             zmin: -2,
+//             zmax: 2
 //         }]
 //     }, {
 //         transition: {
