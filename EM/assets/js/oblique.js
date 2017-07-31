@@ -14,7 +14,6 @@ var ops = require('ndarray-ops');
 var pool = require('ndarray-scratch');
 var unpack = require('ndarray-unpack');
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
-var show = require('ndarray-show');
 var tile = require('ndarray-tile');
 
 
@@ -233,20 +232,19 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 250;
-var xNum = 125;
+var zNum = 10;
+var xNum = 5;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 var lambda = 1;
-var opt = 3; // For plotting incident, reflected, transmitted, or total light intensity
+var opt = 1; // For plotting incident, reflected, transmitted, or total light intensity
 var sty = 0; // For plotting instantaneous or time-averaged intensiy
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
 var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
     .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
-
 
 function reshape(oldNdarr, newShape) {
     /*
@@ -413,12 +411,14 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
-    plt0.data[0].z = chooseIntensity(opt, sty);
+    console.log(chooseIntensity(option, style))
+    plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
+    console.log(chooseIntensity(option, style))
     var trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
