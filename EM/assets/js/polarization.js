@@ -16,9 +16,12 @@ var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
 
 // Initialize variables
 // UI variables
-var phiSlider = $('#phi').bootstrapSlider({});
-var timeSlider = $('#time').bootstrapSlider({});
-var BoverASlider = $('#BoverA').bootstrapSlider({});
+var phiSlider = $('#phi')
+    .bootstrapSlider({});
+var timeSlider = $('#time')
+    .bootstrapSlider({});
+var BoverASlider = $('#BoverA')
+    .bootstrapSlider({});
 var phi = phiSlider.bootstrapSlider('getValue');
 var time = timeSlider.bootstrapSlider('getValue');
 var BoverA = BoverASlider.bootstrapSlider('getValue');
@@ -49,7 +52,8 @@ phiSlider.on('change', function () {
     updateZ();
     plot();
 
-    $('#phiSliderVal').text(phi);
+    $('#phiSliderVal')
+        .text(phi);
 });
 
 timeSlider.on('change', function () {
@@ -59,7 +63,8 @@ timeSlider.on('change', function () {
     updateZ();
     plot();
 
-    $('#timeSliderVal').text(time);
+    $('#timeSliderVal')
+        .text(time);
 });
 
 BoverASlider.on('change', function () {
@@ -69,22 +74,24 @@ BoverASlider.on('change', function () {
     updateZ();
     plot();
 
-    $('#BoverASliderVal').text(BoverA);
+    $('#BoverASliderVal')
+        .text(BoverA);
 });
 
 var isAnimationOff = true; // No animation as default
-$('#animate').click(function () {
-    var $this = $(this);
-    if (isAnimationOff) { // If no animation, a click starts it.
-        isAnimationOff = false;
-        $this.text('Off');
-        reqId = requestAnimationFrame(animatePlot0); // Start animation
-    } else { // If is already in animation, a click stop it.
-        isAnimationOff = true;
-        $this.text('On');
-        cancelAnimationFrame(reqId); // Stop animation
-    }
-});
+$('#animate')
+    .click(function () {
+        var $this = $(this);
+        if (isAnimationOff) { // If no animation, a click starts it.
+            isAnimationOff = false;
+            $this.text('Off');
+            reqId = requestAnimationFrame(animatePlot0); // Start animation
+        } else { // If is already in animation, a click stop it.
+            isAnimationOff = true;
+            $this.text('On');
+            cancelAnimationFrame(reqId); // Stop animation
+        }
+    });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -97,9 +104,12 @@ window.onresize = function () {
 updateX();
 updateY();
 createPlots();
-$('#phiSliderVal').text(phi);
-$('#timeSliderVal').text(time);
-$('#BoverASliderVal').text(BoverA);
+$('#phiSliderVal')
+    .text(phi);
+$('#timeSliderVal')
+    .text(time);
+$('#BoverASliderVal')
+    .text(BoverA);
 
 
 ///////////////////////////////////////////////////////////////////////////

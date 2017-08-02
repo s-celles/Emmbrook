@@ -13,9 +13,12 @@ var ampRand = Math.random();
 var phsRand = Math.random();
 var freqRand = Math.random();
 
-var phaseSlider = $('#myPhase').bootstrapSlider({});
-var ampSlider = $('#myAmplitude').bootstrapSlider({});
-var freqSlider = $('#myFreq').bootstrapSlider({});
+var phaseSlider = $('#myPhase')
+    .bootstrapSlider({});
+var ampSlider = $('#myAmplitude')
+    .bootstrapSlider({});
+var freqSlider = $('#myFreq')
+    .bootstrapSlider({});
 var phase = phaseSlider.bootstrapSlider('getValue');
 var amplitude = ampSlider.bootstrapSlider('getValue');
 var frequency = freqSlider.bootstrapSlider('getValue');
@@ -47,14 +50,37 @@ function plot() {
 
 function createPlot() {
     var layout = {
-        margin: {t: 0},
-        yaxis: {title: 'Height Y (m)', titlefont: {size: 18}},
-        xaxis: {title: 'Time t (s)', titlefont: {size: 18}}
+        margin: {
+            t: 0
+        },
+        yaxis: {
+            title: 'Height Y (m)',
+            titlefont: {
+                size: 18
+            }
+        },
+        xaxis: {
+            title: 'Time t (s)',
+            titlefont: {
+                size: 18
+            }
+        }
     };
 
-    var data = [
-        {x: xv, y: yv, type: 'scatter', mode: 'lines', name: 'fit'},
-        {x: xPoints, y: yPoints, type: 'scatter', mode: 'markers', name: 'data'}
+    var data = [{
+            x: xv,
+            y: yv,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'fit'
+        },
+        {
+            x: xPoints,
+            y: yPoints,
+            type: 'scatter',
+            mode: 'markers',
+            name: 'data'
+        }
     ];
 
     Plotly.newPlot(plt, data, layout);
@@ -67,32 +93,38 @@ window.onresize = function () {
 
 // Interactive interfaces
 phaseSlider.on('change', function () {
-    phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
+    phase = phaseSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     plot();
 
-    $('#phaseSliderVal').text(phase)
+    $('#phaseSliderVal')
+        .text(phase);
 });
 
 ampSlider.on('change', function () {
-    amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
+    amplitude = ampSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     plot();
 
-    $('#ampSliderVal').text(amplitude)
+    $('#ampSliderVal')
+        .text(amplitude);
 });
 
 freqSlider.on('change', function () {
-    frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
+    frequency = freqSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     plot();
 
-    $('#freqSliderVal').text(frequency)
+    $('#freqSliderVal')
+        .text(frequency);
 });
 
 // Initialize
 yvUpdate();
 createPlot();
-$('#phaseSliderVal').text(phase);
-$('#ampSliderVal').text(amplitude);
-$('#freqSliderVal').text(frequency);
+$('#phaseSliderVal')
+    .text(phase);
+$('#ampSliderVal')
+    .text(amplitude);
+$('#freqSliderVal')
+    .text(frequency);

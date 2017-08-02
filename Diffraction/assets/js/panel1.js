@@ -13,10 +13,14 @@ var zIntensity = [];
 var zHM = create2DArray(nY);
 var thetaMax = 0.2;
 
-var nSlider = $('#N').bootstrapSlider({});
-var lambdaSlider = $('#lambda').bootstrapSlider({});
-var aSlider = $('#a').bootstrapSlider({});
-var clSlider = $('#cl').bootstrapSlider({});
+var nSlider = $('#N')
+    .bootstrapSlider({});
+var lambdaSlider = $('#lambda')
+    .bootstrapSlider({});
+var aSlider = $('#a')
+    .bootstrapSlider({});
+var clSlider = $('#cl')
+    .bootstrapSlider({});
 var n = nSlider.bootstrapSlider('getValue');
 var lambda = lambdaSlider.bootstrapSlider('getValue');
 var a = aSlider.bootstrapSlider('getValue');
@@ -31,7 +35,7 @@ function xContUpdate() {
      */
     var q0 = 2 * Math.sin(thetaMax) * cl;
     for (var i = 0; i < nCont; i++) {
-        xCont[i] = q0 * (i / nCont - 0.5)
+        xCont[i] = q0 * (i / nCont - 0.5);
     }
 }
 
@@ -63,10 +67,10 @@ function zUpdate() {
 
     var kv = 1e9 * 2 * Math.PI / lambda;
     for (var k = 0; k < nY; k++) {
-        for (i = 0; i < nCont; i++) {  // Outer loop over positions on the screen
+        for (i = 0; i < nCont; i++) { // Outer loop over positions on the screen
             zRe[i] = 0;
             zIm[i] = 0;
-            for (j = 0; j < n; j++) {  // Inner loop over particles
+            for (j = 0; j < n; j++) { // Inner loop over particles
                 var r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
                 zRe[i] += Math.cos(kv * r);
                 zIm[i] += Math.sin(kv * r);
@@ -166,7 +170,8 @@ nSlider.on('change', function () {
     zUpdate();
     plot();
 
-    $('#nSliderVal').text(n);
+    $('#nSliderVal')
+        .text(n);
 });
 
 lambdaSlider.on('change', function () {
@@ -174,7 +179,8 @@ lambdaSlider.on('change', function () {
     zUpdate();
     plot();
 
-    $('#lambdaSliderVal').text(lambda);
+    $('#lambdaSliderVal')
+        .text(lambda);
 });
 
 aSlider.on('change', function () {
@@ -182,7 +188,8 @@ aSlider.on('change', function () {
     zUpdate();
     plot();
 
-    $('#aSliderVal').text(a);
+    $('#aSliderVal')
+        .text(a);
 });
 
 clSlider.on('change', function () {
@@ -192,7 +199,8 @@ clSlider.on('change', function () {
     zUpdate();
     plot();
 
-    $('#clSliderVal').text(cl);
+    $('#clSliderVal')
+        .text(cl);
 });
 
 
@@ -201,7 +209,11 @@ xContUpdate();
 yContUpdate();
 zUpdate();
 createPlots();
-$('#nSliderVal').text(n);
-$('#lambdaSliderVal').text(lambda);
-$('#aSliderVal').text(a);
-$('#clSliderVal').text(cl);
+$('#nSliderVal')
+    .text(n);
+$('#lambdaSliderVal')
+    .text(lambda);
+$('#aSliderVal')
+    .text(a);
+$('#clSliderVal')
+    .text(cl);
