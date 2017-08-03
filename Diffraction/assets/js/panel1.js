@@ -3,14 +3,14 @@
  */
 
 // Initialize variables
-var nCont = 200;
-var nY = 200;
-var xCont = [];
-var yCont = [];
-var zRe = [];
-var zIm = [];
-var zIntensity = [];
-var zHM = create2DArray(nY);
+var nCont = 250;
+var nY = 250;
+var xCont = new Array(nCont);
+var yCont = new Array(nY);
+var zRe = new Array(nCont);
+var zIm = new Array(nCont);
+var zIntensity = new Array(nCont);
+var zHM = create2DArray(nY, nCont);
 var thetaMax = 0.2;
 
 var nSlider = $('#N')
@@ -52,8 +52,9 @@ function zUpdate() {
     /*
      zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
      */
-    var xP = [];
-    if (Number.isInteger(n)) { // If n is integer, then determine whether odd or even.
+    var xP = new Array(n);
+    if (Number.isInteger(n)) {
+        // If n is integer, then determine whether odd or even.
         if (isEven(n)) {
             for (var i = 0; i < n; i++) {
                 xP[i] = 1e-6 * a * (i - n / 2 + 0.5);
@@ -63,15 +64,18 @@ function zUpdate() {
                 xP[j] = 1e-6 * a * (j - (n - 1) / 2);
             }
         }
-    } else new TypeError('n is neither even nor odd!');
+    } else new TypeError('N is neither even nor odd!');
 
     var kv = 1e9 * 2 * Math.PI / lambda;
     for (var k = 0; k < nY; k++) {
-        for (i = 0; i < nCont; i++) { // Outer loop over positions on the screen
+        for (i = 0; i < nCont; i++) {
+            // Outer loop over positions on the screen
             zRe[i] = 0;
             zIm[i] = 0;
-            for (j = 0; j < n; j++) { // Inner loop over particles
-                var r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
+            for (j = 0; j < n; j++) {
+                // Inner loop over particles
+                var r = Math.sqrt(Math.pow(yCont[k], 2) +
+                    Math.pow(xCont[i] - xP[j], 2));
                 zRe[i] += Math.cos(kv * r);
                 zIm[i] += Math.sin(kv * r);
             }
@@ -87,10 +91,10 @@ function isEven(n) {
     return n % 2 === 0;
 }
 
-function create2DArray(rows) {
-    var arr = [];
+function create2DArray(rows, columns) {
+    var arr = new Array(rows);
     for (var i = 0; i < rows; i++) {
-        arr[i] = [];
+        arr[i] = new Array(columns);
     }
     return arr;
 }
