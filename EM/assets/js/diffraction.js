@@ -3,14 +3,14 @@
  */
 
 // Initialize variables
-var nCont = 250;
+var nX = 250;
 var nY = 250;
-var xCont = new Array(nCont);
+var xCont = new Array(nX);
 var yCont = new Array(nY);
-var zRe = new Array(nCont);
-var zIm = new Array(nCont);
-var zIntensity = new Array(nCont);
-var zHM = create2DArray(nY, nCont);
+var zRe = new Array(nX);
+var zIm = new Array(nX);
+var zIntensity = new Array(nX);
+var zHM = create2DArray(nY, nX);
 var thetaMax = 0.2;
 
 var nSlider = $('#N')
@@ -27,7 +27,7 @@ var a = aSlider.bootstrapSlider('getValue');
 var cl = clSlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-var farOrNear = 'near';
+var farOrNear = 'far';
 
 
 function xContUpdate() {
@@ -35,8 +35,8 @@ function xContUpdate() {
      xCont will change when cl changes.
      */
     var q0 = 2 * Math.sin(thetaMax) * cl;
-    for (var i = 0; i < nCont; i++) {
-        xCont[i] = q0 * (i / nCont - 0.5);
+    for (var i = 0; i < nX; i++) {
+        xCont[i] = q0 * (i / nX - 0.5);
     }
 }
 
@@ -69,7 +69,7 @@ function zUpdate() {
 
     var kv = 1e9 * 2 * Math.PI / lambda;
     for (var k = 0; k < nY; k++) {
-        for (i = 0; i < nCont; i++) {
+        for (i = 0; i < nX; i++) {
             // Outer loop over positions on the screen
             zRe[i] = 0;
             zIm[i] = 0;
@@ -77,13 +77,14 @@ function zUpdate() {
                 // Inner loop over particles
                 var r;
                 if (farOrNear === 'far') {
-                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + 10000);
+                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + 1);
                 } else {
                     r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
                 }
                 zRe[i] += Math.cos(kv * r) / r;
                 zIm[i] += Math.sin(kv * r) / r;
             }
+            // Intensity is E times its complex conjugate
             if (k === nY - 1) {
                 zIntensity[i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
             }
@@ -122,7 +123,8 @@ function createPlots() {
             title: 'Screen position y',
             titlefont: {
                 size: 18
-            }
+            },
+            range: [xCont[0] * 1.2, xCont[xCont.length - 1] * 1.2]
         }
     };
 
@@ -138,7 +140,7 @@ function createPlots() {
         y: zIntensity,
         type: 'scatter',
         mode: 'lines',
-        name: 'continuous'
+        name: 'continuous',
     }];
 
     var data1 = [{
@@ -152,22 +154,16 @@ function createPlots() {
     Plotly.newPlot(plt1, data1, layout1);
 }
 
-function plotDataUpdate() {
+function plot() {
     plt0.data[0].x = xCont;
     plt0.data[0].y = zIntensity;
 
     plt1.data[0].z = zHM;
-}
 
-function plotsRedraw() {
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
 }
 
-function plot() {
-    plotDataUpdate();
-    plotsRedraw();
-}
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
