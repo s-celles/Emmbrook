@@ -3,25 +3,31 @@
  */
 
 // Import libraries
-var ndarray = require("ndarray");  // Modular multidimensional arrays for JavaScript.
-var ops = require("ndarray-ops");  // A collection of common mathematical operations for ndarrays. Implemented using cwise.
-var show = require("ndarray-show");  // For debugging
-var cwise = require("cwise");  // Elementwise operation
-var pool = require("ndarray-scratch");  // A simple wrapper for typedarray-pool.
-var unpack = require("ndarray-unpack");  // Converts an ndarray into an array-of-native-arrays.
-var fill = require("ndarray-fill");  // Initialize an ndarray with a function.
-var fft = require("ndarray-fft");  // A fast Fourier transform implementation for ndarrays.
+var ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+var ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var show = require('ndarray-show'); // For debugging
+var cwise = require('cwise'); // Elementwise operation
+var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
+var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
+var fill = require('ndarray-fill'); // Initialize an ndarray with a function.
+var fft = require('ndarray-fft'); // A fast Fourier transform implementation for ndarrays.
 
 
 // Initialize variables
 // UI variables
-var sampleSlider = $('#mySamples').bootstrapSlider({});
-var t0Slider = $('#myT0').bootstrapSlider({});
-var b1Slider = $('#b1').bootstrapSlider();
-var b3Slider = $('#b3').bootstrapSlider();
-var b5Slider = $('#b5').bootstrapSlider();
-var b7Slider = $('#b7').bootstrapSlider();
-var nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Number of samples
+var sampleSlider = $('#mySamples')
+    .bootstrapSlider({});
+var t0Slider = $('#myT0')
+    .bootstrapSlider({});
+var b1Slider = $('#b1')
+    .bootstrapSlider({});
+var b3Slider = $('#b3')
+    .bootstrapSlider({});
+var b5Slider = $('#b5')
+    .bootstrapSlider({});
+var b7Slider = $('#b7')
+    .bootstrapSlider({});
+var nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue')); // Number of samples
 var t0 = t0Slider.bootstrapSlider('getValue');
 var b1 = b1Slider.bootstrapSlider('getValue');
 var b3 = b3Slider.bootstrapSlider('getValue');
@@ -32,18 +38,18 @@ var plt1 = document.getElementById('plt1');
 // Basic variables
 var nCont = 1000;
 var xHi = 10;
-var xCont = ndarray(new Float64Array(nCont));  // Continuous value
-var yCont = ndarray(new Float64Array(nCont));  // Continuous value
+var xCont = ndarray(new Float64Array(nCont)); // Continuous value
+var yCont = ndarray(new Float64Array(nCont)); // Continuous value
 var yApprox = ndarray(new Float64Array(nCont));
 var fmin = 1.0 / xHi;
-var xv = ndarray(new Float64Array(nSample));  // Sample points
-var yv = ndarray(new Float64Array(nSample));  // Sample points
+var xv = ndarray(new Float64Array(nSample)); // Sample points
+var yv = ndarray(new Float64Array(nSample)); // Sample points
 
-fill(xCont, function (i) {  // Initialize xCont
+fill(xCont, function (i) { // Initialize xCont
     /*
      xCont will not change in this simulation.
      */
-    return i / nCont * xHi - 0.5 * xHi;  // Fills an ndarray with a pattern.
+    return i / nCont * xHi - 0.5 * xHi; // Fills an ndarray with a pattern.
 });
 
 
@@ -52,7 +58,7 @@ function xvUpdate() {
     /*
      xv will not change unless the number of samples changes.
      */
-    xv = ndarray(new Float64Array(nSample));  // Sample x coordinates
+    xv = ndarray(new Float64Array(nSample)); // Sample x coordinates
     fill(xv, function (i) {
         return (i / nSample - 0.5) * xHi;
     });
@@ -63,13 +69,13 @@ function yvUpdate() {
      yv will change as the number of samples and t0 change.
      */
     yv = ndarray(new Float64Array(nSample));
-    for (var i = 0; i < nSample; i++) {  // Sample y coordinates
+    for (var i = 0; i < nSample; i++) { // Sample y coordinates
         if (xv.get(i) > (t0 + 5.0)) {
-            yv.set(i, -0.5)
+            yv.set(i, -0.5);
         } else if (xv.get(i) > t0 || xv.get(i) < (t0 - 5.0)) {
-            yv.set(i, 0.5)
+            yv.set(i, 0.5);
         } else {
-            yv.set(i, -0.5)
+            yv.set(i, -0.5);
         }
     }
 }
@@ -80,7 +86,7 @@ function yContUpdate() {
      */
     for (var i = 0; i < nCont; i++) {
         if (xCont.get(i) > (t0 + 5.0)) {
-            yCont.set(i, -0.5);  // yCont[i] = -0.5
+            yCont.set(i, -0.5); // yCont[i] = -0.5
         } else if (xCont.get(i) > t0 || xCont.get(i) < (t0 - 5.0)) {
             yCont.set(i, 0.5);
         } else {
@@ -97,37 +103,42 @@ function yApproxUpdate() {
         return b1 * Math.sin(0.62832 * (xCont.get(i) - t0)) +
             b3 * Math.sin(3. * 0.62832 * (xCont.get(i) - t0)) +
             b5 * Math.sin(5. * 0.62832 * (xCont.get(i) - t0)) +
-            b7 * Math.sin(7. * 0.62832 * (xCont.get(i) - t0))
+            b7 * Math.sin(7. * 0.62832 * (xCont.get(i) - t0));
     });
 }
 
 // FFT
-function FFTUpdate() {
-    fv = pool.clone(yv);  // Real part, size: nSample
-    fv_im = pool.zeros([nSample], 'float64');  // Imaginary part
+function fftUpdate() {
+    fv = pool.clone(yv); // Real part, size: nSample
+    fv_im = pool.zeros([nSample], 'float64'); // Imaginary part
     xv_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_im_half = ndarray(new Float64Array(nSample / 2 + 1));
     fv_abs_half = ndarray(new Float64Array(nSample / 2 + 1));
 
-    fft(1, fv, fv_im);  // Forward FFT
-    ops.mulseq(fv_im, -1);  // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
+    fft(1, fv, fv_im); // Forward FFT
+    ops.mulseq(fv_im, -1); // The -seq suffix denotes scalar/broadcast operations, and then perform an assignment to original array.
 
-    fill(xv_half, function (i) {  // xv_half[i] = i * fmin;
+    fill(xv_half, function (i) { // xv_half[i] = i * fmin;
         return i * fmin;
     });
 
-    fill(fv_half, function (i) {  // fv_half[i] = fv[i] * 2 / nSample;
+    fill(fv_half, function (i) { // fv_half[i] = fv[i] * 2 / nSample;
         return fv.get(i) * 2 / nSample;
     });
 
-    fill(fv_im_half, function (i) {  // fv_im_half[i] = fv_im[i] * 2 / nSample;
+    fill(fv_im_half, function (i) { // fv_im_half[i] = fv_im[i] * 2 / nSample;
         return fv_im.get(i) * 2 / nSample;
     });
 
     var p = ndarray(new Float64Array(nSample / 2 + 1));
     var q = ndarray(new Float64Array(nSample / 2 + 1));
-    ops.sqrteq(ops.add(fv_abs_half, ops.pows(p, fv_im_half, 2), ops.pows(q, fv_half, 2)));  // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
+    ops.sqrteq(
+        ops.add(fv_abs_half,
+            ops.pows(p, fv_im_half, 2),
+            ops.pows(q, fv_half, 2)
+        )
+    ); // fv_abs_half[i] = Math.sqrt(Math.pow(fv_im_half[i], 2) + Math.pow(fv_half[i], 2));
 }
 
 // Plot
@@ -140,8 +151,8 @@ function plotDataUpdate() {
     ops.mulseq(b, Math.sin(10 * t0));
     ops.mulseq(c, Math.cos(10 * t0));
     ops.mulseq(d, Math.sin(10 * t0));
-    ops.addeq(a, b);  // a += b
-    ops.subeq(c, d);  // c -= d
+    ops.addeq(a, b); // a += b
+    ops.subeq(c, d); // c -= d
 
     plt0.data[0].x = unpack(xv);
     plt0.data[0].y = unpack(yv);
@@ -163,7 +174,7 @@ function plotsRedraw() {
 
 function plot() {
     plotDataUpdate();
-    plotsRedraw()
+    plotsRedraw();
 }
 
 function createPlots() {
@@ -204,8 +215,7 @@ function createPlots() {
         }
     };
 
-    var data0 = [
-        {
+    var data0 = [{
             x: unpack(xv),
             y: unpack(yv),
             type: 'scatter',
@@ -231,8 +241,7 @@ function createPlots() {
         }
     ];
 
-    var data1 = [
-        {
+    var data1 = [{
             x: unpack(xv),
             y: unpack(yv),
             type: 'bar',
@@ -256,7 +265,7 @@ function createPlots() {
     ];
 
     Plotly.newPlot(plt0, data0, layout0);
-    Plotly.newPlot(plt1, data1, layout1)
+    Plotly.newPlot(plt1, data1, layout1);
 }
 
 // Adjust Plotly's plotRatios size responsively according to window motion
@@ -273,60 +282,66 @@ sampleSlider.bootstrapSlider({
 });
 
 sampleSlider.on('change', function () {
-    nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue'));  // Change "global" value
+    nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue')); // Change "global" value
     xvUpdate();
     yvUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#samplesSliderVal').text(nSample)
+    $('#samplesSliderVal')
+        .text(nSample);
 });
 
 t0Slider.on('change', function () {
-    t0 = t0Slider.bootstrapSlider('getValue');  // Change "global" value
+    t0 = t0Slider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     yContUpdate();
     yApproxUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#t0SliderVal').text(t0)
+    $('#t0SliderVal')
+        .text(t0);
 });
 
 b1Slider.on('change', function () {
-    b1 = b1Slider.bootstrapSlider('getValue');  // Change "global" value
+    b1 = b1Slider.bootstrapSlider('getValue'); // Change "global" value
     yApproxUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#b1SliderVal').text(b1)
+    $('#b1SliderVal')
+        .text(b1);
 });
 
 b3Slider.on('change', function () {
-    b3 = b3Slider.bootstrapSlider('getValue');  // Change "global" value
+    b3 = b3Slider.bootstrapSlider('getValue'); // Change "global" value
     yApproxUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#b3SliderVal').text(b3)
+    $('#b3SliderVal')
+        .text(b3);
 });
 
 b5Slider.on('change', function () {
-    b5 = b5Slider.bootstrapSlider('getValue');  // Change "global" value
+    b5 = b5Slider.bootstrapSlider('getValue'); // Change "global" value
     yApproxUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#b5SliderVal').text(b5)
+    $('#b5SliderVal')
+        .text(b5);
 });
 
 b7Slider.on('change', function () {
-    b7 = b7Slider.bootstrapSlider('getValue');  // Change "global" value
+    b7 = b7Slider.bootstrapSlider('getValue'); // Change "global" value
     yApproxUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#b7SliderVal').text(b7)
+    $('#b7SliderVal')
+        .text(b7);
 });
 
 // Initialize
@@ -335,9 +350,15 @@ yvUpdate();
 yContUpdate();
 yApproxUpdate();
 createPlots();
-$('#samplesSliderVal').text(nSample);
-$('#t0SliderVal').text(t0);
-$('#b1SliderVal').text(b1);
-$('#b3SliderVal').text(b3);
-$('#b5SliderVal').text(b5);
-$('#b7SliderVal').text(b7);
+$('#samplesSliderVal')
+    .text(nSample);
+$('#t0SliderVal')
+    .text(t0);
+$('#b1SliderVal')
+    .text(b1);
+$('#b3SliderVal')
+    .text(b3);
+$('#b5SliderVal')
+    .text(b5);
+$('#b7SliderVal')
+    .text(b7);

@@ -284,7 +284,13 @@ package-lock.json
 *.css.map
 
 .idea/
-.vscode/
 
 # browserify file
 *.bundle.js
+
+# eslint
+.eslintrc.json
+=*
+
+# macOS
+.DS_Store

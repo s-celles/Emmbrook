@@ -7,17 +7,20 @@ var nSamples = 64;
 var nCont = nSamples * 10;
 var xv = new Array(nSamples);
 var yv = new Array(nSamples);
-var xCont = new Array(nCont);  // Continuous value
-var yCont = new Array(nCont);  // Continuous value
+var xCont = new Array(nCont); // Continuous value
+var yCont = new Array(nCont); // Continuous value
 var xHi = 10;
 var fmin = 1.0 / xHi;
 var ampRand = Math.random();
 var phsRand = Math.random();
 var freqRand = Math.random();
 
-var phaseSlider = $('#myPhase').bootstrapSlider({});
-var ampSlider = $('#myAmplitude').bootstrapSlider({});
-var freqSlider = $('#myFreq').bootstrapSlider({});
+var phaseSlider = $('#myPhase')
+    .bootstrapSlider({});
+var ampSlider = $('#myAmplitude')
+    .bootstrapSlider({});
+var freqSlider = $('#myFreq')
+    .bootstrapSlider({});
 var phase = phaseSlider.bootstrapSlider('getValue');
 var amplitude = ampSlider.bootstrapSlider('getValue');
 var frequency = freqSlider.bootstrapSlider('getValue');
@@ -26,12 +29,12 @@ var plt1 = document.getElementById('plt1');
 
 for (var i = 0; i < nSamples; i++) {
     xv[i] = i / nSamples * xHi;
-    yv[i] = Math.sin(2 * Math.PI * frequency * xv[i])
+    yv[i] = Math.sin(2 * Math.PI * frequency * xv[i]);
 }
 
 for (var j = 0; j < nCont; j++) {
     xCont[j] = j / nCont * xHi;
-    yCont[j] = ampRand * Math.sin(phsRand + freqRand * 2 * Math.PI * xCont[j])
+    yCont[j] = ampRand * Math.sin(phsRand + freqRand * 2 * Math.PI * xCont[j]);
 }
 
 function yvUpdate() {
@@ -39,7 +42,7 @@ function yvUpdate() {
      yv will change when amplitude, phase, or frequency changes.
      */
     for (var i = 0; i < nSamples; i++) {
-        yv[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xv[i])
+        yv[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xv[i]);
     }
 }
 
@@ -48,7 +51,7 @@ function yContUpdate() {
      yCont will change when amplitude, phase, or frequency changes.
      */
     for (var i = 0; i < nCont; i++) {
-        yCont[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xCont[i])
+        yCont[i] = amplitude * Math.cos(1.0 * phase + 2 * Math.PI * frequency * xCont[i]);
     }
 }
 
@@ -60,7 +63,7 @@ function miniFFT(re, im) {
             j = (j << 1) | (h & 1);
         if (j > i) {
             re[j] = [re[i], re[i] = re[j]][0];
-            im[j] = [im[i], im[i] = im[j]][0]
+            im[j] = [im[i], im[i] = im[j]][0];
         }
     }
 
@@ -78,8 +81,8 @@ function miniFFT(re, im) {
             }
 }
 
-function FFTUpdate() {
-    fv = new Array(nSamples);  // Cannot add 'var'
+function fftUpdate() {
+    fv = new Array(nSamples); // Cannot add 'var'
     fv_im = new Array(nSamples);
     xv_half = new Array(nSamples / 2);
     fv_half = new Array(nSamples / 2);
@@ -87,14 +90,14 @@ function FFTUpdate() {
     fv_abs_half = new Array(nSamples / 2);
 
     for (var i = 0; i < nSamples; i++) {
-        fv[i] = yv[i];  // Real part
+        fv[i] = yv[i]; // Real part
         fv_im[i] = 0;
     }
 
     miniFFT(fv, fv_im);
 
     for (i = 0; i < nSamples / 2; i++) {
-        xv_half[i] = i * fmin;   // \alpha_k
+        xv_half[i] = i * fmin; // \alpha_k
         fv_half[i] = fv[i] * 2 / nSamples;
         fv_im_half[i] = fv_im[i] * 2 / nSamples;
         fv_abs_half[i] = Math.sqrt(fv_im_half[i] * fv_im_half[i] + fv_half[i] * fv_half[i]);
@@ -127,26 +130,81 @@ function plot() {
 
 function createPlots() {
     var layout0 = {
-        margin: {t: 0},
-        yaxis: {title: 'Height Y (m)', titlefont: {size: 18}},
-        xaxis: {title: 'Time t (s)', titlefont: {size: 18}}
+        margin: {
+            t: 0
+        },
+        yaxis: {
+            title: 'Height Y (m)',
+            titlefont: {
+                size: 18
+            }
+        },
+        xaxis: {
+            title: 'Time t (s)',
+            titlefont: {
+                size: 18
+            }
+        }
     };
 
     var layout1 = {
-        margin: {t: 0},
-        yaxis: {title: 'FFT', titlefont: {size: 18}},
-        xaxis: {title: 'Frequency (hz)', titlefont: {size: 18}}
+        margin: {
+            t: 0
+        },
+        yaxis: {
+            title: 'FFT',
+            titlefont: {
+                size: 18
+            }
+        },
+        xaxis: {
+            title: 'Frequency (hz)',
+            titlefont: {
+                size: 18
+            }
+        }
     };
 
-    var data0 = [
-        {x: xv, y: yv, type: 'scatter', mode: 'markers', marker: {size: 10}, name: 'samples'},
-        {x: xCont, y: yCont, type: 'scatter', mode: 'lines', name: 'continuous'}
+    var data0 = [{
+            x: xv,
+            y: yv,
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+                size: 10
+            },
+            name: 'samples'
+        },
+        {
+            x: xCont,
+            y: yCont,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'continuous'
+        }
     ];
 
-    var data1 = [
-        {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'Real'},
-        {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'Imag'},
-        {x: xv, y: yv, type: 'bar', mode: 'markers', name: 'abs'}
+    var data1 = [{
+            x: xv,
+            y: yv,
+            type: 'bar',
+            mode: 'markers',
+            name: 'Real'
+        },
+        {
+            x: xv,
+            y: yv,
+            type: 'bar',
+            mode: 'markers',
+            name: 'Imag'
+        },
+        {
+            x: xv,
+            y: yv,
+            type: 'bar',
+            mode: 'markers',
+            name: 'abs'
+        }
     ];
 
     Plotly.newPlot(plt0, data0, layout0);
@@ -155,33 +213,36 @@ function createPlots() {
 
 // Interactive interfaces
 phaseSlider.on('change', function () {
-    phase = phaseSlider.bootstrapSlider('getValue');  // Change "global" value
+    phase = phaseSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     yContUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#phaseSliderVal').text(phase)
+    $('#phaseSliderVal')
+        .text(phase);
 });
 
 ampSlider.on('change', function () {
-    amplitude = ampSlider.bootstrapSlider('getValue');  // Change "global" value
+    amplitude = ampSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     yContUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#ampSliderVal').text(amplitude)
+    $('#ampSliderVal')
+        .text(amplitude);
 });
 
 freqSlider.on('change', function () {
-    frequency = freqSlider.bootstrapSlider('getValue');  // Change "global" value
+    frequency = freqSlider.bootstrapSlider('getValue'); // Change "global" value
     yvUpdate();
     yContUpdate();
-    FFTUpdate();
+    fftUpdate();
     plot();
 
-    $('#freqSliderVal').text(frequency)
+    $('#freqSliderVal')
+        .text(frequency);
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
@@ -193,8 +254,11 @@ window.onresize = function () {
 // Initialize
 yvUpdate();
 yContUpdate();
-FFTUpdate();
+fftUpdate();
 createPlots();
-$('#phaseSliderVal').text(phase);
-$('#ampSliderVal').text(amplitude);
-$('#freqSliderVal').text(frequency);
+$('#phaseSliderVal')
+    .text(phase);
+$('#ampSliderVal')
+    .text(amplitude);
+$('#freqSliderVal')
+    .text(frequency);

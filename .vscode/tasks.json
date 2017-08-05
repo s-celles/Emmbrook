@@ -1,0 +1,36 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "watchers",
+    "args": [],
+    "suppressTaskName": true,
+    "isShellCommand": false,
+    "tasks": [{
+            "taskName": "browserify",
+            "command": "browserify",
+            "args": ["${file}", "--outfile", "${fileDirname}/${fileBasenameNoExtension}.bundle.js", "--verbose"],
+            "isShellCommand": true,
+            "showOutput": "never",
+            "echoCommand": true,
+            "isBackground": true
+        }, {
+            "taskName": "watchify",
+            "command": "watchify",
+            "args": ["${file}", "--outfile", "${fileDirname}/${fileBasenameNoExtension}.bundle.js", "--verbose"],
+            "isShellCommand": true,
+            "showOutput": "never",
+            "echoCommand": true,
+            "isBackground": true
+        },
+        {
+            "taskName": "sass",
+            "command": "node-sass",
+            "args": ["--include-path", "scss", "${file}", "${fileDirname}/${fileBasenameNoExtension}.css"],
+            "isShellCommand": true,
+            "showOutput": "never",
+            "echoCommand": true,
+            "isBackground": true
+        }
+    ]
+}

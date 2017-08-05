@@ -56,8 +56,8 @@ $gradient3: rgb(210, 210, 210);
     box-shadow: inset 1px 1px 1px 0 $shadow1;
 }
 
-.btn-default {
-    display: inline-block;
+.col-md-1, .col-md-10 {
+    display: inline;
 }
 
 section {

@@ -1,5 +1,5 @@
 /**
- * Created by qizhang on 7/1/17.
+ * Created by Qi on 5/20/17.
  */
 
 $(document)
@@ -16,5 +16,5 @@ $(document)
                         .attr("src"));
                 $("#img-modal")
                     .modal("show");
-            });
+            })
     });

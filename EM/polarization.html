@@ -41,6 +41,9 @@
                     <a class="nav-link active" href="index.html">Main page</a>
                 </li>
                 <li>
+                    <a class="nav-link" href="diffraction.html">Diffraction</a>
+                </li>
+                <li>
                     <a class="nav-link" href="oblique.html">Oblique incidence</a>
                 </li>
             </ul>
@@ -78,18 +81,18 @@
             <div class="row">
                 <div class="col" id="control-panel">
                     <div class="row">
-                        <div class="col-9" id="sliders">
+                        <div class="col-md-11">
                             <!-- Slide bars -->
                             <div class="row">
                                 <div class="col slider-row">
-                                    <label for="phi" class="slideLables">\( \phi \):</label>
+                                    <label for="phi" class="slideLables">Phase \( \phi \) (rad):</label>
                                     <span id="phiSliderVal" class="sliderVal"></span>
                                     <input id="phi" data-slider-min="-3.14" data-slider-max="3.14" data-slider-step="0.01" data-slider-value="1.57">
                                 </div>
                                 <div class="col slider-row">
-                                    <label for="time" class="slideLables">\( t \):</label>
+                                    <label for="time" class="slideLables">Time \( t \) (s):</label>
                                     <span id="timeSliderVal" class="sliderVal"></span>
-                                    <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.01" data-slider-value="0">
+                                    <input id="time" data-slider-min="0" data-slider-max="31.4" data-slider-step="0.01" data-slider-value="0">
                                 </div>
                                 <div class="col slider-row">
                                     <label for="BoverA" class="slideLables">\( B / A \):</label>
@@ -98,7 +101,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-1">
+                        <div class="col-md-1 col-md-offset-11">
                             <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false" autocomplete="off" id="animate">On</button>
                         </div>
                     </div>
@@ -140,6 +143,8 @@
     <script type="text/javascript" src="assets/js/polarization.bundle.js"></script>
     <!-- MathJax -->
     <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+
+
     </script>
 </body>
 
