@@ -14,7 +14,7 @@ var ops = require('ndarray-ops');
 var pool = require('ndarray-scratch');
 var unpack = require('ndarray-unpack');
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
-var tile = require('ndarray-tile');
+var tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
@@ -33,8 +33,7 @@ var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle fro
 var lambda = lambdaSlider.bootstrapSlider('getValue'); // Get incident wave length from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-var opt = 3;
-var sty = 0;
+var opt, sty;
 // Start and stop animation
 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
@@ -85,41 +84,52 @@ n2Slider.on('change', function () {
         .text(n2);
 });
 
-$('opt')
+function optSwitch(val) {
+    switch (val) {
+    case 'Incident':
+        opt = 0;
+        break;
+    case 'Reflected':
+        opt = 1;
+        break;
+    case 'Transmitted':
+        opt = 2;
+        break;
+    case 'Total':
+        opt = 3;
+        break;
+    default:
+        new RangeError('This option is not valid!')
+    };
+}
+
+function stySwitch(val) {
+    switch (val) {
+    case 'Instantaneous intensity':
+        sty = 0;
+        break;
+    case 'Time averaged intensity':
+        sty = 1;
+        break;
+    default:
+        new RangeError('This style is not valid!')
+    };
+}
+
+$('#optSelect')
     .on('changed.bs.select', function () {
-        var selectedValue = parseInt($(this)
-            .val());
-        switch (selectedValue) {
-        case 'inci':
-            opt = 0;
-        case 'refl':
-            opt = 1;
-        case 'trans':
-            opt = 2;
-            break;
-        case 'total':
-            opt = 3;
-        default:
-            console.log('hhh');
-        };
-        console.log(opt, sty)
+        var selectedValue = $(this)
+            .val();
+        optSwitch(selectedValue);
         plotHeatmap(opt, sty);
     });
 
-$('sty')
+$('#stySelect')
     .on('changed.bs.select', function () {
-        var selectedValue = parseInt($(this)
-            .val());
-        switch (selectedValue) {
-        case 'inst':
-            sty = 0;
-            break;
-        case 'tav':
-            sty = 1;
-        default:
-            console.log('lll');
-        };
-        console.log()
+        var selectedValue = $(this)
+            .val();
+        stySwitch(selectedValue);
+        console.log(opt, sty)
         plotHeatmap(opt, sty);
     });
 
@@ -137,48 +147,6 @@ $('#animate')
             cancelAnimationFrame(reqId); // Stop animation
         }
     });
-
-// $('inci')
-//     .on('click', function () {
-//         opt = 0;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
-
-// $('refl')
-//     .on('click', function () {
-//         opt = 1;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
-
-// $('trans')
-//     .on('click', function () {
-//         opt = 2;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
-
-// $('total')
-//     .on('click', function () {
-//         opt = 3;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
-
-// $('inst')
-//     .on('click', function () {
-//         sty = 0;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
-
-// $('tav')
-//     .on('click', function () {
-//         sty = 1;
-//         console.log(opt, sty)
-//         plotHeatmap(opt, sty);
-//     });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
@@ -464,8 +432,10 @@ function chooseIntensity(option, style) {
     switch (style) {
     case 0:
         return unpack(updateInstantaneousIntensity(option));
+        break;
     case 1:
         return unpack(updateAveragedIntensity(option));
+        break;
     default:
         alert("You have inputted a wrong style!");
     };
@@ -482,9 +452,7 @@ function createHeatmap(option, style) {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
-        type: 'heatmap',
-        zmin: -2,
-        zmax: 2
+        type: 'heatmap'
     };
 
     var trace1 = {
@@ -618,6 +586,12 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
+// opt = optSwitch($('#optSelect')
+//     .val());
+// sty = stySwitch($('#stySelect')
+//     .val());
+opt = 3;
+sty = 1;
 createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
