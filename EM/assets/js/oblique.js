@@ -129,7 +129,6 @@ $('#stySelect')
         var selectedValue = $(this)
             .val();
         stySwitch(selectedValue);
-        console.log(opt, sty)
         plotHeatmap(opt, sty);
     });
 
@@ -494,84 +493,83 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-// var reField, imField;
-// var dt = 0.1;
-// var omega = Math.PI * 2;
-// var aux = pool.zeros(kxx.shape);
+var reField, imField;
+var dt = 2.1;
+var omega = Math.PI * 2;
+var kZ, kX;
+[kZ, kX] = updateKxAndKz();
+var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
+var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
+var aux = pool.zeros(kxx.shape);
+ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
 
 
-// function updateFrame() {
-//     /*
-//      Generate individual wave amplitudes for incident, reflected, and transmitted.
-//      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-//      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
-//      */
-//     var reA = updateGeneralAmplitude();
-//     var imA = pool.zeros(reA.shape);
-//     var kZ, kX;
-//     [kZ, kX] = updateKxAndKz();
-//     var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
-//     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-//     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
-//     ops.subseq(aux, omega * dt); // aux -= omega * dt
-//     console.log(aux)
-//     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-//     var rePhase, imPhase;
-//     rePhase = pool.zeros(aux.shape);
-//     imPhase = pool.zeros(aux.shape);
-//     ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-//     ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-//     cops.muleq(reA, imA, rePhase, imPhase);
-//     switch (opt) {
-//     case 3:
-//         {
-//             reField = pool.zeros(reA.shape.slice(0, -1));
-//             imField = pool.zeros(imA.shape.slice(0, -1));
-//             for (var i = 0; i < 3; i++) {
-//                 cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
-//             }
-//         }
-//     case 0: // Fallthrough, incident field
-//     case 1: // Fallthrough, reflected field
-//     case 2: // Transmitted field
-//         [reField, imField] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
-//     }
-//     switch (sty) {
-//     case 1:
-//         ops.powseq(reField, 2); // a^2
-//         ops.powseq(imField, 2); // b^2
-//         ops.addeq(reField, imField); // a^2 - b^2
-//     case 0:
-//         ops.powseq(reField, 2); // a^2
-//         ops.powseq(imField, 2); // b^2
-//         ops.subeq(reField, imField); // a^2 - b^2
-//     };
-// }
+function updateFrame() {
+    /*
+     Generate individual wave amplitudes for incident, reflected, and transmitted.
+     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
+     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+     */
+    var reA = updateGeneralAmplitude();
+    var imA = pool.zeros(reA.shape);
 
-// function animatePlot0() {
-//     updateFrame();
+    ops.subseq(aux, omega * dt); // aux -= omega * dt
+    // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    var rePhase = pool.zeros(aux.shape);
+    var imPhase = pool.zeros(aux.shape);
+    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    cops.muleq(reA, imA, rePhase, imPhase);
+    switch (opt) {
+    case 3:
+        {
+            reField = pool.zeros(reA.shape.slice(0, -1));
+            imField = pool.zeros(imA.shape.slice(0, -1));
+            for (var i = 0; i < 3; i++) {
+                cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
+            }
+            return [reField, imField];
+        }
+    case 0: // Fallthrough, incident field
+    case 1: // Fallthrough, reflected field
+    case 2: // Transmitted field
+        return [reA.pick(null, null, option), imA.pick(null, null, option)];
+    }
+    switch (sty) {
+    case 0:
+        ops.powseq(reField, 2); // a^2
+        ops.powseq(imField, 2); // b^2
+        ops.subeq(reField, imField); // a^2 - b^2
+    case 1:
+        ops.powseq(reField, 2); // a^2
+        ops.powseq(imField, 2); // b^2
+        ops.addeq(reField, imField); // a^2 - b^2
+    };
+}
 
-//     Plotly.animate('plt0', {
-//         data: [{
-//             x: unpack(zCoord),
-//             y: unpack(xCoord),
-//             z: reField,
-//             type: 'heatmap',
-//             zmin: -2,
-//             zmax: 2
-//         }]
-//     }, {
-//         transition: {
-//             duration: 0
-//         },
-//         frame: {
-//             duration: 0,
-//             redraw: false
-//         }
-//     });
+function animatePlot0() {
+    updateFrame();
+    console.log(reField)
 
-//     reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
-// }
+    Plotly.animate('plt0', {
+        data: [{
+            x: unpack(zCoord),
+            y: unpack(xCoord),
+            z: reField,
+            type: 'heatmap'
+        }]
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: false
+        }
+    });
+
+    reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
+}
 
 
 ///////////////////////////////////////////////////////////////////////////
