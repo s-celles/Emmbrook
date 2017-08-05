@@ -49,6 +49,7 @@ thetaISlider.on('change', function () {
     thetaI = thetaISlider.bootstrapSlider('getValue');
     plotHeatmap(opt, sty);
     plotRatios();
+    updateAnimationInitials();
 
     $('#thetaISliderVal')
         .text(thetaI);
@@ -57,6 +58,7 @@ thetaISlider.on('change', function () {
 lambdaSlider.on('change', function () {
     lambda = lambdaSlider.bootstrapSlider('getValue');
     plotHeatmap(opt, sty);
+    updateAnimationInitials();
 
     $('#lambdaSliderVal')
         .text(lambda);
@@ -68,6 +70,7 @@ n1Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    updateAnimationInitials();
 
     $('#n1SliderVal')
         .text(n1);
@@ -79,48 +82,32 @@ n2Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    updateAnimationInitials();
 
     $('#n2SliderVal')
         .text(n2);
 });
 
-function optSwitch(val) {
-    switch (val) {
-    case 'Incident':
-        opt = 0;
-        break;
-    case 'Reflected':
-        opt = 1;
-        break;
-    case 'Transmitted':
-        opt = 2;
-        break;
-    case 'Total':
-        opt = 3;
-        break;
-    default:
-        new RangeError('This option is not valid!')
-    };
-}
-
-function stySwitch(val) {
-    switch (val) {
-    case 'Instantaneous intensity':
-        sty = 0;
-        break;
-    case 'Time averaged intensity':
-        sty = 1;
-        break;
-    default:
-        new RangeError('This style is not valid!')
-    };
-}
-
 $('#optSelect')
     .on('changed.bs.select', function () {
         var selectedValue = $(this)
             .val();
-        optSwitch(selectedValue);
+        switch (selectedValue) {
+        case 'Incident':
+            opt = 0;
+            break;
+        case 'Reflected':
+            opt = 1;
+            break;
+        case 'Transmitted':
+            opt = 2;
+            break;
+        case 'Total':
+            opt = 3;
+            break;
+        default:
+            new RangeError('This option is not valid!')
+        };
         plotHeatmap(opt, sty);
     });
 
@@ -128,7 +115,16 @@ $('#stySelect')
     .on('changed.bs.select', function () {
         var selectedValue = $(this)
             .val();
-        stySwitch(selectedValue);
+        switch (selectedValue) {
+        case 'Instantaneous intensity':
+            sty = 0;
+            break;
+        case 'Time averaged intensity':
+            sty = 1;
+            break;
+        default:
+            new RangeError('This style is not valid!')
+        };
         plotHeatmap(opt, sty);
     });
 
@@ -136,11 +132,11 @@ var isAnimationOff = true; // No animation as default
 $('#animate')
     .on('click', function () {
         var $this = $(this);
-        if (isAnimationOff) { // If no animation, a click starts it.
+        if (isAnimationOff) { // If no animation, a click starts one.
             isAnimationOff = false;
             $this.text('Off');
             reqId = requestAnimationFrame(animatePlot0); // Start animation
-        } else { // If is already in animation, a click stop it.
+        } else { // If is already in animation, a click stops it.
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
@@ -264,7 +260,7 @@ function createRatioPlot() {
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 var zNum = 250;
-var xNum = 125;
+var xNum = 250;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
@@ -493,16 +489,25 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var reField, imField;
-var dt = 2.1;
+var reField, imField, reA, imA, kZ, kX;
+var dt = 0.1;
 var omega = Math.PI * 2;
-var kZ, kX;
-[kZ, kX] = updateKxAndKz();
-var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
-var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-var aux = pool.zeros(kxx.shape);
-ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+var aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
+function updateAnimationInitials() {
+    /*
+     This subroutine defines some initial values for the animation,
+     so it can follow the user's controlling of slider bars or dropdown
+     menus.
+     */
+    reA = updateGeneralAmplitude();
+    imA = pool.zeros(reA.shape);
+    [kZ, kX] = updateKxAndKz();
+    // Here kxx and kzz are not used by other subroutines, so they are defined locally.
+    var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
+    var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
+    ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+}
 
 function updateFrame() {
     /*
@@ -510,9 +515,6 @@ function updateFrame() {
      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
      */
-    var reA = updateGeneralAmplitude();
-    var imA = pool.zeros(reA.shape);
-
     ops.subseq(aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
     var rePhase = pool.zeros(aux.shape);
@@ -528,12 +530,11 @@ function updateFrame() {
             for (var i = 0; i < 3; i++) {
                 cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
             }
-            return [reField, imField];
         }
     case 0: // Fallthrough, incident field
     case 1: // Fallthrough, reflected field
     case 2: // Transmitted field
-        return [reA.pick(null, null, option), imA.pick(null, null, option)];
+        [reField, imField] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
     }
     switch (sty) {
     case 0:
@@ -549,13 +550,10 @@ function updateFrame() {
 
 function animatePlot0() {
     updateFrame();
-    console.log(reField)
 
     Plotly.animate('plt0', {
         data: [{
-            x: unpack(zCoord),
-            y: unpack(xCoord),
-            z: reField,
+            z: unpack(reField), // Always remember to unpack ndarray!
             type: 'heatmap'
         }]
     }, {
@@ -564,7 +562,7 @@ function animatePlot0() {
         },
         frame: {
             duration: 0,
-            redraw: false
+            redraw: true
         }
     });
 
@@ -584,13 +582,11 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-// opt = optSwitch($('#optSelect')
-//     .val());
-// sty = stySwitch($('#stySelect')
-//     .val());
 opt = 3;
-sty = 1;
+sty = 0;
 createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
+// Animation
+updateAnimationInitials();

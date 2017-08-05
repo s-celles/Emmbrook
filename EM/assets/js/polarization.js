@@ -80,13 +80,13 @@ BoverASlider.on('change', function () {
 
 var isAnimationOff = true; // No animation as default
 $('#animate')
-    .click(function () {
+    .on('click', function () {
         var $this = $(this);
-        if (isAnimationOff) { // If no animation, a click starts it.
+        if (isAnimationOff) { // If no animation, a click starts one.
             isAnimationOff = false;
             $this.text('Off');
             reqId = requestAnimationFrame(animatePlot0); // Start animation
-        } else { // If is already in animation, a click stop it.
+        } else { // If is already in animation, a click stops it.
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
