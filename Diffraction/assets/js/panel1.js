@@ -27,6 +27,7 @@ var a = aSlider.bootstrapSlider('getValue');
 var cl = clSlider.bootstrapSlider('getValue');
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
+var farOrNear = 'near';
 
 
 function xContUpdate() {
@@ -74,10 +75,14 @@ function zUpdate() {
             zIm[i] = 0;
             for (j = 0; j < n; j++) {
                 // Inner loop over particles
-                var r = Math.sqrt(Math.pow(yCont[k], 2) +
-                    Math.pow(xCont[i] - xP[j], 2));
-                zRe[i] += Math.cos(kv * r);
-                zIm[i] += Math.sin(kv * r);
+                var r;
+                if (farOrNear === 'far') {
+                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + 10000);
+                } else {
+                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
+                }
+                zRe[i] += Math.cos(kv * r) / r;
+                zIm[i] += Math.sin(kv * r) / r;
             }
             if (k === nY - 1) {
                 zIntensity[i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
@@ -110,7 +115,8 @@ function createPlots() {
             title: 'Light intensity',
             titlefont: {
                 size: 18
-            }
+            },
+            // range: [0, 50]
         },
         xaxis: {
             title: 'Screen position y',
@@ -137,7 +143,9 @@ function createPlots() {
 
     var data1 = [{
         z: [zIntensity, zIntensity, zIntensity],
-        type: 'heatmap'
+        type: 'heatmap',
+        zmin: 0,
+        zmax: 30
     }];
 
     Plotly.newPlot(plt0, data0, layout0);
