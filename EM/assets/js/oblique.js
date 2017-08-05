@@ -9,10 +9,10 @@
 'use strict';
 // Import libraries
 var numeric = require('numeric');
-var ndarray = require('ndarray');
-var ops = require('ndarray-ops');
-var pool = require('ndarray-scratch');
-var unpack = require('ndarray-unpack');
+var ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+var ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
+var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 var tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
@@ -20,13 +20,13 @@ var tile = require('ndarray-tile'); // This module takes an input ndarray and re
 // Variables
 // Interactive variables
 var n1Slider = $('#n1')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var n2Slider = $('#n2')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var thetaISlider = $('#thetaI')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var lambdaSlider = $('#lambda')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var n1 = n1Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
 var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
@@ -88,7 +88,7 @@ n2Slider.on('change', function () {
         .text(n2);
 });
 
-$('#optSelect')
+$('#optSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
     .on('changed.bs.select', function () {
         var selectedValue = $(this)
             .val();
@@ -111,7 +111,7 @@ $('#optSelect')
         plotHeatmap(opt, sty);
     });
 
-$('#stySelect')
+$('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
     .on('changed.bs.select', function () {
         var selectedValue = $(this)
             .val();
@@ -135,6 +135,7 @@ $('#animate')
         if (isAnimationOff) { // If no animation, a click starts one.
             isAnimationOff = false;
             $this.text('Off');
+            updateAnimationInitials();
             reqId = requestAnimationFrame(animatePlot0); // Start animation
         } else { // If is already in animation, a click stops it.
             isAnimationOff = true;
@@ -280,7 +281,7 @@ function reshape(oldNdarr, newShape) {
 function updateKVector() {
     /*
      kVector = k0 * [n1, n1, n2]
-     kVector will change if n1 or n2 change.
+     kVector will change if lambda, n1 or n2 change.
      */
     var k0 = 2 * Math.PI / lambda; // Free-space wavenumber
     var kVector = ndarray(new Float64Array(3)); // Wavenumbers for incident, reflected, transmitted waves
@@ -292,7 +293,7 @@ function updateKxAndKz() {
     /*
      Calculate z component for incident, reflected, and transmitted wave's k vector,
      and x component for incident, reflected, and transmitted wave's k vector.
-     kZ and kX will change if thetaI, n1 or n2 change.
+     kZ and kX will change if thetaI, lambda, n1 or n2 change.
      */
     var kVector = updateKVector();
     var thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmitted angle from Snell's law
@@ -322,7 +323,7 @@ function updateGeneralAmplitude() { // correct
     /* 
      Consider amplitudes for the three waves together.
      Amplitude A has dimension [xNum + 1, zNum + 1, 3].
-     A changes when thetaI, n1, or n2 change.
+     A changes when thetaI, lambda, n1, or n2 change.
      */
     var r, t;
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
@@ -460,7 +461,7 @@ function createHeatmap(option, style) {
     }
 
     var texts = {
-        x: [-8, 8],
+        x: [-6, 6],
         y: [5, 5],
         text: ['medium 1', 'medium 2'],
         mode: 'text',
@@ -489,10 +490,13 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var reField, imField, reA, imA, kZ, kX;
-var dt = 0.1;
+// Define a new global namespace ANIMATE for those variables which have 
+// same name as the plotting subroutines.
+var ANIMATE = {};
+var dt = 0.05;
 var omega = Math.PI * 2;
-var aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
+ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
+
 
 function updateAnimationInitials() {
     /*
@@ -500,13 +504,11 @@ function updateAnimationInitials() {
      so it can follow the user's controlling of slider bars or dropdown
      menus.
      */
-    reA = updateGeneralAmplitude();
-    imA = pool.zeros(reA.shape);
-    [kZ, kX] = updateKxAndKz();
+    [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
     // Here kxx and kzz are not used by other subroutines, so they are defined locally.
-    var kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
-    var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
-    ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+    var kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
+    var kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
+    ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
 }
 
 function updateFrame() {
@@ -515,36 +517,38 @@ function updateFrame() {
      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
      */
-    ops.subseq(aux, omega * dt); // aux -= omega * dt
+    ANIMATE.reA = updateGeneralAmplitude();
+    ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
+    ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    var rePhase = pool.zeros(aux.shape);
-    var imPhase = pool.zeros(aux.shape);
-    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-    cops.muleq(reA, imA, rePhase, imPhase);
+    var rePhase = pool.zeros(ANIMATE.aux.shape);
+    var imPhase = pool.zeros(ANIMATE.aux.shape);
+    ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
     switch (opt) {
     case 3:
         {
-            reField = pool.zeros(reA.shape.slice(0, -1));
-            imField = pool.zeros(imA.shape.slice(0, -1));
+            ANIMATE.reField = pool.zeros(ANIMATE.reA.shape.slice(0, -1));
+            ANIMATE.imField = pool.zeros(ANIMATE.imA.shape.slice(0, -1));
             for (var i = 0; i < 3; i++) {
-                cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
+                cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
             }
         }
     case 0: // Fallthrough, incident field
     case 1: // Fallthrough, reflected field
     case 2: // Transmitted field
-        [reField, imField] = [reA.pick(null, null, opt), imA.pick(null, null, opt)];
+        [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
     }
     switch (sty) {
     case 0:
-        ops.powseq(reField, 2); // a^2
-        ops.powseq(imField, 2); // b^2
-        ops.subeq(reField, imField); // a^2 - b^2
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
     case 1:
-        ops.powseq(reField, 2); // a^2
-        ops.powseq(imField, 2); // b^2
-        ops.addeq(reField, imField); // a^2 - b^2
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
     };
 }
 
@@ -553,7 +557,7 @@ function animatePlot0() {
 
     Plotly.animate('plt0', {
         data: [{
-            z: unpack(reField), // Always remember to unpack ndarray!
+            z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
             type: 'heatmap'
         }]
     }, {
@@ -562,7 +566,7 @@ function animatePlot0() {
         },
         frame: {
             duration: 0,
-            redraw: true
+            redraw: true // You have to set this to true.
         }
     });
 

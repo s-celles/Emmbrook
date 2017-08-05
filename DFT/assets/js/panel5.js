@@ -3,14 +3,14 @@
  */
 
 // Import libraries
-var ndarray = require("ndarray"); // Modular multidimensional arrays for JavaScript.
-var ops = require("ndarray-ops"); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
-var show = require("ndarray-show"); // For debugging
-var cwise = require("cwise"); // Elementwise operation
-var pool = require("ndarray-scratch"); // A simple wrapper for typedarray-pool.
-var unpack = require("ndarray-unpack"); // Converts an ndarray into an array-of-native-arrays.
-var fill = require("ndarray-fill"); // Initialize an ndarray with a function.
-var fft = require("ndarray-fft"); // A fast Fourier transform implementation for ndarrays.
+var ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+var ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+var show = require('ndarray-show'); // For debugging
+var cwise = require('cwise'); // Elementwise operation
+var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
+var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
+var fill = require('ndarray-fill'); // Initialize an ndarray with a function.
+var fft = require('ndarray-fft'); // A fast Fourier transform implementation for ndarrays.
 
 
 // Initialize variables
@@ -20,13 +20,13 @@ var sampleSlider = $('#mySamples')
 var t0Slider = $('#myT0')
     .bootstrapSlider({});
 var b1Slider = $('#b1')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var b3Slider = $('#b3')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var b5Slider = $('#b5')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var b7Slider = $('#b7')
-    .bootstrapSlider();
+    .bootstrapSlider({});
 var nSample = Math.pow(2, sampleSlider.bootstrapSlider('getValue')); // Number of samples
 var t0 = t0Slider.bootstrapSlider('getValue');
 var b1 = b1Slider.bootstrapSlider('getValue');
