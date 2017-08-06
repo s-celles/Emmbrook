@@ -5,12 +5,12 @@
 // Initialize variables
 var nX = 250;
 var nY = 250;
-var xCont = new Array(nX);
-var yCont = new Array(nY);
-var zRe = new Array(nX);
-var zIm = new Array(nX);
-var zIntensity = new Array(nX);
-var zHM = create2DArray(nY, nX);
+var xPrime = new Array(nX);
+var yPrime = new Array(nY);
+var eRe = new Array(nX);
+var eIm = new Array(nX);
+var eIntensityLine = new Array(nX);
+var eIntensityHeatmap = create2DArray(nY, nX);
 var thetaMax = 0.2;
 
 var nSlider = $('#N')
@@ -28,47 +28,46 @@ var lambda = lambdaSlider.bootstrapSlider('getValue');
 var a = aSlider.bootstrapSlider('getValue');
 var cl = clSlider.bootstrapSlider('getValue');
 var z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
-console.log(z)
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 
 
-function xContUpdate() {
+function xPrimeUpdate() {
     /*
      xCont will change when cl changes.
      xCont is the split of the screen.
      */
     var q0 = 2 * Math.sin(thetaMax) * cl;
     for (var i = 0; i < nX; i++) {
-        xCont[i] = q0 * (i / nX - 0.5);
+        xPrime[i] = q0 * (i / nX - 0.5);
     }
 }
 
-function yContUpdate() {
+function yPrimeUpdate() {
     /*
      yCont will change when cl changes.
      yCont is the split of the screen.
      */
     for (var i = 0; i < nY; i++) {
-        yCont[i] = i / nY * cl;
+        yPrime[i] = i / nY * cl;
     }
 }
 
-function zUpdate() {
+function eIntensityUpdate() {
     /*
      zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
      xP is the array of scatters, it is formed by a lattice.
      */
-    var xP = new Array(n);
+    var x = new Array(n);
     if (Number.isInteger(n)) {
         // If n is integer, then determine whether odd or even.
         if (isEven(n)) {
             for (var i = 0; i < n; i++) {
-                xP[i] = 1e-6 * a * (i - n / 2 + 0.5);
+                x[i] = 1e-6 * a * (i - n / 2 + 0.5);
             }
         } else {
             for (var j = 0; j < n; j++) {
-                xP[j] = 1e-6 * a * (j - (n - 1) / 2);
+                x[j] = 1e-6 * a * (j - (n - 1) / 2);
             }
         }
     } else new TypeError('N is neither even nor odd!');
@@ -77,20 +76,22 @@ function zUpdate() {
     for (var k = 0; k < nY; k++) {
         for (i = 0; i < nX; i++) {
             // Outer loop over positions on the screen
-            zRe[i] = 0;
-            zIm[i] = 0;
+            eRe[i] = 0;
+            eIm[i] = 0;
             for (j = 0; j < n; j++) {
                 // Inner loop over particles
-                var r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + Math.pow(z, 2));
-                zRe[i] += Math.cos(kv * r);
-                zIm[i] += Math.sin(kv * r);
+                var r = Math.sqrt(Math.pow(yPrime[k], 2) +
+                    Math.pow(xPrime[i] - x[j], 2) +
+                    Math.pow(z, 2));
+                eRe[i] += Math.cos(kv * r);
+                eIm[i] += Math.sin(kv * r);
             }
             // Intensity = E times its complex conjugate.
             if (k === nY - 1) { // Take the intensity of last line of y
-                zIntensity[i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
+                eIntensityLine[i] = Math.pow(eRe[i], 2) + Math.pow(eIm[i], 2);
             }
             // Intensity forms a 2D heatmap.
-            zHM[k][i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
+            eIntensityHeatmap[k][i] = Math.pow(eRe[i], 2) + Math.pow(eIm[i], 2);
         }
     }
 }
@@ -118,15 +119,14 @@ function createPlots() {
             title: 'Light intensity',
             titlefont: {
                 size: 18
-            },
-            // range: [0, 50]
+            }
         },
         xaxis: {
             title: 'Screen position y',
             titlefont: {
                 size: 18
             },
-            range: [xCont[0] * 1.2, xCont[xCont.length - 1] * 1.2]
+            range: [xPrime[0] * 1.2, xPrime[xPrime.length - 1] * 1.2]
         }
     };
 
@@ -138,17 +138,17 @@ function createPlots() {
     };
 
     var data0 = [{
-        x: xCont,
-        y: zIntensity,
+        x: xPrime,
+        y: eIntensityLine,
         type: 'scatter',
         mode: 'lines',
         name: 'continuous',
     }];
 
     var data1 = [{
-        x: xCont,
-        y: yCont,
-        z: [zIntensity, zIntensity, zIntensity],
+        x: xPrime,
+        y: yPrime,
+        z: [eIntensityLine, eIntensityLine, eIntensityLine],
         type: 'heatmap',
         zmin: 0,
         zmax: 30
@@ -159,10 +159,10 @@ function createPlots() {
 }
 
 function plot() {
-    plt0.data[0].x = xCont;
-    plt0.data[0].y = zIntensity;
+    plt0.data[0].x = xPrime;
+    plt0.data[0].y = eIntensityLine;
 
-    plt1.data[0].z = zHM;
+    plt1.data[0].z = eIntensityHeatmap;
 
     Plotly.redraw(plt0);
     Plotly.redraw(plt1);
@@ -179,7 +179,7 @@ window.onresize = function () {
 // Interactive interfaces
 nSlider.on('change', function () {
     n = nSlider.bootstrapSlider('getValue'); // Change "global" value
-    zUpdate();
+    eIntensityUpdate();
     plot();
 
     $('#nSliderVal')
@@ -188,7 +188,7 @@ nSlider.on('change', function () {
 
 lambdaSlider.on('change', function () {
     lambda = lambdaSlider.bootstrapSlider('getValue'); // Change "global" value
-    zUpdate();
+    eIntensityUpdate();
     plot();
 
     $('#lambdaSliderVal')
@@ -197,7 +197,7 @@ lambdaSlider.on('change', function () {
 
 aSlider.on('change', function () {
     a = aSlider.bootstrapSlider('getValue'); // Change "global" value
-    zUpdate();
+    eIntensityUpdate();
     plot();
 
     $('#aSliderVal')
@@ -206,9 +206,9 @@ aSlider.on('change', function () {
 
 clSlider.on('change', function () {
     cl = clSlider.bootstrapSlider('getValue'); // Change "global" value
-    xContUpdate();
-    yContUpdate();
-    zUpdate();
+    xPrimeUpdate();
+    yPrimeUpdate();
+    eIntensityUpdate();
     plot();
 
     $('#clSliderVal')
@@ -223,7 +223,7 @@ zSlider.bootstrapSlider({
 
 zSlider.on('change', function () {
     z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
-    zUpdate();
+    eIntensityUpdate();
     plot();
 
     $('#zSliderVal').text(z);
@@ -231,9 +231,9 @@ zSlider.on('change', function () {
 
 
 // Initialize
-xContUpdate();
-yContUpdate();
-zUpdate();
+xPrimeUpdate();
+yPrimeUpdate();
+eIntensityUpdate();
 createPlots();
 $('#nSliderVal')
     .text(n);
