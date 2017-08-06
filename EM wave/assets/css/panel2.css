@@ -23,12 +23,12 @@
 .slider-row {
   display: inline-block;
   margin: 10px auto;
-  max-width: 30%; }
+  max-width: 40%; }
 
 .slider.slider-horizontal {
   display: block;
   margin: 0 auto;
-  max-width: 90%; }
+  max-width: 70%; }
 
 .slider-selection {
   background-image: linear-gradient(to bottom, #c1c1c1 0, #d2d2d2 100%);
@@ -37,6 +37,9 @@
 .slider-track-high {
   background-image: linear-gradient(to bottom, #e5e5e5 0, white 100%);
   box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, 0.15); }
+
+.col-md-1, .col-md-10 {
+  display: inline; }
 
 section {
   margin-bottom: 30px;
@@ -49,4 +52,4 @@ ol {
   font-size: medium;
   list-style-type: lower-alpha; }
 
-/*# sourceMappingURL=panel1.css.map */
+/*# sourceMappingURL=panel2.css.map */
