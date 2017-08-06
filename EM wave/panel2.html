@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    <title>Panel 3</title>
-
+    <title>Panel 2</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css"
-          rel="stylesheet"/>
-
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
     <!-- User css -->
-    <link rel="stylesheet" href="assets/css/panel3.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/panel2.css" type="text/css">
 </head>
-<body>
 
+<body>
 <!-- Navigation bar -->
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
@@ -36,7 +34,6 @@
             </button>
         </div>
     </div>
-
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="panels">
         <ul class="nav navbar-nav">
@@ -50,44 +47,39 @@
                 <a class="nav-link" href="panel1.html">Panel 1</a>
             </li>
             <li>
-                <a class="nav-link" href="panel2.html">Panel 2</a>
-            </li>
-            <li>
-                <a class="nav-link" href="panel4.html">Panel 4</a>
-            </li>
-            <li>
-                <a class="nav-link" href="panel5.html">Panel 5</a>
+                <a class="nav-link" href="panel3.html">Panel 3</a>
             </li>
         </ul>
     </div>
 </nav>
-
-
 <section>
     <div class="container">
         <div class="row">
             <div class="col">
                 <!-- Heading text-->
                 <div class="page-header">
-                    <h1>Meet the FFT
-                        <small>How to read the DFT of a single sinusoid</small>
+                    <h1>
+                        Polarized light
                     </h1>
                 </div>
                 <p>
-                    \( y(t) = A \sin{\left(\omega t + \phi\right)} \), fit to data. <br>
-                    Change the amplitude, frequency, and phase. What happens to the FFT \( Y(\omega) \) of \( y(t) \)?
+                    The \( \mathbf{E} \) field vector and \( \mathbf{B} \) field vector of an electromagnetic wave form
+                    a plane perpendicular to the direction of wave propagation, i.e., \( \hat{\mathbf{ k }} \). Here we
+                    only talk about \( \mathbf{E} \) field. For an unpolarized light, its electric field can be
+                    decomposed into \( 2 \) directions, here, say \( \hat{ \mathbf{x} } \) and \( \hat{ \mathbf{y} } \).
+                    If we assume \( \mathbf{ k } = (0, 0, k_z) \), then $$ \begin{align} \mathbf{ E }_x (z, t) &= E_x
+                    \hat{ \mathbf{ x } } = A \sin ( k_z z - \omega t ) \hat{ \mathbf{ x } }, \\ \mathbf{ E }_y (z, t) &=
+                    E_y \hat{ \mathbf{ y } } = B \sin ( k_z z - \omega t + \phi ) \hat{ \mathbf{ y } }, \\ \end{align}
+                    $$ i.e., there is a phase difference \( \phi \) between \( E_x \) and \( E_y \).
                 </p>
             </div>
         </div>
     </div>
-
-
     <!-- The simulator -->
     <div class="container" id="app-div">
         <h4>
-            DFT simulator
+            Polarization simulator
         </h4>
-
         <div class="row" id="plots">
             <div class="col-sm-6">
                 <div id="plt0" class="plot"></div>
@@ -96,91 +88,82 @@
                 <div id="plt1" class="plot"></div>
             </div>
         </div>
-
         <div class="row">
             <div class="col" id="control-panel">
-                <div id="sliders">
-                    <!-- Slide bars -->
-                    <div class="row">
-                        <div class="col slider-row">
-                            <label for="myPhase" class="slideLables">Phase \( \phi \):</label>
-                            <span id="phaseSliderVal" class="sliderVal"></span>
-                            <input id="myPhase" data-slider-min="-5" data-slider-max="5" data-slider-value="0"
-                                   data-slider-step="0.01">
+                <div class="row">
+                    <div class="col-md-11">
+                        <!-- Slide bars -->
+                        <div class="row">
+                            <div class="col slider-row">
+                                <label for="phi" class="slideLables">Phase \( \phi \) (rad):</label>
+                                <span id="phiSliderVal" class="sliderVal"></span>
+                                <input id="phi" data-slider-min="-3.14" data-slider-max="3.14" data-slider-step="0.01"
+                                       data-slider-value="1.57">
+                            </div>
+                            <div class="col slider-row">
+                                <label for="time" class="slideLables">Time \( t \) (s):</label>
+                                <span id="timeSliderVal" class="sliderVal"></span>
+                                <input id="time" data-slider-min="0" data-slider-max="31.4" data-slider-step="0.01"
+                                       data-slider-value="0">
+                            </div>
+                            <div class="col slider-row">
+                                <label for="BoverA" class="slideLables">\( B / A \):</label>
+                                <span id="BoverASliderVal" class="sliderVal"></span>
+                                <input id="BoverA" data-slider-min="0" data-slider-max="1" data-slider-step="0.01"
+                                       data-slider-value="1">
+                            </div>
                         </div>
-
-                        <div class="col slider-row">
-                            <label for="myFreq" class="slideLables">Frequency \( \omega / ( 2\pi ) \):</label>
-                            <span id="freqSliderVal" class="sliderVal"></span>
-                            <input id="myFreq" data-slider-min="0" data-slider-max="1.6"
-                                   data-slider-value="0.1" data-slider-step="0.1">
-                        </div>
-
-                        <div class="col slider-row">
-                            <label for="myAmplitude" class="slideLables">Amplitude \( A \):</label>
-                            <span id="ampSliderVal" class="sliderVal"></span>
-                            <input id="myAmplitude" data-slider-min="0" data-slider-max="5" data-slider-value="1"
-                                   data-slider-step="0.01">
-                        </div>
+                    </div>
+                    <div class="col-md-1 col-md-offset-11">
+                        <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false"
+                                autocomplete="off" id="animate">On
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <div class="container">
         <div class="row">
             <div class="col">
                 <h3>Questions</h3>
                 <ol>
                     <li>
-                        Adjust the frequency and look at the FFT. How can you tell the dominant frequency of the signal
-                        from the absolute value of the FFT?
+                        Identify under which condition you will see a linear- or plane-polarized wave?
                     </li>
-
                     <li>
-                        With the phase set to zero, giving \( \cos{\omega t} \), which part of the FFT responds to
-                        variations in amplitude, real or imaginary?
+                        Identify under which condition you will see a circular-polarized wave?
                     </li>
-
                     <li>
-                        With the phase set to \( \pi/2 \), giving \( \sin{\omega t} \), which part of the FFT responds
-                        to
-                        variations in amplitude, real or imaginary?
+                        Identify under which condition you will see an right hand elliptic-polarized wave? Then for
+                        circular-polarized wave? What if \( E_x \) and \( E_y \) vary as \( \cos \) rather than \( \sin
+                        \)?
                     </li>
-
                     <li>
-                        Set the phase to \( \pi/4 \) and vary the amplitude. How do the real and imaginary components
-                        respond, and how do
-                        you understand this?
+                        Identify under which condition you will see an elliptical-polarized wave?
                     </li>
-
                     <li>
-                        Describe a general technique to determine \( A, B, \omega \) from the FFT of \(
-                        y(t) = A \cos{\omega t} + B \sin{\omega t} \).
+                        Could you use the knowledge of polarization to explain the physical cause of Brewster angle?
                     </li>
                 </ol>
             </div>
         </div>
     </div>
 </section>
-
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 <!-- User script -->
-<script type="text/javascript" src="assets/js/panel3.js"></script>
-
+<script type="text/javascript" src="assets/js/panel2.bundle.js"></script>
 <!-- MathJax -->
 <script type="text/javascript" async
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 </body>
+
 </html>
