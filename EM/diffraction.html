@@ -26,13 +26,13 @@
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels" aria-expanded="false">
-                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
-                <span class="sr-only">Toggle navigation</span>
-                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+                    <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                    <span class="sr-only">Toggle navigation</span>
+                    <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
             </div>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -65,7 +65,47 @@
                         </h1>
                     </div>
                     <p>
-                        Assume that there are \( N \) scatterers, uniformly spaced by \( a \), with total length \( (N-1) a \): a finite lattice.<br> The lattice could be a diffraction grating made by optical lithography (probed by visible light, like a laser pointer) or a crystal lattice (probed by x-rays or electron waves, as in a transmission electron microscope.)<br> The simulation assumes that each scatterer is a point source for a spherical light wave, radiating outwards from the point.)<br> You will see that the <em>diffraction pattern</em> images the Fourier transform of the lattice. Since atomic spacings (periodicities) are characteristic of elements, this allows us to determine a material's composition.<br>
+                        Assume that there are \( N \) scatterers, uniformly spaced by \( a \), 
+                        with total length \( (N-1) a \): a finite lattice. 
+                        The lattice could be a diffraction grating made by optical lithography (probed by visible light, 
+                        like a laser pointer) or a crystal lattice (probed by x-rays or electron waves, 
+                        as in a transmission electron microscope.)
+                    </p>
+                    <p>
+                        The simulation assumes that each scatterer is a point source for a spherical light wave, 
+                        radiating outwards from the point.)
+
+                    </p>
+                    <p>
+                        You will see that the <em>diffraction pattern</em> images: 
+                        the Fourier transform of the lattice. Since atomic spacings (periodicities) 
+                        are characteristic of elements, 
+                        this allows us to determine a material's composition.
+                    </p>
+                    <p>
+                        Consider the wave front on the screen is 
+                        $$
+                        \begin{equation}
+                            \begin{split}
+                                \tilde{E} &= 
+                                \frac{ 1 }{ r } \exp(i k r) \\ 
+                                &= \frac{ 1 }{ \sqrt{(x - x')^2 + y'^2 + z^2} } \thinspace
+                                \exp \Big( i k \sqrt{(x - x')^2 + y'^2 + z^2} \Big),
+                            \end{split} 
+                        \end{equation}
+                        $$
+                        where \( (x', y') \) is the position of the image point, 
+                        \( (x,0) \) is the position of the scatterer.
+                        The intensity is \( \tilde{E} \tilde{E}^\ast \).
+                    </p>
+                    <p>
+                        If \( x^2 \ll z^2 \), or \( x'^2, y'^2 \ll z^2 \), 
+                        we call that they satisfy <em>paraxial approximation</em>.
+                        If \( x^2 / \lambda \ll z \), 
+                        or \( x'^2 / \lambda, y'^2 / \lambda \ll z \), 
+                        we call that they satisfy <em>far field approximation</em>, 
+                        where \( x^2 / (\lambda z) \) is called 
+                        <em>Fresnel number</em>.
                     </p>
                 </div>
             </div>
@@ -113,6 +153,12 @@
                                 <label for="cl" class="slideLables">camera length \( L \) (m):</label>
                                 <span id="clSliderVal" class="sliderVal"></span>
                                 <input id="cl" data-slider-min="0.00001" data-slider-max="20" data-slider-step="0.01" data-slider-value="0.00001">
+                            </div>
+
+                            <div class="col slider-row">
+                                <label for="z" class="slideLables">\( z \) (m):</label>
+                                <span id="zSliderVal" class="sliderVal"></span>
+                                <input id="z" data-slider-min="-9" data-slider-max="-2" data-slider-step="1" data-slider-value="-9">
                             </div>
                         </div>
                     </div>

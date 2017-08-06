@@ -21,18 +21,22 @@ var aSlider = $('#a')
     .bootstrapSlider({});
 var clSlider = $('#cl')
     .bootstrapSlider({});
+var zSlider = $('#z')
+    .bootstrapSlider({});
 var n = nSlider.bootstrapSlider('getValue');
 var lambda = lambdaSlider.bootstrapSlider('getValue');
 var a = aSlider.bootstrapSlider('getValue');
 var cl = clSlider.bootstrapSlider('getValue');
+var z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
+console.log(z)
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
-var farOrNear = 'far';
 
 
 function xContUpdate() {
     /*
      xCont will change when cl changes.
+     xCont is the split of the screen.
      */
     var q0 = 2 * Math.sin(thetaMax) * cl;
     for (var i = 0; i < nX; i++) {
@@ -43,6 +47,7 @@ function xContUpdate() {
 function yContUpdate() {
     /*
      yCont will change when cl changes.
+     yCont is the split of the screen.
      */
     for (var i = 0; i < nY; i++) {
         yCont[i] = i / nY * cl;
@@ -52,6 +57,7 @@ function yContUpdate() {
 function zUpdate() {
     /*
      zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
+     xP is the array of scatters, it is formed by a lattice.
      */
     var xP = new Array(n);
     if (Number.isInteger(n)) {
@@ -75,19 +81,15 @@ function zUpdate() {
             zIm[i] = 0;
             for (j = 0; j < n; j++) {
                 // Inner loop over particles
-                var r;
-                if (farOrNear === 'far') {
-                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + 1);
-                } else {
-                    r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2));
-                }
-                zRe[i] += Math.cos(kv * r) / r;
-                zIm[i] += Math.sin(kv * r) / r;
+                var r = Math.sqrt(Math.pow(yCont[k], 2) + Math.pow(xCont[i] - xP[j], 2) + Math.pow(z, 2));
+                zRe[i] += Math.cos(kv * r);
+                zIm[i] += Math.sin(kv * r);
             }
-            // Intensity is E times its complex conjugate
-            if (k === nY - 1) {
+            // Intensity = E times its complex conjugate.
+            if (k === nY - 1) { // Take the intensity of last line of y
                 zIntensity[i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
             }
+            // Intensity forms a 2D heatmap.
             zHM[k][i] = Math.pow(zRe[i], 2) + Math.pow(zIm[i], 2);
         }
     }
@@ -144,6 +146,8 @@ function createPlots() {
     }];
 
     var data1 = [{
+        x: xCont,
+        y: yCont,
         z: [zIntensity, zIntensity, zIntensity],
         type: 'heatmap',
         zmin: 0,
@@ -211,6 +215,20 @@ clSlider.on('change', function () {
         .text(cl);
 });
 
+zSlider.bootstrapSlider({
+    formatter: function (value) {
+        return Math.pow(10, value);
+    }
+});
+
+zSlider.on('change', function () {
+    z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
+    zUpdate();
+    plot();
+
+    $('#zSliderVal').text(z);
+});
+
 
 // Initialize
 xContUpdate();
@@ -225,3 +243,5 @@ $('#aSliderVal')
     .text(a);
 $('#clSliderVal')
     .text(cl);
+$('#zSliderVal')
+    .text(z);
