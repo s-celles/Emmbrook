@@ -62,7 +62,7 @@ lambdaSlider.on('change', function () {
 
     $('#lambdaSliderVal')
         .text(lambda);
-})
+});
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
@@ -108,7 +108,6 @@ $('#optSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
             default:
                 new RangeError('This option is not valid!')
         }
-        ;
         plotHeatmap(opt, sty);
     });
 
@@ -126,7 +125,6 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
             default:
                 new RangeError('This style is not valid!')
         }
-        ;
         plotHeatmap(opt, sty);
     });
 
@@ -176,15 +174,6 @@ function updateRatioLists() {
      Return: An array of [[r0, r1, ...], [t0, t1, ...]].
      */
     return numeric.transpose(thetaIList.map(updateRatioValues));
-}
-
-function updateBrewsterAngle() {
-    /*
-     Brewster angle changes when n1, n2 changes.
-     */
-    epsilon1 = Math.pow(n1, 2);
-    epsilon2 = Math.pow(n2, 2);
-    return (n1 / n2 * epsilon2 / epsilon1);
 }
 
 
@@ -396,7 +385,7 @@ function selectField(option) {
         case 2: // Transmitted field
             return [reA.pick(null, null, option), imA.pick(null, null, option)];
         default:
-            alert("You have inputted a wrong option!");
+            alert('You have inputted a wrong option!');
     }
 }
 
@@ -434,9 +423,8 @@ function chooseIntensity(option, style) {
             return unpack(updateAveragedIntensity(option));
             break;
         default:
-            alert("You have inputted a wrong style!");
+            alert('You have inputted a wrong style!');
     }
-    ;
 }
 
 function plotHeatmap(option, style) {
