@@ -21,10 +21,10 @@ if (supportsES6) {
 // Import libraries
 let ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
 let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
-let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays. Implemented using cwise.
+let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
 let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
 // let show = require('ndarray-show');
-let tile = require('ndarray-tile');
+let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
@@ -36,9 +36,9 @@ let wireNum = 500;
 let loopMul = 10;
 // Spatial coordinates
 let spatialRange = 10;
-let xCoord = myLinspace(xNum, -spatialRange, spatialRange);
-let yCoord = myLinspace(yNum, -spatialRange, spatialRange);
-let zCoord = myLinspace(zNum, -spatialRange, spatialRange);
+let xCoord = myLinspace([xNum], -spatialRange, spatialRange);
+let yCoord = myLinspace([yNum], -spatialRange, spatialRange);
+let zCoord = myLinspace([zNum], -spatialRange, spatialRange);
 // Wire
 let wireRange = 10;
 let xWireCoord;
@@ -58,12 +58,13 @@ let zMesh;
 // Main interfaces
 function myLinspace(shape, start, end, options) {
     /*
-     If we use ndarray-linspace package, it returns a ndarray with dtype='array',
+     If we use ndarray-linspace package,
+     it returns a ndarray with dtype='array',
      but this dtype cannot be used by ndarray-tile package, it needs 'float'.
      So we need to transform dtype manually.
      */
-    let tmp = linspace(ndarray([], [shape]), start, end, options);
-    return ndarray(new Float64Array(tmp.data));
+    let tmp = linspace(ndarray([], shape), start, end, options);
+    return reshape(ndarray(new Float64Array(tmp.data)), shape);
 }
 
 function meshgrid(xArray, yArray, zArray) {
@@ -208,11 +209,6 @@ function createPlots() {
     let bFieldZ;
     [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
 
-    let m = xMesh;
-    // let m = concatc([xMesh, bFieldX])
-    // console.log(show(bFieldX))
-    // console.log(show(m.shape))
-
     let layout = {
         scene: {
             xaxis: {
@@ -280,16 +276,16 @@ function setWire(opt) {
         case 0:
             xWireCoord = ndarray(new Float64Array(wireNum));
             yWireCoord = ndarray(new Float64Array(wireNum));
-            zWireCoord = myLinspace(wireNum, -wireRange, wireRange);
+            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
             break;
         case 1:
             xWireCoord = ops.coseq(
-                ops.mulseq(myLinspace(wireNum, -wireRange, wireRange), loopMul)
+                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
             );
             yWireCoord = ops.sineq(
-                ops.mulseq(myLinspace(wireNum, -wireRange, wireRange), loopMul)
+                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
             );
-            zWireCoord = myLinspace(wireNum, -wireRange, wireRange);
+            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
             break;
         default:
             new RangeError('This option is not valid!');
