@@ -23,15 +23,16 @@ let ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScr
 let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
 let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
 let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
-// let show = require('ndarray-show');
+var fill = require('ndarray-fill');
+let show = require('ndarray-show');
 let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
 let current = 1; // Current
-let xNum = 10;
-let yNum = 10;
-let zNum = 10;
+let xNum = 5;
+let yNum = 5;
+let zNum = 5;
 let wireNum = 500;
 let loopMul = 10;
 // Spatial coordinates
@@ -74,14 +75,11 @@ function meshgrid(xArray, yArray, zArray) {
      they are all column-major order:
      http://www.wikiwand.com/en/Row-_and_column-major_order.
      */
-    let xNum = xArray.size;
-    let yNum = yArray.size;
-    let zNum = zArray.size;
     let xMesh = reshape(tile(xArray, [zNum, yNum]), [zNum, xNum, yNum]);
     let yMesh = reshape(
-        tile(tile(yCoord, [1, xNum]).transpose(1, 0), [zNum]), [zNum, xNum, yNum]
+        tile(tile(yArray, [1, xNum]).transpose(1, 0), [zNum]), [zNum, xNum, yNum]
     );
-    let zMesh = tile(zCoord, [1, xNum, yNum]);
+    let zMesh = tile(zArray, [1, xNum, yNum]);
     return [xMesh, yMesh, zMesh];
 }
 
@@ -93,7 +91,7 @@ function reshape(oldNdarr, newShape) {
     return ndarray(oldNdarr.data, newShape);
 }
 
-function cross(arr1, arr2) {
+function crossProduct(arr1, arr2) {
     /*
      Here arr1, arr2 are both 1D arrays.
      */
@@ -110,11 +108,20 @@ function setDeltaLArray() {
     /*
      Delta l is the infinitesimal part of l---the wire.
      */
-    for (let i = 0; i < wireNum - 1; i++) {
-        dlx.set(i, xWireCoord.get(i + 1) - xWireCoord.get(i));
-        dly.set(i, yWireCoord.get(i + 1) - yWireCoord.get(i));
-        dlz.set(i, zWireCoord.get(i + 1) - zWireCoord.get(i));
-    }
+    // for (let i = 0; i < wireNum - 1; i++) {
+    //     dlx.set(i, xWireCoord.get(i + 1) - xWireCoord.get(i));
+    //     dly.set(i, yWireCoord.get(i + 1) - yWireCoord.get(i));
+    //     dlz.set(i, zWireCoord.get(i + 1) - zWireCoord.get(i));
+    // }
+    fill(dlx, function (i) {
+        return xWireCoord.get(i + 1) - xWireCoord.get(i);
+    });
+    fill(dly, function (i) {
+        return yWireCoord.get(i + 1) - yWireCoord.get(i);
+    });
+    fill(dlz, function (i) {
+        return zWireCoord.get(i + 1) - zWireCoord.get(i);
+    });
     dlx.set(wireNum - 1, 1 - xWireCoord.get(wireNum - 1));
     dly.set(wireNum - 1, 1 - yWireCoord.get(wireNum - 1));
     dlz.set(wireNum - 1, 1 - zWireCoord.get(wireNum - 1));
@@ -139,15 +146,17 @@ function calculateB(x, y, z) {
      */
     let b = ndarray(new Float64Array(3));
     let aux = ndarray(new Float64Array(3));
+    // This is the integration part of Biot--Savart law.
     for (let i = 0; i < wireNum - 1; i++) {
         let r = calculateR(x, y, z, i);
         let rLength = ops.norm2(ndarray(r)); // L2 norm of vector r
         let dl = [dlx.get(i), dly.get(i), dlz.get(i)];
-        ops.muls(aux, ndarray(cross(dl, r)), current / Math.pow(rLength, 3));
+        ops.muls(aux, ndarray(crossProduct(dl, r)), 1 / Math.pow(rLength, 3));
         ops.addeq(b, aux);
     }
-    return b;
+    return ops.mulseq(b, current);
 }
+setWire(1);
 
 function generateBField() {
     let bField = [];
@@ -162,8 +171,21 @@ function generateBField() {
             }
         }
     }
+    // let bField = ndarray(new Float64Array(xNum * yNum * zNum * 3), [xNum, yNum, zNum, 3]);
+    // for (let i = 0; i < zNum; i++) {
+    //     for (let j = 0; j < xNum; j++) {
+    //         for (let k = 0; k < yNum; k++) {
+    //             let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
+    //             bField.set(i, j, k, 0, bf.get(0));
+    //             bField.set(i, j, k, 1, bf.get(1));
+    //             bField.set(i, j, k, 2, bf.get(2));
+    //         }
+    //     }
+    // }
     return bField;
 }
+
+console.log((generateBField()))
 
 function parseBField() {
     let bField = generateBField();
@@ -174,9 +196,10 @@ function parseBField() {
     for (let i = 0; i < zNum; i++) {
         for (let j = 0; j < xNum; j++) {
             for (let k = 0; k < yNum; k++) {
-                bFieldX.set(i, j, k, bField[i][j][k][0]);
-                bFieldY.set(i, j, k, bField[i][j][k][1]);
-                bFieldZ.set(i, j, k, bField[i][j][k][2]);
+                let bfijk = bField[i][j][k];
+                bFieldX.set(i, j, k, bfijk[0]);
+                bFieldY.set(i, j, k, bfijk[1]);
+                bFieldZ.set(i, j, k, bfijk[2]);
             }
         }
     }
@@ -250,7 +273,7 @@ function createPlots() {
         }
     }
 
-    Plotly.newPlot('plt0', data0, layout);
+    // Plotly.newPlot('plt0', data0, layout);
 }
 
 
