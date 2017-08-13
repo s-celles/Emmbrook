@@ -6,13 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>Magnetic field using Biot--Savart's law</title>
+    <title>Magnetic field using Biot--Savart law</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/panel1.css" type="text/css">
 </head>
@@ -57,11 +59,29 @@
                 <!-- Heading text-->
                 <div class="page-header">
                     <h1>
-                        Magnetic field using Biot--Savart's law
+                        Magnetic field using Biot--Savart law
                     </h1>
                 </div>
                 <p>
-                    lll
+                    Biot--Savart law has the form
+                    $$
+                    \begin{equation}
+                    \mathbf{B} (\mathbf{x}) = \frac{ \mu_0 i }{ 4 \pi } \int
+                    \frac{ d\mathbf{l} \times \mathbf{r} }{ \lvert \mathbf{r} \rvert^3 },
+                    \end{equation}
+                    $$
+                    where \( d\mathbf{l} \) is a vector whose magnitude is the length of the differential element
+                    of the wire in the direction of conventional current;
+                    and \( \mathbf{r} = \mathbf{x} - \mathbf{l} \) is the displacement vector from the wire element
+                    \( \mathbf{l} \) to the point \( \mathbf{x} \) at which the field is being computed;
+                    \( i \) is the magnitude of the current. This could also be written as
+                    $$
+                    \begin{equation}
+                    \mathbf{B} (\mathbf{x}) = \frac{ \mu_0 i }{ 4 \pi } \int
+                    \frac{ d\mathbf{l} \times \hat{ \mathbf{r} } }{ \lvert \mathbf{r} \rvert^2 },
+                    \end{equation}
+                    $$
+                    where \( \hat{ \mathbf{r} } \) means the unit vector of that direction.
                 </p>
             </div>
         </div>
@@ -86,29 +106,11 @@
                 <div id="sliders">
                     <!-- Slide bars -->
                     <div class="row">
-                        <div class="col slider-row">
-                            <label for="thetaI" class="slideLables">\( \theta_I \): (rad)</label>
-                            <span id="thetaISliderVal" class="sliderVal"></span>
-                            <input id="thetaI" data-slider-min="0" data-slider-max="1.57" data-slider-step="0.01"
-                                   data-slider-value="1.25">
-                        </div>
-                        <div class="col slider-row">
-                            <label for="lambda" class="slideLables">\( \lambda \):</label>
-                            <span id="lambdaSliderVal" class="sliderVal"></span>
-                            <input id="lambda" data-slider-min="1" data-slider-max="10" data-slider-step="0.1"
-                                   data-slider-value="1">
-                        </div>
-                        <div class="col slider-row">
-                            <label for="n1" class="slideLables">\( n_1 \):</label>
-                            <span id="n1SliderVal" class="sliderVal"></span>
-                            <input id="n1" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
-                                   data-slider-value="1">
-                        </div>
-                        <div class="col slider-row">
-                            <label for="n2" class="slideLables">\( n_2 \):</label>
-                            <span id="n2SliderVal" class="sliderVal"></span>
-                            <input id="n2" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
-                                   data-slider-value="2">
+                        <div class="col-md-12">
+                            <select class="selectpicker" id="wireSelect">
+                                <option>Straight wire</option>
+                                <option selected>Solenoid</option>
+                            </select>
                         </div>
                     </div>
                 </div>

@@ -106,7 +106,7 @@ $('#optSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
                 opt = 3;
                 break;
             default:
-                new RangeError('This option is not valid!')
+                new RangeError('This option is not valid!');
         }
         plotHeatmap(opt, sty);
     });
@@ -123,7 +123,7 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
                 sty = 1;
                 break;
             default:
-                new RangeError('This style is not valid!')
+                new RangeError('This style is not valid!');
         }
         plotHeatmap(opt, sty);
     });
