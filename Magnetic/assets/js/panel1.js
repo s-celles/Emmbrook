@@ -13,8 +13,7 @@ var supportsES6 = function () { // Test if ES6 is ~fully supported
     }
 }();
 
-if (supportsES6) {
-} else {
+if (supportsES6) {} else {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
@@ -23,22 +22,23 @@ let ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScr
 let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
 let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
 let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
-var fill = require('ndarray-fill');
-let show = require('ndarray-show');
+let fill = require('ndarray-fill');
+// let show = require('ndarray-show');
 let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
-let current = 1; // Current
-let xNum = 5;
-let yNum = 5;
-let zNum = 5;
-let wireNum = 500;
+let current = 0.5; // Current
+let xNum = 20;
+let yNum = 20;
+let zNum = 10;
+let wireNum = 400;
 let loopMul = 10;
+let opt;
 // Spatial coordinates
 let spatialRange = 10;
-let xCoord = myLinspace([xNum], -spatialRange, spatialRange);
-let yCoord = myLinspace([yNum], -spatialRange, spatialRange);
+let xCoord = myLinspace([xNum], -4, 4);
+let yCoord = myLinspace([yNum], -4, 4);
 let zCoord = myLinspace([zNum], -spatialRange, spatialRange);
 // Wire
 let wireRange = 10;
@@ -156,53 +156,53 @@ function calculateB(x, y, z) {
     }
     return ops.mulseq(b, current);
 }
-setWire(1);
 
 function generateBField() {
-    let bField = [];
-    for (let i = 0; i < zNum; i++) {
-        bField[i] = [];
-        for (let j = 0; j < xNum; j++) {
-            bField[i][j] = [];
-            for (let k = 0; k < yNum; k++) {
-                bField[i][j][k] = unpack(
-                    calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i))
-                );
-            }
-        }
-    }
-    // let bField = ndarray(new Float64Array(xNum * yNum * zNum * 3), [xNum, yNum, zNum, 3]);
+    // let bField = [];
     // for (let i = 0; i < zNum; i++) {
+    //     bField[i] = [];
     //     for (let j = 0; j < xNum; j++) {
+    //         bField[i][j] = [];
     //         for (let k = 0; k < yNum; k++) {
-    //             let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
-    //             bField.set(i, j, k, 0, bf.get(0));
-    //             bField.set(i, j, k, 1, bf.get(1));
-    //             bField.set(i, j, k, 2, bf.get(2));
+    //             bField[i][j][k] = unpack(
+    //                 calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i))
+    //             );
     //         }
     //     }
     // }
-    return bField;
-}
-
-console.log((generateBField()))
-
-function parseBField() {
-    let bField = generateBField();
-    let size = xNum * yNum * zNum;
-    let bFieldX = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
-    let bFieldY = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
-    let bFieldZ = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
+    let bField = ndarray(new Float64Array(xNum * yNum * zNum * 3), [zNum, xNum, yNum, 3]);
     for (let i = 0; i < zNum; i++) {
         for (let j = 0; j < xNum; j++) {
             for (let k = 0; k < yNum; k++) {
-                let bfijk = bField[i][j][k];
-                bFieldX.set(i, j, k, bfijk[0]);
-                bFieldY.set(i, j, k, bfijk[1]);
-                bFieldZ.set(i, j, k, bfijk[2]);
+                let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
+                bField.set(i, j, k, 0, bf.get(0));
+                bField.set(i, j, k, 1, bf.get(1));
+                bField.set(i, j, k, 2, bf.get(2));
             }
         }
     }
+    return bField;
+}
+
+function parseBField() {
+    let bField = generateBField();
+    // let size = xNum * yNum * zNum;
+    // let bFieldX = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
+    // let bFieldY = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
+    // let bFieldZ = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
+    // for (let i = 0; i < zNum; i++) {
+    //     for (let j = 0; j < xNum; j++) {
+    //         for (let k = 0; k < yNum; k++) {
+    //             let bfijk = bField[i][j][k];
+    //             bFieldX.set(i, j, k, bfijk[0]);
+    //             bFieldY.set(i, j, k, bfijk[1]);
+    //             bFieldZ.set(i, j, k, bfijk[2]);
+    //         }
+    //     }
+    // }
+    let bFieldX = bField.pick(null, null, null, 0);
+    let bFieldY = bField.pick(null, null, null, 1);
+    let bFieldZ = bField.pick(null, null, null, 2);
     return [bFieldX, bFieldY, bFieldZ];
 }
 
@@ -219,9 +219,24 @@ function vectorFieldEnd() {
 
 // Plot
 function plot() {
+    let bFieldX;
+    let bFieldY;
+    let bFieldZ;
+    [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
+
     plt0.data[0].x = unpack(xWireCoord);
     plt0.data[0].y = unpack(yWireCoord);
     plt0.data[0].z = unpack(zWireCoord);
+
+    for (let i = 0; i < zNum; i++) {
+        for (let j = 0; j < xNum; j++) {
+            for (let k = 1; k <= yNum; k++) {
+                plt0.data[i * xNum * yNum + j * yNum + k].x = [xMesh.get(j, k, i), bFieldX.get(j, k, i)];
+                plt0.data[i * xNum * yNum + j * yNum + k].y = [yMesh.get(j, k, i), bFieldY.get(j, k, i)];
+                plt0.data[i * xNum * yNum + j * yNum + k].z = [zMesh.get(j, k, i), bFieldZ.get(j, k, i)];
+            };
+        }
+    }
 
     Plotly.redraw(plt0);
 }
@@ -235,16 +250,17 @@ function createPlots() {
     let layout = {
         scene: {
             xaxis: {
-                range: [-10, 10],
+                range: [-4, 4],
             },
             yaxis: {
-                range: [-10, 10],
+                range: [-4, 4],
             },
             zaxis: {
                 range: [-spatialRange, spatialRange],
             },
         },
         showlegend: false,
+        // height: 800,
     };
 
     // Plot wire itself
@@ -254,6 +270,9 @@ function createPlots() {
         x: unpack(xWireCoord),
         y: unpack(yWireCoord),
         z: unpack(zWireCoord),
+        line: {
+            color: '#ff0000',
+        },
     };
 
     let data0 = [wire];
@@ -273,49 +292,54 @@ function createPlots() {
         }
     }
 
-    // Plotly.newPlot('plt0', data0, layout);
+    Plotly.newPlot('plt0', data0, layout);
 }
+
+// Adjust Plotly's plotRatios size responsively according to window motion
+window.onresize = function () {
+    Plotly.Plots.resize(plt0);
+};
 
 
 // Interactive interfaces
-// $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
-//     .on('changed.bs.select', function () {
-//         let selectedValue = $(this)
-//             .val();
-//         switch (selectedValue) {
-//             case 'Straight wire':
-//                 opt = 0;
-//                 break;
-//             case 'Solenoid':
-//                 opt = 1;
-//                 break;
-//         }
-//         setWire(opt);
-//         plot();
-//     });
+$('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
+    .on('changed.bs.select', function () {
+        let selectedValue = $(this)
+            .val();
+        switch (selectedValue) {
+        case 'Straight wire':
+            opt = 0;
+            break;
+        case 'Solenoid':
+            opt = 1;
+            break;
+        }
+        setWire(opt);
+        plot();
+    });
 
 function setWire(opt) {
     switch (opt) {
-        case 0:
-            xWireCoord = ndarray(new Float64Array(wireNum));
-            yWireCoord = ndarray(new Float64Array(wireNum));
-            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-            break;
-        case 1:
-            xWireCoord = ops.coseq(
-                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-            );
-            yWireCoord = ops.sineq(
-                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-            );
-            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-            break;
-        default:
-            new RangeError('This option is not valid!');
+    case 0:
+        xWireCoord = ndarray(new Float64Array(wireNum));
+        yWireCoord = ndarray(new Float64Array(wireNum));
+        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
+        break;
+    case 1:
+        xWireCoord = ops.coseq(
+            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
+        );
+        yWireCoord = ops.sineq(
+            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
+        );
+        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
+        break;
+    default:
+        new RangeError('This option is not valid!');
     }
 }
 
 // Initialize
-setWire(0);
+setWire(1);
 setDeltaLArray();
 createPlots();
