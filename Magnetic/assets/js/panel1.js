@@ -29,9 +29,9 @@ let tile = require('ndarray-tile'); // This module takes an input ndarray and re
 
 // Variables
 let current = 0.5; // Current
-let xNum = 5;
-let yNum = 5;
-let zNum = 5;
+let xNum = 20;
+let yNum = 20;
+let zNum = 20;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
@@ -217,7 +217,7 @@ function createPlots() {
     let bFieldZ;
     [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
     console.log(xMesh)
-    
+
     let layout = {
         scene: {
             xaxis: {
@@ -308,9 +308,14 @@ function setWire(opt) {
         zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
         break;
     case 2:
-        xWireCoord = ops.coseq(myLinspace([30], 0, 2 * Math.PI, {endpoint: false}));
-        yWireCoord = ops.sineq(myLinspace([30], 0, 2 * Math.PI, {endpoint: false}));
+        xWireCoord = ops.coseq(myLinspace([wireNum], 0, 2 * Math.PI, {
+            endpoint: false,
+        }));
+        yWireCoord = ops.sineq(myLinspace([wireNum], 0, 2 * Math.PI, {
+            endpoint: false,
+        }));
         zWireCoord = myLinspace([wireNum], 0, 0);
+        zCoord = myLinspace([zNum], -2, 2);
         break;
     default:
         new RangeError('This option is not valid!');
@@ -318,6 +323,6 @@ function setWire(opt) {
 }
 
 // Initialize
-setWire(2);
+setWire(1);
 setDeltaLArray();
 createPlots();
