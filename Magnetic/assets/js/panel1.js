@@ -29,9 +29,9 @@ let tile = require('ndarray-tile'); // This module takes an input ndarray and re
 
 // Variables
 let current = 0.5; // Current
-let xNum = 20;
-let yNum = 20;
-let zNum = 20;
+let xNum = 10;
+let yNum = 10;
+let zNum = 10;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
@@ -286,6 +286,10 @@ $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
             break;
         case 'Circle':
             opt = 2;
+            break;
+        case 'Toroidal solenoid':
+            opt = 3;
+            break;
         }
         setWire(opt);
         plot();
@@ -293,12 +297,12 @@ $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
 
 function setWire(opt) {
     switch (opt) {
-    case 0:
+    case 0: // Generate a straight wire
         xWireCoord = ndarray(new Float64Array(wireNum));
         yWireCoord = ndarray(new Float64Array(wireNum));
         zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
         break;
-    case 1:
+    case 1: // Generate a solenoid
         xWireCoord = ops.coseq(
             ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
         );
@@ -307,7 +311,7 @@ function setWire(opt) {
         );
         zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
         break;
-    case 2:
+    case 2: // Generate a circle
         xWireCoord = ops.coseq(myLinspace([wireNum], 0, 2 * Math.PI, {
             endpoint: false,
         }));
@@ -317,12 +321,30 @@ function setWire(opt) {
         zWireCoord = myLinspace([wireNum], 0, 0);
         zCoord = myLinspace([zNum], -2, 2);
         break;
+    case 3: // Generate a toroidal solenoid
+        let R = 3;
+        let r = 1;
+        let n = 60;
+        let u = unpack(myLinspace([2*wireNum], 0, 2 * Math.PI));
+        xWireCoord = u.map(function (x) {
+            return (R + r * Math.cos(n * x)) * Math.cos(x);
+        });
+        yWireCoord = u.map(function (x) {
+            return (R + r * Math.cos(n * x)) * Math.sin(x);
+        });
+        zWireCoord = u.map(function (x) {
+            return r * Math.sin(n * x);
+        });
+        xWireCoord = ndarray(new Float64Array(xWireCoord));
+        yWireCoord = ndarray(new Float64Array(yWireCoord));
+        zWireCoord = ndarray(new Float64Array(zWireCoord));
     default:
         new RangeError('This option is not valid!');
     }
 }
 
+
 // Initialize
-setWire(1);
+setWire(3);
 setDeltaLArray();
 createPlots();
