@@ -28,15 +28,15 @@ let tile = require('ndarray-tile'); // This module takes an input ndarray and re
 
 
 // Variables
-let current = 0.5; // Current
-let xNum = 10;
-let yNum = 10;
-let zNum = 10;
+let current = 0.1; // Current
+let xNum = 20;
+let yNum = 20;
+let zNum = 20;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
 // Spatial coordinates
-let spatialRange = 12;
+let spatialRange = 6;
 let xCoord = myLinspace([xNum], -4, 4);
 let yCoord = myLinspace([yNum], -4, 4);
 let zCoord = myLinspace([zNum], -spatialRange, spatialRange);
@@ -158,10 +158,10 @@ function generateBField() {
         for (let j = 0; j < xNum; j++) {
             for (let k = 0; k < yNum; k++) {
                 let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
-                let bfnorm = ops.norm2(bf);
-                bField.set(i, j, k, 0, bf.get(0) / bfnorm * 0.5); // Normalized vector
-                bField.set(i, j, k, 1, bf.get(1) / bfnorm * 0.5);
-                bField.set(i, j, k, 2, bf.get(2) / bfnorm * 0.5);
+                // let bfnorm = ops.norm2(bf);
+                bField.set(i, j, k, 0, bf.get(0)); // / bfnorm * 0.5); // Normalized vector
+                bField.set(i, j, k, 1, bf.get(1)); /// bfnorm * 0.5);
+                bField.set(i, j, k, 2, bf.get(2)); /// bfnorm * 0.5);
             }
         }
     }
@@ -323,9 +323,9 @@ function setWire(opt) {
         break;
     case 3: // Generate a toroidal solenoid
         let R = 3;
-        let r = 1;
+        let r = 0.5;
         let n = 60;
-        let u = unpack(myLinspace([2*wireNum], 0, 2 * Math.PI));
+        let u = unpack(myLinspace([2 * wireNum], 0, 2 * Math.PI));
         xWireCoord = u.map(function (x) {
             return (R + r * Math.cos(n * x)) * Math.cos(x);
         });
@@ -345,6 +345,6 @@ function setWire(opt) {
 
 
 // Initialize
-setWire(3);
+setWire(1);
 setDeltaLArray();
 createPlots();
