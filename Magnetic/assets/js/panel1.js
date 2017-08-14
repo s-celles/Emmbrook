@@ -29,9 +29,9 @@ let tile = require('ndarray-tile'); // This module takes an input ndarray and re
 
 // Variables
 let current = 0.5; // Current
-let xNum = 10;
-let yNum = 10;
-let zNum = 10;
+let xNum = 5;
+let yNum = 5;
+let zNum = 5;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
@@ -108,11 +108,6 @@ function setDeltaLArray() {
     /*
      Delta l is the infinitesimal part of l---the wire.
      */
-    // for (let i = 0; i < wireNum - 1; i++) {
-    //     dlx.set(i, xWireCoord.get(i + 1) - xWireCoord.get(i));
-    //     dly.set(i, yWireCoord.get(i + 1) - yWireCoord.get(i));
-    //     dlz.set(i, zWireCoord.get(i + 1) - zWireCoord.get(i));
-    // }
     fill(dlx, function (i) {
         return xWireCoord.get(i + 1) - xWireCoord.get(i);
     });
@@ -158,26 +153,15 @@ function calculateB(x, y, z) {
 }
 
 function generateBField() {
-    // let bField = [];
-    // for (let i = 0; i < zNum; i++) {
-    //     bField[i] = [];
-    //     for (let j = 0; j < xNum; j++) {
-    //         bField[i][j] = [];
-    //         for (let k = 0; k < yNum; k++) {
-    //             bField[i][j][k] = unpack(
-    //                 calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i))
-    //             );
-    //         }
-    //     }
-    // }
     let bField = ndarray(new Float64Array(xNum * yNum * zNum * 3), [zNum, xNum, yNum, 3]);
     for (let i = 0; i < zNum; i++) {
         for (let j = 0; j < xNum; j++) {
             for (let k = 0; k < yNum; k++) {
                 let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
-                bField.set(i, j, k, 0, bf.get(0));
-                bField.set(i, j, k, 1, bf.get(1));
-                bField.set(i, j, k, 2, bf.get(2));
+                let bfnorm = ops.norm2(bf);
+                bField.set(i, j, k, 0, bf.get(0) / bfnorm * 0.5); // Normalized vector
+                bField.set(i, j, k, 1, bf.get(1) / bfnorm * 0.5);
+                bField.set(i, j, k, 2, bf.get(2) / bfnorm * 0.5);
             }
         }
     }
@@ -186,20 +170,6 @@ function generateBField() {
 
 function parseBField() {
     let bField = generateBField();
-    // let size = xNum * yNum * zNum;
-    // let bFieldX = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
-    // let bFieldY = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
-    // let bFieldZ = ndarray(new Float64Array(size), [zNum, xNum, yNum]);
-    // for (let i = 0; i < zNum; i++) {
-    //     for (let j = 0; j < xNum; j++) {
-    //         for (let k = 0; k < yNum; k++) {
-    //             let bfijk = bField[i][j][k];
-    //             bFieldX.set(i, j, k, bfijk[0]);
-    //             bFieldY.set(i, j, k, bfijk[1]);
-    //             bFieldZ.set(i, j, k, bfijk[2]);
-    //         }
-    //     }
-    // }
     let bFieldX = bField.pick(null, null, null, 0);
     let bFieldY = bField.pick(null, null, null, 1);
     let bFieldZ = bField.pick(null, null, null, 2);
@@ -246,14 +216,15 @@ function createPlots() {
     let bFieldY;
     let bFieldZ;
     [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
-
+    console.log(xMesh)
+    
     let layout = {
         scene: {
             xaxis: {
-                range: [-10, 10],
+                range: [-4, 4],
             },
             yaxis: {
-                range: [-10, 10],
+                range: [-4, 4],
             },
             zaxis: {
                 range: [-spatialRange, spatialRange],
@@ -313,6 +284,8 @@ $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         case 'Solenoid':
             opt = 1;
             break;
+        case 'Circle':
+            opt = 2;
         }
         setWire(opt);
         plot();
@@ -334,12 +307,17 @@ function setWire(opt) {
         );
         zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
         break;
+    case 2:
+        xWireCoord = ops.coseq(myLinspace([30], 0, 2 * Math.PI, {endpoint: false}));
+        yWireCoord = ops.sineq(myLinspace([30], 0, 2 * Math.PI, {endpoint: false}));
+        zWireCoord = myLinspace([wireNum], 0, 0);
+        break;
     default:
         new RangeError('This option is not valid!');
     }
 }
 
 // Initialize
-setWire(1);
+setWire(2);
 setDeltaLArray();
 createPlots();
