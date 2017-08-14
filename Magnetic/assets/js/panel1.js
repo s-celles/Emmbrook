@@ -29,19 +29,19 @@ let tile = require('ndarray-tile'); // This module takes an input ndarray and re
 
 // Variables
 let current = 0.5; // Current
-let xNum = 20;
-let yNum = 20;
+let xNum = 10;
+let yNum = 10;
 let zNum = 10;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
 // Spatial coordinates
-let spatialRange = 10;
+let spatialRange = 12;
 let xCoord = myLinspace([xNum], -4, 4);
 let yCoord = myLinspace([yNum], -4, 4);
 let zCoord = myLinspace([zNum], -spatialRange, spatialRange);
 // Wire
-let wireRange = 10;
+let wireRange = 8;
 let xWireCoord;
 let yWireCoord;
 let zWireCoord;
@@ -250,17 +250,17 @@ function createPlots() {
     let layout = {
         scene: {
             xaxis: {
-                range: [-4, 4],
+                range: [-10, 10],
             },
             yaxis: {
-                range: [-4, 4],
+                range: [-10, 10],
             },
             zaxis: {
                 range: [-spatialRange, spatialRange],
             },
         },
         showlegend: false,
-        // height: 800,
+        height: 800,
     };
 
     // Plot wire itself
