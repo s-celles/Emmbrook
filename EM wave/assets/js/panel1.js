@@ -34,8 +34,8 @@ var plt1 = document.getElementById('plt1');
 
 function xPrimeUpdate() {
     /*
-     xCont will change when cl changes.
-     xCont is the split of the screen.
+     xPrime will change when cl changes.
+     xPrime is the x split of the screen.
      */
     var q0 = 2 * Math.sin(thetaMax) * cl;
     for (var i = 0; i < nX; i++) {
@@ -45,8 +45,8 @@ function xPrimeUpdate() {
 
 function yPrimeUpdate() {
     /*
-     yCont will change when cl changes.
-     yCont is the split of the screen.
+     yPrime will change when cl changes.
+     yPrime is the y split of the screen.
      */
     for (var i = 0; i < nY; i++) {
         yPrime[i] = i / nY * cl;
@@ -56,7 +56,7 @@ function yPrimeUpdate() {
 function eIntensityUpdate() {
     /*
      zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
-     xP is the array of scatters, it is formed by a lattice.
+     x is the array of scatters, it is formed by a lattice.
      */
     var x = new Array(n);
     if (Number.isInteger(n)) {
@@ -119,10 +119,11 @@ function createPlots() {
             title: 'Light intensity',
             titlefont: {
                 size: 18
-            }
+            },
+            range: [0, Math.max(...eIntensityLine) * 1.2] // Spread operator
         },
         xaxis: {
-            title: 'Screen position y',
+            title: 'Screen position x',
             titlefont: {
                 size: 18
             },
@@ -134,6 +135,9 @@ function createPlots() {
         title: 'heatmap',
         titlefont: {
             size: 18
+        },
+        xaxis: {
+            range: [xPrime[0] * 1.1, xPrime[xPrime.length - 1] * 1.1]
         }
     };
 
@@ -142,7 +146,7 @@ function createPlots() {
         y: eIntensityLine,
         type: 'scatter',
         mode: 'lines',
-        name: 'continuous',
+        name: 'continuous'
     }];
 
     var data1 = [{
@@ -150,8 +154,7 @@ function createPlots() {
         y: yPrime,
         z: [eIntensityLine, eIntensityLine, eIntensityLine],
         type: 'heatmap',
-        zmin: 0,
-        zmax: 30
+        zmin: 0
     }];
 
     Plotly.newPlot(plt0, data0, layout0);
@@ -161,6 +164,7 @@ function createPlots() {
 function plot() {
     plt0.data[0].x = xPrime;
     plt0.data[0].y = eIntensityLine;
+    plt0.layout.yaxis.range = [0, Math.max(...eIntensityLine) * 1.1]
 
     plt1.data[0].z = eIntensityHeatmap;
 

@@ -7,10 +7,13 @@
         "mathjs": "^3.14.2",
         "ndarray": "^1.0.18",
         "ndarray-complex": "^1.0.3",
+        "ndarray-concat-cols": "^1.0.0",
+        "ndarray-concat-rows": "^1.0.1",
         "ndarray-fft": "^1.0.3",
         "ndarray-fill": "^1.0.2",
         "ndarray-gemm": "^1.0.0",
         "ndarray-linspace": "^2.0.3",
+        "ndarray-meshgrid": "^1.0.1",
         "ndarray-ops": "^1.2.2",
         "ndarray-scratch": "^1.2.0",
         "ndarray-show": "^2.0.0",
@@ -19,6 +22,7 @@
         "numeric": "^1.2.6"
     },
     "devDependencies": {
+        "babel-eslint": "^7.2.3",
         "eslint": "^4.3.0",
         "eslint-config-google": "^0.9.1",
         "eslint-plugin-import": "^2.7.0"

@@ -62,7 +62,7 @@ lambdaSlider.on('change', function () {
 
     $('#lambdaSliderVal')
         .text(lambda);
-})
+});
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
@@ -93,22 +93,21 @@ $('#optSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         var selectedValue = $(this)
             .val();
         switch (selectedValue) {
-            case 'Incident':
-                opt = 0;
-                break;
-            case 'Reflected':
-                opt = 1;
-                break;
-            case 'Transmitted':
-                opt = 2;
-                break;
-            case 'Total':
-                opt = 3;
-                break;
-            default:
-                new RangeError('This option is not valid!')
+        case 'Incident':
+            opt = 0;
+            break;
+        case 'Reflected':
+            opt = 1;
+            break;
+        case 'Transmitted':
+            opt = 2;
+            break;
+        case 'Total':
+            opt = 3;
+            break;
+        default:
+            new RangeError('This option is not valid!');
         }
-        ;
         plotHeatmap(opt, sty);
     });
 
@@ -117,16 +116,15 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         var selectedValue = $(this)
             .val();
         switch (selectedValue) {
-            case 'Instantaneous intensity':
-                sty = 0;
-                break;
-            case 'Time averaged intensity':
-                sty = 1;
-                break;
-            default:
-                new RangeError('This style is not valid!')
+        case 'Instantaneous intensity':
+            sty = 0;
+            break;
+        case 'Time averaged intensity':
+            sty = 1;
+            break;
+        default:
+            new RangeError('This style is not valid!');
         }
-        ;
         plotHeatmap(opt, sty);
     });
 
@@ -143,6 +141,7 @@ $('#animate')
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
+            plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
 
@@ -176,15 +175,6 @@ function updateRatioLists() {
      Return: An array of [[r0, r1, ...], [t0, t1, ...]].
      */
     return numeric.transpose(thetaIList.map(updateRatioValues));
-}
-
-function updateBrewsterAngle() {
-    /*
-     Brewster angle changes when n1, n2 changes.
-     */
-    epsilon1 = Math.pow(n1, 2);
-    epsilon2 = Math.pow(n2, 2);
-    return (n1 / n2 * epsilon2 / epsilon1);
 }
 
 
@@ -382,7 +372,8 @@ function selectField(option) {
     var reA, imA;
     [reA, imA] = updateEachAmplitude();
     switch (option) {
-        case 3: {
+    case 3:
+        {
             var reField, imField;
             reField = pool.zeros(reA.shape.slice(0, -1));
             imField = pool.zeros(imA.shape.slice(0, -1));
@@ -391,12 +382,12 @@ function selectField(option) {
             }
             return [reField, imField];
         }
-        case 0: // Fallthrough, incident field
-        case 1: // Fallthrough, reflected field
-        case 2: // Transmitted field
-            return [reA.pick(null, null, option), imA.pick(null, null, option)];
-        default:
-            alert("You have inputted a wrong option!");
+    case 0: // Fallthrough, incident field
+    case 1: // Fallthrough, reflected field
+    case 2: // Transmitted field
+        return [reA.pick(null, null, option), imA.pick(null, null, option)];
+    default:
+        throw new Error('You have inputted a wrong option!');
     }
 }
 
@@ -427,16 +418,15 @@ function chooseIntensity(option, style) {
      style: {0: instantaneous intensity, 1: time-averaged intensity}.
      */
     switch (style) {
-        case 0:
-            return unpack(updateInstantaneousIntensity(option));
-            break;
-        case 1:
-            return unpack(updateAveragedIntensity(option));
-            break;
-        default:
-            alert("You have inputted a wrong style!");
+    case 0:
+        return unpack(updateInstantaneousIntensity(option));
+        break;
+    case 1:
+        return unpack(updateAveragedIntensity(option));
+        break;
+    default:
+        throw new Error('You have inputted a wrong style!');
     }
-    ;
 }
 
 function plotHeatmap(option, style) {
@@ -529,29 +519,29 @@ function updateFrame() {
     ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
     cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
     switch (opt) {
-        case 3: {
+    case 3:
+        {
             ANIMATE.reField = pool.zeros(ANIMATE.reA.shape.slice(0, -1));
             ANIMATE.imField = pool.zeros(ANIMATE.imA.shape.slice(0, -1));
             for (var i = 0; i < 3; i++) {
                 cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
             }
         }
-        case 0: // Fallthrough, incident field
-        case 1: // Fallthrough, reflected field
-        case 2: // Transmitted field
-            [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
+    case 0: // Fallthrough, incident field
+    case 1: // Fallthrough, reflected field
+    case 2: // Transmitted field
+        [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
     }
     switch (sty) {
-        case 0:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-        case 1:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-    }
-    ;
+    case 0:
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+    case 1:
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+    };
 }
 
 function animatePlot0() {
