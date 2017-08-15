@@ -387,7 +387,7 @@ function selectField(option) {
     case 2: // Transmitted field
         return [reA.pick(null, null, option), imA.pick(null, null, option)];
     default:
-        alert('You have inputted a wrong option!');
+        throw new Error('You have inputted a wrong option!');
     }
 }
 
@@ -425,7 +425,7 @@ function chooseIntensity(option, style) {
         return unpack(updateAveragedIntensity(option));
         break;
     default:
-        alert('You have inputted a wrong style!');
+        throw new Error('You have inputted a wrong style!');
     }
 }
 
