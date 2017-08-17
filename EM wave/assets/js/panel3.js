@@ -144,6 +144,7 @@ $('#animate')
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
+            ANIMATE.aux = pool.zeros(xMesh.shape);
             plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
@@ -521,6 +522,7 @@ function updateFrame() {
     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
     ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    // console.log(ANIMATE.aux)
     var rePhase = pool.zeros(ANIMATE.aux.shape);
     var imPhase = pool.zeros(ANIMATE.aux.shape);
     ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
@@ -554,6 +556,7 @@ function updateFrame() {
 
 function animatePlot0() {
     updateFrame();
+    // console.log(ANIMATE.reField)
 
     Plotly.animate('plt0', {
         data: [{
@@ -568,7 +571,7 @@ function animatePlot0() {
             zmax: 1
         },
         transition: {
-            duration: 0
+            duration: 10
         },
         frame: {
             duration: 0,
