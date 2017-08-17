@@ -122,6 +122,9 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         case 'Time averaged intensity':
             sty = 1;
             break;
+        case 'Field amplitude':
+            sty = 2;
+            break;
         default:
             new RangeError('This style is not valid!');
         }
@@ -141,6 +144,7 @@ $('#animate')
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
+            ANIMATE.aux = pool.zeros(xMesh.shape);
             plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
@@ -260,6 +264,7 @@ var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
 var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+// iMesh represents: {0: incident, 1: reflected, 2: transmit}
 var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
     .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 
@@ -415,7 +420,7 @@ function updateAveragedIntensity(option) {
 function chooseIntensity(option, style) {
     /*
      option: {0: incident, 1: reflected intensity, 2: transmitted intensity, 3: total intensity},
-     style: {0: instantaneous intensity, 1: time-averaged intensity}.
+     style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}.
      */
     switch (style) {
     case 0:
@@ -424,6 +429,8 @@ function chooseIntensity(option, style) {
     case 1:
         return unpack(updateAveragedIntensity(option));
         break;
+    case 2:
+        return unpack(selectField(option)[0]);
     default:
         throw new Error('You have inputted a wrong style!');
     }
@@ -440,7 +447,9 @@ function createHeatmap(option, style) {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
-        type: 'heatmap'
+        type: 'heatmap',
+        zmin: 0,
+        zmax: 1
     };
 
     var trace1 = {
@@ -465,7 +474,7 @@ function createHeatmap(option, style) {
     var data = [trace0, trace1, texts];
 
     var layout = {
-        title: 'E filed intensity',
+        title: 'light intensity',
         yaxis: {
             title: 'x'
         },
@@ -482,10 +491,10 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Animation /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-// Define a new global namespace ANIMATE for those variables which have 
-// same name as the plotting subroutines.
+// Define a new global namespace ANIMATE for variables which have the
+// same name as those in the plotting subroutines.
 var ANIMATE = {};
-var dt = 0.05;
+var dt = 0.1;
 var omega = Math.PI * 2;
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
@@ -494,7 +503,7 @@ function updateAnimationInitials() {
     /*
      This subroutine defines some initial values for the animation,
      so it can follow the user's controlling of slider bars or dropdown
-     menus.
+     menus. This function is fired when those controllers are cliked/dragged.
      */
     [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
     // Here kxx and kzz are not used by other subroutines, so they are defined locally.
@@ -513,6 +522,7 @@ function updateFrame() {
     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
     ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    // console.log(ANIMATE.aux)
     var rePhase = pool.zeros(ANIMATE.aux.shape);
     var imPhase = pool.zeros(ANIMATE.aux.shape);
     ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
@@ -546,15 +556,22 @@ function updateFrame() {
 
 function animatePlot0() {
     updateFrame();
+    // console.log(ANIMATE.reField)
 
     Plotly.animate('plt0', {
         data: [{
             z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
-            type: 'heatmap'
-        }]
+            type: 'heatmap',
+            zmin: 0,
+            // zmax: 0.005
+        }],
     }, {
+        layout: {
+            zmin: 0,
+            zmax: 1
+        },
         transition: {
-            duration: 0
+            duration: 10
         },
         frame: {
             duration: 0,
@@ -584,5 +601,3 @@ createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
-// Animation
-updateAnimationInitials();
