@@ -15,6 +15,7 @@ var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
 var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 var tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
+var show = require('ndarray-show');
 
 
 // Variables
@@ -139,12 +140,13 @@ $('#animate')
             isAnimationOff = false;
             $this.text('Off');
             updateAnimationInitials();
-            reqId = requestAnimationFrame(animatePlot0); // Start animation
+            animatePlot0();
+            // reqId = requestAnimationFrame(animatePlot0); // Start animation
         } else { // If is already in animation, a click stops it.
             isAnimationOff = true;
             $this.text('On');
-            cancelAnimationFrame(reqId); // Stop animation
-            ANIMATE.aux = pool.zeros(xMesh.shape);
+            stopAnimation();
+            // cancelAnimationFrame(reqId); // Stop animation
             plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
@@ -256,8 +258,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-var zNum = 250;
-var xNum = 250;
+var zNum = 3;
+var xNum = 3;
 var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
 var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
 var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
@@ -267,6 +269,8 @@ var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
 // iMesh represents: {0: incident, 1: reflected, 2: transmit}
 var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
     .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var greaterEqualThan0, lessThan0;
+[greaterEqualThan0, lessThan0] = updateMask();
 
 function reshape(oldNdarr, newShape) {
     /*
@@ -332,8 +336,6 @@ function updateGeneralAmplitude() { // correct
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
     ops.addeq(A, ops.mulseq(aux, t)); // A += np.equal(iMesh, 2) * t
 
-    var greaterEqualThan0, lessThan0;
-    [greaterEqualThan0, lessThan0] = updateMask();
     ops.muleq(A.pick(null, null, 0), lessThan0.pick(null, null, 0)); // A[:, :, 0] *= lessThan0[:, :, 0]
     ops.muleq(A.pick(null, null, 1), lessThan0.pick(null, null, 1)); // A[:, :, 1] *= lessThan0[:, :, 1]
     ops.muleq(A.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2)); // A[:, :, 2] *= greaterEqualThan0[:, :, 2]
@@ -494,7 +496,7 @@ function createHeatmap(option, style) {
 // Define a new global namespace ANIMATE for variables which have the
 // same name as those in the plotting subroutines.
 var ANIMATE = {};
-var dt = 0.1;
+var dt = 0.0001;
 var omega = Math.PI * 2;
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
@@ -511,6 +513,8 @@ function updateAnimationInitials() {
     var kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
     ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
 }
+opt = 3;
+sty = 0;
 
 function updateFrame() {
     /*
@@ -520,9 +524,8 @@ function updateFrame() {
      */
     ANIMATE.reA = updateGeneralAmplitude();
     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
-    ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
+    ops.subseq(ANIMATE.aux, omega * t); // aux -= omega * t
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    // console.log(ANIMATE.aux)
     var rePhase = pool.zeros(ANIMATE.aux.shape);
     var imPhase = pool.zeros(ANIMATE.aux.shape);
     ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
@@ -554,34 +557,59 @@ function updateFrame() {
     };
 }
 
-function animatePlot0() {
+var frames = [];
+for (var t = 0; t < .5; t += 0.1) {
     updateFrame();
-    // console.log(ANIMATE.reField)
-
-    Plotly.animate('plt0', {
+    console.log(show(ANIMATE.reField))
+    frames.push({
         data: [{
             z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
             type: 'heatmap',
             zmin: 0,
             // zmax: 0.005
         }],
-    }, {
+    });
+}
+Plotly.plot('plt0', {
+    data: [{
+        z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
+        type: 'heatmap',
+        // zmin: 0,
+        // zmax: 0.005
+    }],
+}).then(function () {
+    Plotly.addFrames('plt0', frames);
+})
+
+
+function animatePlot0() {
+    // ANIMATE.reField = updateFrame();
+    // console.log(ANIMATE.reField)
+
+    Plotly.animate('plt0', frames, {
         layout: {
             zmin: 0,
             zmax: 1
         },
         transition: {
-            duration: 10
+            duration: 500,
+            easing: 'linear'
         },
         frame: {
-            duration: 0,
+            duration: 500,
             redraw: true // You have to set this to true.
         }
     });
 
-    reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
+    // reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
 }
+animatePlot0();
 
+function stopAnimation() {
+    Plotly.animate('plt0', [], {
+        mode: 'next'
+    });
+}
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Initialize //////////////////////////////////
