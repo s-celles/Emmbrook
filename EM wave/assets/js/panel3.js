@@ -161,13 +161,11 @@ $('#animate')
             isAnimationOff = false;
             $this.text('Off');
             updateAnimationInitials();
-            animatePlot0();
-            // reqId = requestAnimationFrame(animatePlot0); // Start animation
+            reqId = requestAnimationFrame(animatePlot0); // Start animation
         } else { // If is already in animation, a click stops it.
             isAnimationOff = true;
             $this.text('On');
-            stopAnimation();
-            // cancelAnimationFrame(reqId); // Stop animation
+            cancelAnimationFrame(reqId); // Stop animation
             plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
@@ -281,7 +279,7 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 var zNum = 250;
 var xNum = 250;
-var omega = 2 * Math.PI;
+var omega = Math.PI;
 var zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64';
 var xCoord = linspace(ndarray([], [xNum]), 0, 10);
@@ -359,7 +357,7 @@ function updateMask() {
 function updateGeneralAmplitude() { // correct
     /* 
      Consider amplitudes for the three waves together.
-     Amplitude A has dimension [xNum + 1, zNum + 1, 3].
+     Amplitude A has dimension [xNum, zNum, 3].
      A changes when thetaI, lambda, n1, or n2 change.
      */
     var r, t;
@@ -390,8 +388,8 @@ function tensorProduct(mesh, vec) {
 function updateEachAmplitude() {
     /*
      Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+     Real amplitude reA has dimension [xNum, zNum, 3].
+     Imaginary amplitude imA has dimension [xNum, zNum, 3].
      */
     var reA = updateGeneralAmplitude();
     var imA = pool.zeros(reA.shape);
@@ -442,6 +440,7 @@ function updateInstantaneousIntensity(option) {
     ops.powseq(reField, 2); // a^2
     ops.powseq(imField, 2); // b^2
     ops.subeq(reField, imField); // a^2 - b^2
+    console.log(show(reField) + '\n')
     return reField;
 }
 
@@ -452,6 +451,7 @@ function updateAveragedIntensity(option) {
     ops.powseq(reField, 2); // a^2
     ops.powseq(imField, 2); // b^2
     ops.addeq(reField, imField); // a^2 - b^2
+    console.log(show(reField) + '\n')
     return reField;
 }
 
@@ -536,120 +536,92 @@ function createHeatmap(option, style) {
 ///////////////////////////////////////////////////////////////////////////
 // Define a new global namespace ANIMATE for variables which have the
 // same name as those in the plotting subroutines.
-// var ANIMATE = {};
-// var dt = 0.0001;
-// ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
+var ANIMATE = {};
+var dt = Math.E;
+ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
 
-// function updateAnimationInitials() {
-//     /*
-//      This subroutine defines some initial values for the animation,
-//      so it can follow the user's controlling of slider bars or dropdown
-//      menus. This function is fired when those controllers are cliked/dragged.
-//      */
-//     [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
-//     // Here kxx and kzz are not used by other subroutines, so they are defined locally.
-//     var kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
-//     var kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
-//     ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
-// }
-// opt = 3;
-// sty = 0;
+function updateAnimationInitials() {
+    /*
+     This subroutine defines some initial values for the animation,
+     so it can follow the user's controlling of slider bars or dropdown
+     menus. This function is fired when those controllers are cliked/dragged.
+     */
+    [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
+    // Here kxx and kzz are not used by other subroutines, so they are defined locally.
+    var kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
+    var kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
+    ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
+}
 
-// function updateFrame() {
-//     /*
-//      Generate individual wave amplitudes for incident, reflected, and transmitted.
-//      Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-//      Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
-//      */
-//     ANIMATE.reA = updateGeneralAmplitude();
-//     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
-//     ops.subseq(ANIMATE.aux, omega * t); // aux -= omega * t
-//     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-//     var rePhase = pool.zeros(ANIMATE.aux.shape);
-//     var imPhase = pool.zeros(ANIMATE.aux.shape);
-//     ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-//     ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-//     cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
-//     switch (opt) {
-//     case 3:
-//         {
-//             ANIMATE.reField = pool.zeros(ANIMATE.reA.shape.slice(0, -1));
-//             ANIMATE.imField = pool.zeros(ANIMATE.imA.shape.slice(0, -1));
-//             for (var i = 0; i < 3; i++) {
-//                 cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
-//             }
-//         }
-//     case 0: // Fallthrough, incident field
-//     case 1: // Fallthrough, reflected field
-//     case 2: // Transmitted field
-//         [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
-//     }
-//     switch (sty) {
-//     case 0:
-//         ops.powseq(ANIMATE.reField, 2); // a^2
-//         ops.powseq(ANIMATE.imField, 2); // b^2
-//         ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-//     case 1:
-//         ops.powseq(ANIMATE.reField, 2); // a^2
-//         ops.powseq(ANIMATE.imField, 2); // b^2
-//         ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-//     };
-// }
+function updateFrame() {
+    /*
+     Generate individual wave amplitudes for incident, reflected, and transmitted.
+     Real amplitude reA has dimension [xNum, zNum, 3].
+     Imaginary amplitude imA has dimension [xNum, zNum, 3].
+     */
+    ANIMATE.reA = updateGeneralAmplitude();
+    ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
+    ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
+    // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
+    var rePhase = pool.zeros(ANIMATE.aux.shape);
+    var imPhase = pool.zeros(ANIMATE.aux.shape);
+    ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
+    ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
+    cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
+    switch (opt) {
+    case 3:
+        {
+            ANIMATE.reField = pool.zeros(ANIMATE.reA.shape.slice(0, -1));
+            ANIMATE.imField = pool.zeros(ANIMATE.imA.shape.slice(0, -1));
+            for (var i = 0; i < 3; i++) {
+                cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
+            }
+        };
+        break; // Don't forget break!
+    case 0: // Fallthrough, incident field
+    case 1: // Fallthrough, reflected field
+    case 2: // Transmitted field
+        [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
+        break; // Don't forget break!
+    }
+    switch (sty) {
+    case 0:
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+        break; // Don't forget break!
+    case 1:
+        ops.powseq(ANIMATE.reField, 2); // a^2
+        ops.powseq(ANIMATE.imField, 2); // b^2
+        ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+        break;
+    };
+}
 
-// var frames = [];
-// for (var t = 0; t < .5; t += 0.1) {
-//     updateFrame();
-//     console.log(show(ANIMATE.reField))
-//     frames.push({
-//         data: [{
-//             z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
-//             type: 'heatmap',
-//             zmin: 0,
-//             // zmax: 0.005
-//         }],
-//     });
-// }
-// Plotly.plot('plt0', {
-//     data: [{
-//         z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
-//         type: 'heatmap',
-//         // zmin: 0,
-//         // zmax: 0.005
-//     }],
-// }).then(function () {
-//     Plotly.addFrames('plt0', frames);
-// })
+function animatePlot0() {
+    updateFrame();
 
+    Plotly.animate('plt0', {
+        data: [{
+            x: unpack(zCoord),
+            y: unpack(xCoord),
+            z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
+            type: 'heatmap'
+        }],
+    }, {
+        transition: {
+            duration: 0
+        },
+        frame: {
+            duration: 0,
+            redraw: true // You have to set this to true.
+        }
+    });
 
-// function animatePlot0() {
-//     // ANIMATE.reField = updateFrame();
-//     // console.log(ANIMATE.reField)
+    reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
+}
 
-//     Plotly.animate('plt0', frames, {
-//         layout: {
-//             zmin: 0,
-//             zmax: 1
-//         },
-//         transition: {
-//             duration: 500,
-//             easing: 'linear'
-//         },
-//         frame: {
-//             duration: 500,
-//             redraw: true // You have to set this to true.
-//         }
-//     });
-
-//     // reqId = requestAnimationFrame(animatePlot0); // Return the request id, that uniquely identifies the entry in the callback list.
-// }
-// animatePlot0();
-
-// function stopAnimation() {
-//     Plotly.animate('plt0', [], {
-//         mode: 'next'
-//     });
-// }
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////// Initialize //////////////////////////////////
