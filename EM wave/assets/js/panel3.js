@@ -166,7 +166,6 @@ $('#animate')
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
-            plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
 
@@ -279,7 +278,7 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 var zNum = 250;
 var xNum = 250;
-var omega = Math.PI;
+var omega = 2 * Math.PI;
 var zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64';
 var xCoord = linspace(ndarray([], [xNum]), 0, 10);
@@ -501,7 +500,7 @@ function createHeatmap(option, style) {
     var texts = {
         x: [-6, 6],
         y: [5, 5],
-        text: ['medium 1', 'medium 2'],
+        text: ['Material 1', 'Material 2'],
         mode: 'text',
         textfont: {
             color: '#ffffff'
@@ -604,8 +603,6 @@ function animatePlot0() {
 
     Plotly.animate('plt0', {
         data: [{
-            x: unpack(zCoord),
-            y: unpack(xCoord),
             z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
             type: 'heatmap'
         }],
