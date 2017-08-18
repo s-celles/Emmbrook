@@ -16,6 +16,7 @@ var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 var tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 var show = require('ndarray-show');
+var linspace = require('ndarray-linspace');
 
 
 // Variables
@@ -281,15 +282,16 @@ function createRatioPlot() {
 var zNum = 250;
 var xNum = 250;
 var omega = 2 * Math.PI;
-var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
-var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
-var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
+var zCoord = linspace(ndarray([], [zNum]), -10, 10);
+zCoord.dtype = 'float64';
+var xCoord = linspace(ndarray([], [xNum]), 0, 10);
+xCoord.dtype = 'float64';
+var optionIndices = linspace(ndarray([], [3]), 0, 2);
+optionIndices.dtype = 'float64';
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
-var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
-var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var zMesh, xMesh, iMesh;
 // iMesh represents: {0: incident, 1: reflected, 2: transmit}
-var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
-    .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+[zMesh, xMesh, iMesh] = meshgrid(zCoord, xCoord, optionIndices);
 var greaterEqualThan0, lessThan0;
 [greaterEqualThan0, lessThan0] = updateMask();
 
@@ -298,6 +300,19 @@ function reshape(oldNdarr, newShape) {
      Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
      */
     return ndarray(oldNdarr.data, newShape);
+}
+
+function meshgrid(xArray, yArray, zArray) {
+    /*
+     Here xArray, yArray, zArray should all be 1d arrays.
+     */
+    var xNum = xArray.size;
+    var yNum = yArray.size;
+    var zNum = zArray.size;
+    var xMesh = reshape(tile(xArray, [yNum, zNum]), [yNum, xNum, zNum]);
+    var yMesh = tile(yArray, [1, xNum, zNum]);
+    var zMesh = reshape(tile(tile(tile(zArray, [1]), [1, xNum]).transpose(1, 0), [yNum]), [yNum, xNum, zNum]);
+    return [xMesh, yMesh, zMesh];
 }
 
 function updateKVector() {
