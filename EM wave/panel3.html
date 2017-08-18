@@ -139,7 +139,7 @@
                     <!-- Slide bars -->
                     <div class="row">
                         <div class="col slider-row">
-                            <label for="thetaI" class="slideLables">\( \theta_I \): (rad)</label>
+                            <label for="thetaI" class="slideLables">\( \theta_I \) (rad): </label>
                             <span id="thetaISliderVal" class="sliderVal"></span>
                             <input id="thetaI" data-slider-min="0" data-slider-max="1.57" data-slider-step="0.01"
                                    data-slider-value="1.25">
@@ -162,10 +162,16 @@
                             <input id="n2" data-slider-min="1" data-slider-max="4" data-slider-step="0.01"
                                    data-slider-value="2">
                         </div>
+                        <div class="col slider-row">
+                            <label for="time" class="slideLables">\( t \) (s) :</label>
+                            <span id="timeSliderVal" class="sliderVal"></span>
+                            <input id="time" data-slider-min="0" data-slider-max="10" data-slider-step="0.01"
+                                   data-slider-value="0">
+                        </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <select class="selectpicker" id="optSelect">
                                 <option>Incident</option>
                                 <option>Reflected</option>
@@ -173,18 +179,18 @@
                                 <option selected>Total</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <select class="selectpicker" id="stySelect">
                                 <option selected>Instantaneous intensity</option>
-                                <option>Time averaged intensity</option>
+                                <option>Time-averaged intensity</option>
                                 <option>Field amplitude</option>
                             </select>
                         </div>
-                        <div class="col-md-1 col-md-offset-10">
-                            <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false"
-                                    autocomplete="off" id="animate">On
-                            </button>
-                        </div>
+                    </div>
+                    <div class="col-md-1 col-md-offset-10">
+                        <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false"
+                                autocomplete="off" id="animate">On
+                        </button>
                     </div>
                 </div>
             </div>

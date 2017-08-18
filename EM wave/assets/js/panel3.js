@@ -15,6 +15,8 @@ var pool = require('ndarray-scratch'); // A simple wrapper for typedarray-pool.
 var unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
 var cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 var tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
+var show = require('ndarray-show');
+var linspace = require('ndarray-linspace');
 
 
 // Variables
@@ -27,10 +29,13 @@ var thetaISlider = $('#thetaI')
     .bootstrapSlider({});
 var lambdaSlider = $('#lambda')
     .bootstrapSlider({});
-var n1 = n1Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
-var n2 = n2Slider.bootstrapSlider('getValue'); // Get refraction index from slider bar
+var timeSlider = $('#time')
+    .bootstrapSlider({});
+var n1 = n1Slider.bootstrapSlider('getValue'); // Get first refraction index from slider bar
+var n2 = n2Slider.bootstrapSlider('getValue'); // Get second refraction index from slider bar
 var thetaI = thetaISlider.bootstrapSlider('getValue'); // Get incident angle from slider bar
 var lambda = lambdaSlider.bootstrapSlider('getValue'); // Get incident wave length from slider bar
+var time = timeSlider.bootstrapSlider('getValue'); // Get time from slider bar
 var plt0 = document.getElementById('plt0');
 var plt1 = document.getElementById('plt1');
 var opt, sty;
@@ -88,6 +93,14 @@ n2Slider.on('change', function () {
         .text(n2);
 });
 
+timeSlider.on('change', function () {
+    time = timeSlider.bootstrapSlider('getValue');
+    plotHeatmap(opt, sty);
+
+    $('#timeSliderVal')
+        .text(time);
+});
+
 $('#optSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
     .on('changed.bs.select', function () {
         var selectedValue = $(this)
@@ -118,12 +131,21 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         switch (selectedValue) {
         case 'Instantaneous intensity':
             sty = 0;
+            Plotly.relayout('plt0', {
+                title: 'instantaneous light intensity'
+            });
             break;
-        case 'Time averaged intensity':
+        case 'Time-averaged intensity':
             sty = 1;
+            Plotly.relayout('plt0', {
+                title: 'time-averaged light intensity'
+            });
             break;
         case 'Field amplitude':
             sty = 2;
+            Plotly.relayout('plt0', {
+                title: 'e-field amplitude'
+            });
             break;
         default:
             new RangeError('This style is not valid!');
@@ -144,8 +166,6 @@ $('#animate')
             isAnimationOff = true;
             $this.text('On');
             cancelAnimationFrame(reqId); // Stop animation
-            ANIMATE.aux = pool.zeros(xMesh.shape);
-            plotHeatmap(opt, sty); // Recover to the plot before animation
         }
     });
 
@@ -258,21 +278,38 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 var zNum = 250;
 var xNum = 250;
-var zCoord = ndarray(new Float64Array(numeric.linspace(-10, 10, zNum + 1)));
-var xCoord = ndarray(new Float64Array(numeric.linspace(0, 10, xNum + 1)));
-var optionIndices = ndarray(new Float64Array(numeric.linspace(0, 2, 3)));
+var omega = 2 * Math.PI;
+var zCoord = linspace(ndarray([], [zNum]), -10, 10);
+zCoord.dtype = 'float64';
+var xCoord = linspace(ndarray([], [xNum]), 0, 10);
+xCoord.dtype = 'float64';
+var optionIndices = linspace(ndarray([], [3]), 0, 2);
+optionIndices.dtype = 'float64';
 // Generate a 3D mesh cotaining z, x and i coordinates for each point.
-var zMesh = reshape(tile(zCoord, [xNum + 1, 3]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
-var xMesh = tile(xCoord, [1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+var zMesh, xMesh, iMesh;
 // iMesh represents: {0: incident, 1: reflected, 2: transmit}
-var iMesh = reshape(tile(tile(tile(optionIndices, [1]), [1, zNum + 1])
-    .transpose(1, 0), [xNum + 1]), [xNum + 1, zNum + 1, 3]); // shape -> [xNum + 1, zNum + 1, 3]
+[zMesh, xMesh, iMesh] = meshgrid(zCoord, xCoord, optionIndices);
+var greaterEqualThan0, lessThan0;
+[greaterEqualThan0, lessThan0] = updateMask();
 
 function reshape(oldNdarr, newShape) {
     /*
      Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
      */
     return ndarray(oldNdarr.data, newShape);
+}
+
+function meshgrid(xArray, yArray, zArray) {
+    /*
+     Here xArray, yArray, zArray should all be 1d arrays.
+     */
+    var xNum = xArray.size;
+    var yNum = yArray.size;
+    var zNum = zArray.size;
+    var xMesh = reshape(tile(xArray, [yNum, zNum]), [yNum, xNum, zNum]);
+    var yMesh = tile(yArray, [1, xNum, zNum]);
+    var zMesh = reshape(tile(tile(tile(zArray, [1]), [1, xNum]).transpose(1, 0), [yNum]), [yNum, xNum, zNum]);
+    return [xMesh, yMesh, zMesh];
 }
 
 function updateKVector() {
@@ -319,7 +356,7 @@ function updateMask() {
 function updateGeneralAmplitude() { // correct
     /* 
      Consider amplitudes for the three waves together.
-     Amplitude A has dimension [xNum + 1, zNum + 1, 3].
+     Amplitude A has dimension [xNum, zNum, 3].
      A changes when thetaI, lambda, n1, or n2 change.
      */
     var r, t;
@@ -332,8 +369,6 @@ function updateGeneralAmplitude() { // correct
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
     ops.addeq(A, ops.mulseq(aux, t)); // A += np.equal(iMesh, 2) * t
 
-    var greaterEqualThan0, lessThan0;
-    [greaterEqualThan0, lessThan0] = updateMask();
     ops.muleq(A.pick(null, null, 0), lessThan0.pick(null, null, 0)); // A[:, :, 0] *= lessThan0[:, :, 0]
     ops.muleq(A.pick(null, null, 1), lessThan0.pick(null, null, 1)); // A[:, :, 1] *= lessThan0[:, :, 1]
     ops.muleq(A.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2)); // A[:, :, 2] *= greaterEqualThan0[:, :, 2]
@@ -352,8 +387,8 @@ function tensorProduct(mesh, vec) {
 function updateEachAmplitude() {
     /*
      Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+     Real amplitude reA has dimension [xNum, zNum, 3].
+     Imaginary amplitude imA has dimension [xNum, zNum, 3].
      */
     var reA = updateGeneralAmplitude();
     var imA = pool.zeros(reA.shape);
@@ -363,6 +398,7 @@ function updateEachAmplitude() {
     var kxx = tensorProduct(xMesh, kX); // kxx = kx * x
     var aux = pool.zeros(kxx.shape);
     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
+    ops.subseq(aux, omega * time); // aux -= w * t
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
     var rePhase, imPhase;
     rePhase = pool.zeros(aux.shape);
@@ -403,6 +439,7 @@ function updateInstantaneousIntensity(option) {
     ops.powseq(reField, 2); // a^2
     ops.powseq(imField, 2); // b^2
     ops.subeq(reField, imField); // a^2 - b^2
+    console.log(show(reField) + '\n')
     return reField;
 }
 
@@ -413,6 +450,7 @@ function updateAveragedIntensity(option) {
     ops.powseq(reField, 2); // a^2
     ops.powseq(imField, 2); // b^2
     ops.addeq(reField, imField); // a^2 - b^2
+    console.log(show(reField) + '\n')
     return reField;
 }
 
@@ -447,9 +485,7 @@ function createHeatmap(option, style) {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
-        type: 'heatmap',
-        zmin: 0,
-        zmax: 1
+        type: 'heatmap'
     };
 
     var trace1 = {
@@ -464,7 +500,7 @@ function createHeatmap(option, style) {
     var texts = {
         x: [-6, 6],
         y: [5, 5],
-        text: ['medium 1', 'medium 2'],
+        text: ['Material 1', 'Material 2'],
         mode: 'text',
         textfont: {
             color: '#ffffff'
@@ -474,12 +510,18 @@ function createHeatmap(option, style) {
     var data = [trace0, trace1, texts];
 
     var layout = {
-        title: 'light intensity',
+        title: 'instantaneous light intensity',
         yaxis: {
-            title: 'x'
+            title: 'x',
+            titlefont: {
+                size: 18
+            }
         },
         xaxis: {
-            title: 'z'
+            title: 'z',
+            titlefont: {
+                size: 18
+            }
         },
         showlegend: false
     };
@@ -494,8 +536,7 @@ function createHeatmap(option, style) {
 // Define a new global namespace ANIMATE for variables which have the
 // same name as those in the plotting subroutines.
 var ANIMATE = {};
-var dt = 0.1;
-var omega = Math.PI * 2;
+var dt = Math.E;
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
 
@@ -515,18 +556,17 @@ function updateAnimationInitials() {
 function updateFrame() {
     /*
      Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum + 1, zNum + 1, 3].
-     Imaginary amplitude imA has dimension [xNum + 1, zNum + 1, 3].
+     Real amplitude reA has dimension [xNum, zNum, 3].
+     Imaginary amplitude imA has dimension [xNum, zNum, 3].
      */
     ANIMATE.reA = updateGeneralAmplitude();
     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
     ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    // console.log(ANIMATE.aux)
     var rePhase = pool.zeros(ANIMATE.aux.shape);
     var imPhase = pool.zeros(ANIMATE.aux.shape);
-    ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
-    ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * (time + dt) )
+    ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
+    ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
     cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
     switch (opt) {
     case 3:
@@ -536,42 +576,39 @@ function updateFrame() {
             for (var i = 0; i < 3; i++) {
                 cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
             }
-        }
+        };
+        break; // Don't forget break!
     case 0: // Fallthrough, incident field
     case 1: // Fallthrough, reflected field
     case 2: // Transmitted field
         [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
+        break; // Don't forget break!
     }
     switch (sty) {
     case 0:
         ops.powseq(ANIMATE.reField, 2); // a^2
         ops.powseq(ANIMATE.imField, 2); // b^2
         ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+        break; // Don't forget break!
     case 1:
         ops.powseq(ANIMATE.reField, 2); // a^2
         ops.powseq(ANIMATE.imField, 2); // b^2
         ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+        break;
     };
 }
 
 function animatePlot0() {
     updateFrame();
-    // console.log(ANIMATE.reField)
 
     Plotly.animate('plt0', {
         data: [{
             z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
-            type: 'heatmap',
-            zmin: 0,
-            // zmax: 0.005
+            type: 'heatmap'
         }],
     }, {
-        layout: {
-            zmin: 0,
-            zmax: 1
-        },
         transition: {
-            duration: 10
+            duration: 0
         },
         frame: {
             duration: 0,
