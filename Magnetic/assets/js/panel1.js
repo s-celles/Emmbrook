@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+// Check if your browser supports ES6 feature
 var supportsES6 = function () { // Test if ES6 is ~fully supported
     try {
         new Function('(a = 0) => a');
@@ -13,7 +13,8 @@ var supportsES6 = function () { // Test if ES6 is ~fully supported
     }
 }();
 
-if (supportsES6) {} else {
+if (supportsES6) {
+} else {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
@@ -204,7 +205,8 @@ function plot() {
                 plt0.data[i * xNum * yNum + j * yNum + k].x = [xMesh.get(j, k, i), bFieldX.get(j, k, i)];
                 plt0.data[i * xNum * yNum + j * yNum + k].y = [yMesh.get(j, k, i), bFieldY.get(j, k, i)];
                 plt0.data[i * xNum * yNum + j * yNum + k].z = [zMesh.get(j, k, i), bFieldZ.get(j, k, i)];
-            };
+            }
+            ;
         }
     }
 
@@ -216,7 +218,6 @@ function createPlots() {
     let bFieldY;
     let bFieldZ;
     [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
-    console.log(xMesh)
 
     let layout = {
         scene: {
@@ -278,18 +279,18 @@ $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
         let selectedValue = $(this)
             .val();
         switch (selectedValue) {
-        case 'Straight wire':
-            opt = 0;
-            break;
-        case 'Solenoid':
-            opt = 1;
-            break;
-        case 'Circle':
-            opt = 2;
-            break;
-        case 'Toroidal solenoid':
-            opt = 3;
-            break;
+            case 'Straight wire':
+                opt = 0;
+                break;
+            case 'Solenoid':
+                opt = 1;
+                break;
+            case 'Circle':
+                opt = 2;
+                break;
+            case 'Toroidal solenoid':
+                opt = 3;
+                break;
         }
         setWire(opt);
         plot();
@@ -297,49 +298,49 @@ $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
 
 function setWire(opt) {
     switch (opt) {
-    case 0: // Generate a straight wire
-        xWireCoord = ndarray(new Float64Array(wireNum));
-        yWireCoord = ndarray(new Float64Array(wireNum));
-        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-        break;
-    case 1: // Generate a solenoid
-        xWireCoord = ops.coseq(
-            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-        );
-        yWireCoord = ops.sineq(
-            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-        );
-        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-        break;
-    case 2: // Generate a circle
-        xWireCoord = ops.coseq(myLinspace([wireNum], 0, 2 * Math.PI, {
-            endpoint: false,
-        }));
-        yWireCoord = ops.sineq(myLinspace([wireNum], 0, 2 * Math.PI, {
-            endpoint: false,
-        }));
-        zWireCoord = myLinspace([wireNum], 0, 0);
-        zCoord = myLinspace([zNum], -2, 2);
-        break;
-    case 3: // Generate a toroidal solenoid
-        let R = 3;
-        let r = 0.5;
-        let n = 60;
-        let u = unpack(myLinspace([2 * wireNum], 0, 2 * Math.PI));
-        xWireCoord = u.map(function (x) {
-            return (R + r * Math.cos(n * x)) * Math.cos(x);
-        });
-        yWireCoord = u.map(function (x) {
-            return (R + r * Math.cos(n * x)) * Math.sin(x);
-        });
-        zWireCoord = u.map(function (x) {
-            return r * Math.sin(n * x);
-        });
-        xWireCoord = ndarray(new Float64Array(xWireCoord));
-        yWireCoord = ndarray(new Float64Array(yWireCoord));
-        zWireCoord = ndarray(new Float64Array(zWireCoord));
-    default:
-        new RangeError('This option is not valid!');
+        case 0: // Generate a straight wire
+            xWireCoord = ndarray(new Float64Array(wireNum));
+            yWireCoord = ndarray(new Float64Array(wireNum));
+            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
+            break;
+        case 1: // Generate a solenoid
+            xWireCoord = ops.coseq(
+                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
+            );
+            yWireCoord = ops.sineq(
+                ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
+            );
+            zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
+            break;
+        case 2: // Generate a circle
+            xWireCoord = ops.coseq(myLinspace([wireNum], 0, 2 * Math.PI, {
+                endpoint: false,
+            }));
+            yWireCoord = ops.sineq(myLinspace([wireNum], 0, 2 * Math.PI, {
+                endpoint: false,
+            }));
+            zWireCoord = myLinspace([wireNum], 0, 0);
+            zCoord = myLinspace([zNum], -2, 2);
+            break;
+        case 3: // Generate a toroidal solenoid
+            let R = 3;
+            let r = 0.5;
+            let n = 60;
+            let u = unpack(myLinspace([2 * wireNum], 0, 2 * Math.PI));
+            xWireCoord = u.map(function (x) {
+                return (R + r * Math.cos(n * x)) * Math.cos(x);
+            });
+            yWireCoord = u.map(function (x) {
+                return (R + r * Math.cos(n * x)) * Math.sin(x);
+            });
+            zWireCoord = u.map(function (x) {
+                return r * Math.sin(n * x);
+            });
+            xWireCoord = ndarray(new Float64Array(xWireCoord));
+            yWireCoord = ndarray(new Float64Array(yWireCoord));
+            zWireCoord = ndarray(new Float64Array(zWireCoord));
+        default:
+            new RangeError('This option is not valid!');
     }
 }
 
