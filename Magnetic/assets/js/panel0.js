@@ -72,7 +72,7 @@ function meshgrid(xArray, yArray) {
 
 // Frame setup
 let width = 960;
-let height = 500;
+let height = 960;
 let mw = 0; // If we want a margin
 let g = d3.select('#plt0').node().getContext('2d'); // Initialize a "canvas" element
 g.lineWidth = 0.7;
@@ -92,7 +92,7 @@ for (let i = 0; i < x.size; i++) {
         let r = Math.sqrt(Math.pow(bx[i][j], 2) + Math.pow(bz[i][j], 2));
         g.beginPath();
         g.moveTo(xMap(X[i][j]), yMap(Z[i][j])); // the start point of the path
-        g.lineTo(xMap(X[i][j] + bx[i][j] / r / 15), yMap(Z[i][j] + bz[i][j] / r / 15)); // the end point
+        g.lineTo(xMap(X[i][j] + bx[i][j] / r / 18), yMap(Z[i][j] + bz[i][j] / r / 18)); // the end point
         g.stroke(); // final draw command
     }
 }
@@ -102,13 +102,13 @@ let svg = d3.select("svg"),
     w = +svg.attr("width"),
     h = +svg.attr("height");
 
-let thresholds = d3.range(-3, 3, 0.025)
+let thresholds = d3.range(-2, 2, 0.025)
     .map(function (p) {
         return p;
     });
 
 let contours = d3.contours()
-    .size([x.size, z.size])
+    .size([100, 300])
     .thresholds(thresholds);
 
 let color = d3.scaleSequential(d3.interpolateMagma)
