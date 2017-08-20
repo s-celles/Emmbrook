@@ -17,7 +17,8 @@
   margin-top: 10px; }
 
 #plt0 {
-  background-color: #ffffff; }
+  top: 0;
+  left: 0; }
 
 .main-svg {
   border-radius: 7px;
