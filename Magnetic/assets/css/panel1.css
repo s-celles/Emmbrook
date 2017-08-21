@@ -16,6 +16,11 @@
 .plot {
   margin-top: 10px; }
 
+canvas {
+  background-color: #ffffff;
+  top: 0;
+  left: 0; }
+
 .main-svg {
   border-radius: 7px;
   box-shadow: inset 1px 2px 1px 1px rgba(0, 0, 0, 0.15); }
@@ -48,5 +53,3 @@ p {
 ol {
   font-size: medium;
   list-style-type: lower-alpha; }
-
-/*# sourceMappingURL=panel1.css.map */

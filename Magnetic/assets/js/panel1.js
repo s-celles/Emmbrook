@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+// Check if your browser supports ES6 feature
 var supportsES6 = function () { // Test if ES6 is ~fully supported
     try {
         new Function('(a = 0) => a');
@@ -23,15 +23,18 @@ let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spac
 let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
 let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
 let fill = require('ndarray-fill');
-// let show = require('ndarray-show');
+let show = require('ndarray-show');
+let pool = require("ndarray-scratch");
+let ncc = require('ndarray-concat-cols');
+let ncr = require('ndarray-concat-rows');
 let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
 let current = 0.1; // Current
-let xNum = 20;
-let yNum = 20;
-let zNum = 20;
+let xNum = 5;
+let yNum = 5;
+let zNum = 5;
 let wireNum = 400;
 let loopMul = 10;
 let opt;
@@ -74,6 +77,8 @@ function meshgrid(xArray, yArray, zArray) {
      Then it returns 3 fortran-style 3D arrays, that is,
      they are all column-major order:
      http://www.wikiwand.com/en/Row-_and_column-major_order.
+     The returned xMesh, yMesh, and zMesh are all of shape
+     [zNum, xNum, yNum].
      */
     let xMesh = reshape(tile(xArray, [zNum, yNum]), [zNum, xNum, yNum]);
     let yMesh = reshape(
@@ -216,7 +221,6 @@ function createPlots() {
     let bFieldY;
     let bFieldZ;
     [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
-    console.log(xMesh)
 
     let layout = {
         scene: {
@@ -246,24 +250,19 @@ function createPlots() {
         },
     };
 
-    let data0 = [wire];
-
     // Plot field vectors
-    for (let i = 0; i < zNum; i++) {
-        for (let j = 0; j < xNum; j++) {
-            for (let k = 0; k < yNum; k++) {
-                data0.push({
-                    mode: 'lines',
-                    type: 'scatter3d',
-                    x: [xMesh.get(j, k, i), bFieldX.get(j, k, i)],
-                    y: [yMesh.get(j, k, i), bFieldY.get(j, k, i)],
-                    z: [zMesh.get(j, k, i), bFieldZ.get(j, k, i)],
-                });
-            }
-        }
-    }
-
-    Plotly.newPlot('plt0', data0, layout);
+    let startX = reshape(xMesh, xMesh.shape.concat([1]));
+    let startY = reshape(yMesh, yMesh.shape.concat([1]));
+    let startZ = reshape(zMesh, zMesh.shape.concat([1]));
+    bFieldX = reshape(bFieldX, bFieldX.shape.concat([1]));
+    bFieldY = reshape(bFieldY, bFieldY.shape.concat([1]));
+    bFieldZ = reshape(bFieldZ, bFieldZ.shape.concat([1]));
+    let groupX = ncc([startX, bFieldX]);
+    let groupY = ncc([startY, bFieldY]);
+    let groupZ = ncc([startZ, bFieldZ]);
+    console.log(unpack(groupX))
+    
+    // Plotly.newPlot('plt0', data0, layout);
 }
 
 // Adjust Plotly's plotRatios size responsively according to window motion
