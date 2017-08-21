@@ -70,13 +70,25 @@ function meshgrid(xArray, yArray) {
     return [xMesh, yMesh];
 }
 
+function fill(geometry) {
+    context.beginPath();
+    path(geometry);
+    let rgb = color(geometry.value).toString();
+    let rgba = 'rgba(' + rgb.slice(4, -1) + ', 0.03)';
+    console.log(rgba)
+    context.fillStyle = rgba;
+    context.fill();
+}
+
+
 // Frame setup
 let width = 960;
 let height = 960;
 let mw = 0; // If we want a margin
-let g = d3.select('#plt0').node().getContext('2d'); // Initialize a "canvas" element
-g.lineWidth = 0.7;
-g.strokeStyle = '#FF8000'; // Stroke color
+let canvas = document.querySelector('canvas');
+let context = canvas.getContext('2d'); // Initialize a "canvas" element
+context.lineWidth = 0.7;
+context.strokeStyle = '#000000'; // Stroke color
 // Mapping from vfield coords to web page coords
 let xMap = d3.scaleLinear()
     .domain([-xMax, xMax])
@@ -85,39 +97,27 @@ let yMap = d3.scaleLinear()
     .domain([-zMax, zMax])
     .range([height - mw, mw]);
 
+context.fillStyle = '#ffffff';
+context.fillRect(0, 0, width, height);
+
 // Plot vector field
-g.fillRect(0, 0, width, height);
 for (let i = 0; i < x.size; i++) {
     for (let j = 0; j < z.size; j++) {
         let r = Math.sqrt(Math.pow(bx[i][j], 2) + Math.pow(bz[i][j], 2));
-        g.beginPath();
-        g.moveTo(xMap(X[i][j]), yMap(Z[i][j])); // the start point of the path
-        g.lineTo(xMap(X[i][j] + bx[i][j] / r / 18), yMap(Z[i][j] + bz[i][j] / r / 18)); // the end point
-        g.stroke(); // final draw command
+        context.beginPath();
+        context.moveTo(xMap(X[i][j]), yMap(Z[i][j])); // the start point of the path
+        context.lineTo(xMap(X[i][j] + bx[i][j] / r / 18), yMap(Z[i][j] + bz[i][j] / r / 18)); // the end point
+        context.stroke(); // final draw command
     }
 }
 
 // Plot contours
-let svg = d3.select("svg"),
-    w = +svg.attr("width"),
-    h = +svg.attr("height");
-
-let thresholds = d3.range(-2, 2, 0.025)
-    .map(function (p) {
-        return p;
-    });
-
+let path = d3.geoPath(null, context);
+let thresholds = d3.range(-2, 2, 0.025);
 let contours = d3.contours()
     .size([100, 300])
     .thresholds(thresholds);
-
-let color = d3.scaleSequential(d3.interpolateMagma)
+let color = d3.scaleSequential(d3.interpolateCubehelixDefault)
     .domain(d3.extent(flattendU));
-
-svg.selectAll('path')
-    .data(contours(flattendU))
-    .enter().append('path')
-    .attr('d', d3.geoPath(d3.geoIdentity().scale(w / x.size)))
-    .attr('fill', function (d) {
-        return color(d.value);
-    });
+context.scale(canvas.width / x.size, canvas.height / z.size);
+contours(flattendU).forEach(fill);

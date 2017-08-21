@@ -16,7 +16,8 @@
 .plot {
   margin-top: 10px; }
 
-#plt0 {
+canvas {
+  background-color: #ffffff;
   top: 0;
   left: 0; }
 
