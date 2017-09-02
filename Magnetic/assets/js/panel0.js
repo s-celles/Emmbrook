@@ -50,6 +50,19 @@ const flattendU = U.reduce(function (a, b) {
 });
 
 
+// Frame setup
+const width = 960;
+const height = 960;
+// Mapping from vfield coords to web page coords
+let xMap = d3.scaleLinear()
+    .domain([-xMax, xMax])
+    .range([0, xNum]);
+let yMap = d3.scaleLinear()
+    .domain([-zMax, zMax])
+    .range([0, zNum]);
+
+
+// Interfaces
 /**
  * Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
  * @param oldNdarr
@@ -78,55 +91,95 @@ function meshgrid(xArray, yArray) {
     return [xMesh, yMesh];
 }
 
+
+// Plotting
 /**
- *
- * @param geometry
+ * Plot vector field
  */
-function fill(geometry) {
-    context.beginPath();
-    path(geometry);
-    let rgb = color(geometry.value).toString();
-    let rgba = 'rgba(' + rgb.slice(4, -1) + ', 0.05)';
-    context.fillStyle = rgba;
-    context.fill();
-}
-
-// Frame setup
-const width = 960;
-const height = 960;
-const canvas = document.querySelector('canvas');
-let context = canvas.getContext('2d'); // Initialize a "canvas" element
-context.lineWidth = 0.1;
-context.strokeStyle = '#ff0000'; // Stroke color
-// Mapping from vfield coords to web page coords
-let xMap = d3.scaleLinear()
-    .domain([-xMax, xMax])
-    .range([0, xNum]);
-let yMap = d3.scaleLinear()
-    .domain([-zMax, zMax])
-    .range([0, zNum]);
-context.fillStyle = '#ffffff';
-context.fillRect(0, 0, width, height);
-context.scale(canvas.width / x.size, canvas.height / z.size);
-
-
-// Plot contours
-let path = d3.geoPath(null, context);
-let thresholds = d3.range(Math.min(...flattendU), Math.max(...flattendU), 0.01);
-let contours = d3.contours()
-    .size([100, 100])
-    .thresholds(thresholds);
-let color = d3.scaleSequential(d3.interpolateCubehelixDefault)
-    .domain(d3.extent(flattendU));
-contours(flattendU).forEach(fill);
-
-// Plot vector field
-for (let i = 0; i < x.size; i++) {
-    for (let j = 0; j < z.size; j++) {
-        let r = Math.sqrt((bx[i][j] ** 2) + (bz[i][j] ** 2));
-        context.beginPath();
-        context.moveTo(xMap(X[i][j]), yMap(Z[i][j])); // the start point of the path
-        context.lineTo(xMap(X[i][j] + (bx[i][j] / r / 18)), yMap(Z[i][j] + (bz[i][j] / r / 18))); // the end point
-        context.stroke(); // final draw command
+function plotVectorField(context) {
+    //
+    for (let i = 0; i < x.size; i++) {
+        for (let j = 0; j < z.size; j++) {
+            let r = Math.sqrt((bx[i][j] ** 2) + (bz[i][j] ** 2));
+            context.beginPath();
+            context.moveTo(xMap(X[i][j]), yMap(Z[i][j])); // the start point of the path
+            context.lineTo(xMap(X[i][j] + (bx[i][j] / r / 18)), yMap(Z[i][j] + (bz[i][j] / r / 18))); // the end point
+            context.stroke(); // final draw command
+        }
     }
 }
+
+/**
+ * Plot contours
+ */
+function plotCountours(context) {
+    let path = d3.geoPath(null, context);
+    let thresholds = d3.range(Math.min(...flattendU), Math.max(...flattendU), 0.01);
+    let contours = d3.contours()
+        .size([100, 100])
+        .thresholds(thresholds);
+    let color = d3.scaleSequential(d3.interpolateCubehelixDefault)
+        .domain(d3.extent(flattendU));
+    contours(flattendU).forEach(fill);
+
+    /**
+     *
+     * @param geometry
+     */
+    function fill(geometry) {
+        context.beginPath();
+        path(geometry);
+        let rgb = color(geometry.value).toString();
+        let rgba = 'rgba(' + rgb.slice(4, -1) + ', 0.05)';
+        context.fillStyle = rgba;
+        context.fill();
+    }
+}
+
+// Interactive interfaces
+/**
+ * Adjust d3's plotRatios size responsively according to window motion.
+ * https://stackoverflow.com/questions/1664785/resize-html5-canvas-to-fit-window
+ */
+function plotPlt0() {
+    let canvas = document.getElementById('plt0');
+    let ctx = canvas.getContext('2d'); // Initialize a "canvas" element
+
+    // Start listening to resize events and draw canvas.
+    initialize();
+
+    /**
+     * Register an event listener to call the resizeCanvas() function
+     * each time the window is resized.
+     */
+    function initialize() {
+        window.addEventListener('resize', resizeCanvas, false);
+        // Draw canvas border for the first time.
+        resizeCanvas();
+    }
+
+    /**
+     * Display custom canvas. In this case it's a blue, 5 pixel
+     * border that resizes along with the browser window.
+     */
+    function redraw() {
+        ctx.scale(canvas.width / x.size, canvas.height / z.size);
+        ctx.lineWidth = 0.1;
+        ctx.strokeStyle = '#ff0000'; // Stroke color
+        plotCountours(ctx);
+        plotVectorField(ctx);
+    }
+
+    /**
+     * Runs each time the DOM window resize event fires.
+     Resets the canvas dimensions to match window,
+     then draws the new borders accordingly.
+     */
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        redraw();
+    }
+}
+
+plotPlt0();
