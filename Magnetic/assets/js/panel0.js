@@ -50,6 +50,16 @@ const flattendU = U.reduce(function (a, b) {
 });
 
 
+// Miscellaneous
+// Scaling HTML5 canvas width preserving w/h aspect ratio
+let plt0 = $('#plt0');
+plt0.css('width', '100%');
+$(window).resize(function () {
+    plt0.height(plt0.width());
+});
+
+
+// Basic interfaces
 /**
  * Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
  * @param oldNdarr
@@ -91,9 +101,11 @@ function fill(geometry) {
     context.fill();
 }
 
+
+// Plotting
 // Frame setup
-const width = 960;
-const height = 960;
+let width = document.getElementById('plt0').getAttribute('width');
+const height = document.getElementById('plt0').getAttribute('height');
 const canvas = document.querySelector('canvas');
 let context = canvas.getContext('2d'); // Initialize a "canvas" element
 context.lineWidth = 0.1;
@@ -108,7 +120,6 @@ let yMap = d3.scaleLinear()
 context.fillStyle = '#ffffff';
 context.fillRect(0, 0, width, height);
 context.scale(canvas.width / x.size, canvas.height / z.size);
-
 
 // Plot contours
 let path = d3.geoPath(null, context);
@@ -130,3 +141,4 @@ for (let i = 0; i < x.size; i++) {
         context.stroke(); // final draw command
     }
 }
+
