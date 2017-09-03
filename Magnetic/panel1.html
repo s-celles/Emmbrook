@@ -90,17 +90,17 @@
                     located at \( x-y \) plane. Any point on it has coordinates \( (R\cos \theta, R\sin \theta, 0) \).
                     Then the magnetic field, at point \( (x, y, z) \), it results in is
                     $$
-                    d\mathbf{B}(x, y, z) =
+                    \mathbf{B}(x, y, z) =
+                    \int
                     \begin{bmatrix}
                     dB_x \\ dB_y \\ dB_z
                     \end{bmatrix}
-                    = \frac{ \mu_0 I }{ 4 \pi } \frac{R d\theta}{ r^3 }
+                    = \int_{0}^{2\pi} \frac{ \mu_0 I }{ 4 \pi } \frac{R d\theta}{ r^3 }
                     \begin{bmatrix}
                     z \cos \theta \\ z \sin \theta \\ - x \cos \theta - y \cos \theta
                     \end{bmatrix},
                     $$
                     where \( r = \sqrt{ (x - R \cos \theta)^2 + (y - R \sin \theta)^2 + z^2 } \).
-                    Then integrates over \( \theta \).
                 </p>
                 <figure class="figure">
                     <img src="images/loop.gif" class="figure-img img-fluid img-responsive center-block"
