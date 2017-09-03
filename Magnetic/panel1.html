@@ -84,6 +84,31 @@
                     $$
                     where \( \hat{ \mathbf{r} } \) means the unit vector of that direction.
                 </p>
+                <p>
+                    For a single circular with radius \( R \) loop like this (figure from
+                    <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/magnetic/curloo.html">here</a>),
+                    located at \( x-y \) plane. Any point on it has coordinates \( (R\cos \theta, R\sin \theta, 0) \).
+                    Then the magnetic field, at point \( (x, y, z) \), it results in is
+                    $$
+                    d\mathbf{B}(x, y, z) =
+                    \begin{bmatrix}
+                    dB_x \\ dB_y \\ dB_z
+                    \end{bmatrix}
+                    = \frac{ \mu_0 I }{ 4 \pi } \frac{R d\theta}{ r^3 }
+                    \begin{bmatrix}
+                    z \cos \theta \\ z \sin \theta \\ - x \cos \theta - y \cos \theta
+                    \end{bmatrix},
+                    $$
+                    where \( r = \sqrt{ (x - R \cos \theta)^2 + (y - R \sin \theta)^2 + z^2 } \).
+                    Then integrates over \( \theta \).
+                </p>
+                <figure class="figure">
+                    <img src="images/loop.gif" class="figure-img img-fluid img-responsive center-block"
+                         alt="loop">
+                </figure>
+                <p>
+
+                </p>
             </div>
         </div>
     </div>
