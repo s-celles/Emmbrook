@@ -87,17 +87,18 @@
                 <p>
                     For a single circular with radius \( R \) loop like this (figure from
                     <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/magnetic/curloo.html">here</a>),
-                    located at \( x-y \) plane. Any point on it has coordinates \( (R\cos \theta, R\sin \theta, 0) \).
-                    Then the magnetic field, at point \( (x, y, z) \), it results in is
+                    located at \( x-y \) plane. Any point on it has coordinates \( \mathbf{l} =
+                    (R\cos \theta, R\sin \theta, 0) \).
+                    Then the magnetic field, at point \( \mathbf{x} = (x, y, z) \), it results in is
                     $$
                     \mathbf{B}(x, y, z) =
                     \int
                     \begin{bmatrix}
                     dB_x \\ dB_y \\ dB_z
                     \end{bmatrix}
-                    = \int_{0}^{2\pi} \frac{ \mu_0 I }{ 4 \pi } \frac{R d\theta}{ r^3 }
+                    = \int_{0}^{2\pi} \frac{ \mu_0 i }{ 4 \pi } \frac{R d\theta}{ r^3 }
                     \begin{bmatrix}
-                    z \cos \theta \\ z \sin \theta \\ - x \cos \theta - y \cos \theta
+                    z \cos \theta \\ z \sin \theta \\ 1 - x \cos \theta - y \cos \theta
                     \end{bmatrix},
                     $$
                     where \( r = \sqrt{ (x - R \cos \theta)^2 + (y - R \sin \theta)^2 + z^2 } \).
@@ -106,9 +107,6 @@
                     <img src="images/loop.gif" class="figure-img img-fluid img-responsive center-block"
                          alt="loop">
                 </figure>
-                <p>
-
-                </p>
             </div>
         </div>
     </div>
@@ -139,6 +137,35 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <ol>
+                    <li>
+                        How to calculate the magnetic field of \( 3 \) loops, \( 5 \) loops, up to \( \infty \) loops
+                        (an infinite solenoid)?
+                    </li>
+                    <li>
+                        For a finite solenoid, on the z-axis, what is the relationship between the magnitude of magnetic
+                        fields at one end and at center? Could you explain why?
+                    </li>
+                    <li>
+                        For only one loop, exactly on the z-axis, what is the magnetic field as a function of
+                        \( z \)? What about \( N \) loops?
+                    </li>
+                    <li>
+                        Based on last question, consider the magnetic dipole moment of a current-carrying loop to be
+                        \( \mu = I A \), where \( A \) is the cross-sectional area of the loop.
+                        On the z-axis, what do you find the
+                        relationship between magnitude of the magnetic field and magnetic dipole moment?
+                    </li>
+                </ol>
             </div>
         </div>
     </div>
