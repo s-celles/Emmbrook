@@ -8,7 +8,7 @@ import scipy.integrate as integrate
 def current_loop():
     ext = 3
     npts = 50
-    number = 9
+    number = 1
 
     def field(X, Y, Z, h):
         def integrand(th, X, Y, Z, i, h):
@@ -31,7 +31,7 @@ def current_loop():
     X, Y = np.meshgrid(xx, yy)
     by = np.zeros((npts, npts))
     bx = np.zeros((npts, npts))
-    for h in np.linspace(-1, 1, num=number):
+    for h in np.linspace(0, 0, num=number):
         print(h)
         by += np.array([field(x, y, 0, h)[2]
                         for x, y in

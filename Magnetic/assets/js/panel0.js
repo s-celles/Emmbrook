@@ -158,7 +158,7 @@ function plotPlt0() {
 }
 
 function plotPlt1() {
-    let bx = bxs_bird[opt];
+    let bx = bxs[opt];
     let by = bys[opt];
     let U = Uvals_bird[opt];
     // Plot contours
