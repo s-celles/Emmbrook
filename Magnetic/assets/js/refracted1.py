@@ -8,7 +8,7 @@ import scipy.integrate as integrate
 def current_loop():
     ext = 3
     npts = 50
-    number = 1
+    number = 7
 
     def field(X, Y, Z, h):
         def integrand(th, X, Y, Z, i, h):
@@ -16,6 +16,7 @@ def current_loop():
 
             A loop with R = 1, have magnetic field at X, Y, Z,
             dl = R d\theta = d\theta.
+            h is the height of loop
             """
             rv = np.array([(Z - h) * np.cos(th), (Z - h) * np.sin(th),
                            1 - X * np.cos(th) - Y * np.sin(th)]) *\
@@ -31,12 +32,12 @@ def current_loop():
     X, Y = np.meshgrid(xx, yy)
     by = np.zeros((npts, npts))
     bx = np.zeros((npts, npts))
-    for h in np.linspace(0, 0, num=number):
+    for h in np.linspace(-1, 1, num=number):
         print(h)
-        by += np.array([field(x, y, 0, h)[2]
+        by += np.array([field(x, y, .1, h)[1]
                         for x, y in
                         zip(np.ravel(X), np.ravel(Y))]).reshape((npts, npts))
-        bx += np.array([field(x, y, 0, h)[0]
+        bx += np.array([field(x, y, .1, h)[0]
                         for x, y in
                         zip(np.ravel(X), np.ravel(Y))]).reshape((npts, npts))
 

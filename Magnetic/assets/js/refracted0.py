@@ -8,7 +8,7 @@ import scipy.integrate as integrate
 def current_loop():
     ext = 3
     npts = 50
-    number = 9
+    number = 3
 
     def field(X, Y, Z, h):
         def integrand(th, X, Y, Z, i, h):
@@ -25,6 +25,7 @@ def current_loop():
         return np.array([integrate.quad(
             integrand, 0, 2 * np.pi,
             args=(X, Y, Z, i, h))[0] for i in range(3)])
+
     xx = np.linspace(-ext, ext, npts)
     zz = np.linspace(-ext, ext, npts)
     X, Z = np.meshgrid(xx, zz)

@@ -109,6 +109,11 @@ context0.fillRect(0, 0, width0, height0);
 context0.scale(canvas0.width / x.size, canvas0.height / z.size);
 let path0 = d3.geoPath(null, context0);  // Used by "fill" function
 let color0;  // Used by "fill" function
+// context0.font = '48px Helvetica';
+// // context0.textBaseline = "right"; // how to align the text vertically
+// // context0.textAlign = "end"; // how to align the text horizontally
+// context0.fillText("test1", xMap0(0), yMap0(0)); // text, x, y
+
 
 // plot 1
 let width1 = document.getElementById('plt1').getAttribute('width');
@@ -128,6 +133,10 @@ context1.fillRect(0, 0, width1, height1);
 context1.scale(canvas1.width / x.size, canvas1.height / y.size);
 let path1 = d3.geoPath(null, context1);  // Used by "fill" function
 let color1;  // Used by "fill" function
+// context1.font = '48px Helvetica';
+// // context0.textBaseline = "right"; // how to align the text vertically
+// // context0.textAlign = "end"; // how to align the text horizontally
+// context1.fillText("test1", xMap1(0), yMap1(0)); // text, x, y
 
 
 function plotPlt0() {
@@ -158,7 +167,7 @@ function plotPlt0() {
 }
 
 function plotPlt1() {
-    let bx = bxs[opt];
+    let bx = bxs_bird[opt];
     let by = bys[opt];
     let U = Uvals_bird[opt];
     // Plot contours
