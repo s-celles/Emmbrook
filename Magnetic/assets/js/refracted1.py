@@ -8,7 +8,7 @@ import scipy.integrate as integrate
 def current_loop():
     ext = 3
     npts = 50
-    number = 1
+    number = 9
 
     def field(X, Y, Z, h):
         def integrand(th, X, Y, Z, i, h):
@@ -25,50 +25,42 @@ def current_loop():
         return np.array([integrate.quad(
             integrand, 0, 2 * np.pi,
             args=(X, Y, Z, i, h))[0] for i in range(3)])
+
     xx = np.linspace(-ext, ext, npts)
-    zz = np.linspace(-ext, ext, npts)
-    X, Z = np.meshgrid(xx, zz)
-    bz = np.zeros((npts, npts))
+    yy = np.linspace(-ext, ext, npts)
+    X, Y = np.meshgrid(xx, yy)
+    by = np.zeros((npts, npts))
     bx = np.zeros((npts, npts))
-    for h in np.linspace(0, 0, num=number):
+    for h in np.linspace(-1, 1, num=number):
         print(h)
-        bz += np.array([field(x, 0, z, h)[2]
-                        for x, z in
-                        zip(np.ravel(X), np.ravel(Z))]).reshape((npts, npts))
-        bx += np.array([field(x, 0, z, h)[0]
-                        for x, z in
-                        zip(np.ravel(X), np.ravel(Z))]).reshape((npts, npts))
+        by += np.array([field(x, y, 0, h)[2]
+                        for x, y in
+                        zip(np.ravel(X), np.ravel(Y))]).reshape((npts, npts))
+        bx += np.array([field(x, y, 0, h)[0]
+                        for x, y in
+                        zip(np.ravel(X), np.ravel(Y))]).reshape((npts, npts))
 
     b0 = field(0, 0, 0, 0)[2]
-    bnorm = np.sqrt(bx**2 + bz**2) / b0
+    bnorm = np.sqrt(bx**2 + by**2) / b0
     U = np.log10(bnorm)
 
-    """
-    fig=plt.figure()
-    ax0=fig.add_subplot(111)
-    ax0.ticklabel_format(style='sci', scilimits=(-2,2))
-    qq=ax0.imshow(np.real(U),cmap='cubehelix',extent=(-2,2.,-1.,1.))
-    """
     plt.figure()
     plt.imshow(np.real(U), cmap='cubehelix', extent=(-ext, ext, -ext, ext))
     cb = plt.colorbar(ticks=[-2, -1, 0, 1])
     cb.set_label("$\log_{10}{|B|/B_{0}}$", size=22)
-    pd.DataFrame(bx).to_json('bx_' + str(number) + 'loop.json', orient='split')
-    pd.DataFrame(bz).to_json('bz_' + str(number) + 'loop.json', orient='split')
-    pd.DataFrame(U).to_json('U_' + str(number) + 'loop.json', orient='split')
+    pd.DataFrame(bx).to_json('bx_' + str(number) + 'loop_birdview.json',
+                             orient='split')
+    pd.DataFrame(by).to_json('by_' + str(number) + 'loop_birdview.json',
+                             orient='split')
+    pd.DataFrame(U).to_json('U_' + str(number) + 'loop_birdview.json',
+                            orient='split')
 
     plt.clim([-2, 1])
     plt.xlabel(r"$x/R$", size=28)
-    plt.ylabel(r"$z/R$", size=28)
-    plt.streamplot(xx, zz, bx, bz, color='b', arrowsize=2)
-    # CS = plt.contour(X, Z, U,cmap=plt.cm.autumn)
-    # plt.clabel(CS, inline=1, fontsize=10)
-    # plt.streamplot(xx,zz,bx,bz,arrowsize=2.)
-
-    # plt.plot(zz,bz,'*-')
-    # plt.streamplot(X,Z,bx,bz,color=U,cmap=plt.cm.autumn)
+    plt.ylabel(r"$y/R$", size=28)
+    plt.streamplot(xx, yy, bx, by, color='b', arrowsize=2)
     # plt.show()
-    plt.savefig(str(number) + '.pdf')
+    plt.savefig(str(number) + 'birdview.pdf')
 
 
 current_loop()
