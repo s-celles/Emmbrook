@@ -8,7 +8,7 @@ import scipy.integrate as integrate
 def current_loop():
     ext = 3
     npts = 50
-    number = 7
+    number = 3
 
     def field(X, Y, Z, h):
         def integrand(th, X, Y, Z, i, h):

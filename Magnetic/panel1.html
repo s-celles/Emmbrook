@@ -98,7 +98,7 @@
                     \end{bmatrix}
                     = \int_{0}^{2\pi} \frac{ \mu_0 i }{ 4 \pi } \frac{R d\theta}{ r^3 }
                     \begin{bmatrix}
-                    z \cos \theta \\ z \sin \theta \\ 1 - x \cos \theta - y \cos \theta
+                    z \cos \theta \\ z \sin \theta \\ R - x \cos \theta - y \sin \theta
                     \end{bmatrix},
                     $$
                     where \( r = \sqrt{ (x - R \cos \theta)^2 + (y - R \sin \theta)^2 + z^2 } \).
@@ -157,22 +157,31 @@
                 <h3>Questions</h3>
                 <ol>
                     <li>
-                        How to calculate the magnetic field of \( 3 \) loops, \( 5 \) loops, up to \( \infty \) loops
-                        (an infinite solenoid)?
+                        The problem (see course notes) is expressed in terms of normalized, dimensionless coordinates,
+                        \(X, Y, Z \). What determines the length scale?
                     </li>
                     <li>
-                        For a finite solenoid, on the z-axis, what is the relationship between the magnitude of magnetic
-                        fields at one end and at center? Could you explain why?
+                        For \( (0, 0, Z) \), in which direction is the field? Along this axis, how does the magnetic field vary,
+                        increasing or decreasing, the further away we go in \( Z \)?
                     </li>
                     <li>
-                        For only one loop, exactly on the z-axis, what is the magnetic field as a function of
-                        \( z \)? What about \( N \) loops?
+                        If we are very close to the wire, what does the field configuration approximate?
                     </li>
                     <li>
-                        Based on last question, consider the magnetic dipole moment of a current-carrying loop to be
-                        \( \mu = I A \), where \( A \) is the cross-sectional area of the loop.
-                        On the z-axis, what do you find the
-                        relationship between magnitude of the magnetic field and magnetic dipole moment?
+                        For a semi-infinitely long solenoid, on the z-axis, what is the relationship between the magnitude of
+                        magnetic fields on the face compared with in the interior? (Why? Proof is simple.)
+                    </li>
+                    <li>
+                        For the configuration on the right, if we measure at \(Z / R = 0.1 \),
+                        where is the absolute magnitude of the field largest?
+                    </li>
+                    <li>
+                        If we are very far away from the loop, what does the field configuration look like?
+                    </li>
+                    <li>
+                        Based on last question, consider the magnetic dipole moment of a current-carrying loop to be \(\mu = i A \), wher \( A \)
+                        is the cross-sectional area of the loop.
+                        On the z-axis, do you find a relationship between the magnitude of the magnetic field and the magnetic dipole moment?
                     </li>
                 </ol>
             </div>
