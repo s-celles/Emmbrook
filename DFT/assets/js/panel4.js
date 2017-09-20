@@ -164,7 +164,7 @@ function createPlots() {
             }
         },
         xaxis: {
-            title: 'Frequency (hz)',
+            title: 'Frequency (Hz)',
             titlefont: {
                 size: 18
             }
