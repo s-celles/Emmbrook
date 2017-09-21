@@ -158,7 +158,7 @@ function createPlots() {
             }
         },
         xaxis: {
-            title: 'Frequency (hz)',
+            title: 'Frequency (Hz)',
             titlefont: {
                 size: 18
             }
@@ -185,22 +185,22 @@ function createPlots() {
     ];
 
     var data1 = [{
-            x: xv,
-            y: yv,
+            x: xv_half,
+            y: fv_half,
             type: 'bar',
             mode: 'markers',
             name: 'Real'
         },
         {
-            x: xv,
-            y: yv,
+            x: xv_half,
+            y: fv_im_half,
             type: 'bar',
             mode: 'markers',
             name: 'Imag'
         },
         {
-            x: xv,
-            y: yv,
+            x: xv_half,
+            y: fv_abs_half,
             type: 'bar',
             mode: 'markers',
             name: 'abs'

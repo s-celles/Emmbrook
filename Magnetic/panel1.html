@@ -9,57 +9,61 @@
 
     <title>Magnetic field using Biot--Savart law</title>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
     <!-- User css -->
     <link rel="stylesheet" href="assets/css/panel1.css" type="text/css">
 </head>
 
 <body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels" aria-expanded="false">
-                    <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
-                    <span class="sr-only">Toggle navigation</span>
-                    <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
         </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="panels">
-            <ul class="nav navbar-nav">
-                <li>
-                    <a class="nav-link" href="../index.html">Home</a>
-                </li>
-                <li>
-                    <a class="nav-link active" href="index.html">Main page</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="panel1.html">Panel 1</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <!-- Heading text-->
-                    <div class="page-header">
-                        <h1>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
                         Magnetic field using Biot--Savart law
                     </h1>
-                    </div>
-                    <p>
+                </div>
+                <p>
                     Biot--Savart law has the form
                     $$
                     \begin{equation}
@@ -80,53 +84,126 @@
                     $$
                     where \( \hat{ \mathbf{r} } \) means the unit vector of that direction.
                 </p>
-                </div>
+                <p>
+                    For a single circular with radius \( R \) loop like this (figure from
+                    <a href="http://hyperphysics.phy-astr.gsu.edu/hbase/magnetic/curloo.html">here</a>),
+                    located at \( x-y \) plane. Any point on it has coordinates \( \mathbf{l} =
+                    (R\cos \theta, R\sin \theta, 0) \).
+                    Then the magnetic field, at point \( \mathbf{x} = (x, y, z) \), it results in is
+                    $$
+                    \mathbf{B}(x, y, z) =
+                    \int
+                    \begin{bmatrix}
+                    dB_x \\ dB_y \\ dB_z
+                    \end{bmatrix}
+                    = \int_{0}^{2\pi} \frac{ \mu_0 i }{ 4 \pi } \frac{R d\theta}{ r^3 }
+                    \begin{bmatrix}
+                    z \cos \theta \\ z \sin \theta \\ R - x \cos \theta - y \sin \theta
+                    \end{bmatrix},
+                    $$
+                    where \( r = \sqrt{ (x - R \cos \theta)^2 + (y - R \sin \theta)^2 + z^2 } \).
+                </p>
+                <figure class="figure">
+                    <img src="images/loop.gif" class="figure-img img-fluid img-responsive center-block"
+                         alt="loop">
+                </figure>
+                <p>
+                    The left panel draws magnetic field on \( x-z \) plane, with vertical-axis to be \( z \),
+                    horizontal to be \( x \). The right panel draws field on \( (x, y, 0.1 ) \) plane. With
+                    with vertical-axis to be \( y \), horizontal to be \( x \).
+                </p>
             </div>
         </div>
+    </div>
 
 
-        <!-- The simulator -->
-        <div class="container" id="app-div">
-            <h4>
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
             Simulator
         </h4>
-            <div class="row" id="plots">
-                <div class="col-md-12">
-                    <canvas id="plt0" width="960" height="960"></canvas>
-                </div>
+        <div class="row" id="plots">
+            <div class="col-md-6">
+                <canvas id="plt0" class="img-responsive" width="480" height="480"></canvas>
             </div>
-            <div class="row">
-                <div class="col" id="control-panel">
-                    <div id="sliders">
-                        <!-- Slide bars -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <select class="selectpicker" id="wireSelect">
-                                    <option>Straight wire</option>
-                                    <option selected>Solenoid</option>
-                                    <option>Circle</option>
-                                    <option>Toroidal solenoid</option>
-                                </select>
-                            </div>
+            <div class="col-md-6">
+                <canvas id="plt1" class="img-responsive" width="480" height="480"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <select class="selectpicker" id="wireSelect">
+                                <option selected>1</option>
+                                <option>3</option>
+                                <option>5</option>
+                                <option>7</option>
+                                <option>9</option>
+                            </select>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="https://d3js.org/d3-contour.v1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
-    <!-- User script -->
-    <script type="text/javascript" async src="assets/js/panel0.bundle.js"></script>
-    <!-- MathJax -->
-    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <ol>
+                    <li>
+                        The problem (see course notes) is expressed in terms of normalized, dimensionless coordinates,
+                        \(X, Y, Z \). What determines the length scale?
+                    </li>
+                    <li>
+                        For \( (0, 0, Z) \), in which direction is the field? Along this axis, how does the magnetic field vary,
+                        increasing or decreasing, the further away we go in \( Z \)?
+                    </li>
+                    <li>
+                        If we are very close to the wire, what does the field configuration approximate?
+                    </li>
+                    <li>
+                        For a semi-infinitely long solenoid, on the z-axis, what is the relationship between the magnitude of
+                        magnetic fields on the face compared with in the interior? (Why? Proof is simple.)
+                    </li>
+                    <li>
+                        For the configuration on the right, if we measure at \(Z / R = 0.1 \),
+                        where is the absolute magnitude of the field largest?
+                    </li>
+                    <li>
+                        If we are very far away from the loop, what does the field configuration look like?
+                    </li>
+                    <li>
+                        Based on last question, consider the magnetic dipole moment of a current-carrying loop to be \(\mu = i A \), wher \( A \)
+                        is the cross-sectional area of the loop.
+                        On the z-axis, do you find a relationship between the magnitude of the magnetic field and the magnetic dipole moment?
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-contour.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+<!-- User script -->
+<script type="text/javascript" async src="assets/js/panel0.bundle.js"></script>
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 
 </html>

@@ -164,7 +164,7 @@ function createPlots() {
             }
         },
         xaxis: {
-            title: 'Frequency (hz)',
+            title: 'Frequency (Hz)',
             titlefont: {
                 size: 18
             }
@@ -240,7 +240,7 @@ sampleSlider.on('change', function () {
 
     $('#samplesSliderVal')
         .text(nSample);
-    freqSlider.bootstrapSlider('setAttribute', 'max', 1.0 / xHi * (nSample / 4.0 + 1)); // Change slide's max value
+    freqSlider.bootstrapSlider('setAttribute', 'max', 1.0 / xHi * (nSample / 2.0)); // Change slide's max value
     freqSlider.bootstrapSlider('refresh'); // To make it synchronously changing
 });
 

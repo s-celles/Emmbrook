@@ -211,6 +211,15 @@ function createPlots() {
         name: 'Ey'
     };
 
+    var zaxis = {
+        mode: 'lines',
+        type: 'scatter3d',
+        x: [0, 0],
+        y: [0, 0],
+        z: [z.data[0], z.data[z.size - 1]],
+        name: 'z-axis'
+    };
+
     var trace3 = {
         mode: 'lines',
         type: 'scatter',
@@ -218,7 +227,7 @@ function createPlots() {
         y: unpack(y)
     };
 
-    var data0 = [trace0, trace1, trace2];
+    var data0 = [trace0, trace1, trace2, zaxis];
     var data1 = [trace3];
 
     Plotly.newPlot('plt0', data0, layout0);
@@ -233,6 +242,7 @@ function plot() {
     plt0.data[1].z = unpack(z);
     plt0.data[2].y = unpack(y);
     plt0.data[2].z = unpack(z);
+    plt0.data[3].z = [z.data[0], z.data[z.size - 1]];
 
     plt1.data[0].x = unpack(x);
     plt1.data[0].y = unpack(y);
@@ -275,6 +285,10 @@ function animatePlot0() {
             x: unpack(pool.zeros([nPoints])),
             y: unpack(y),
             z: unpack(z)
+        }, {
+            x: [0, 0],
+            y: [0, 0],
+            z: [z.data[0], z.data[z.size - 1]]
         }]
     }, {
         transition: {
