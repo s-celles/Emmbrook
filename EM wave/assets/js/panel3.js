@@ -31,6 +31,7 @@ let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-
 let cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
+let show = require('ndarray-show')
 
 
 // Variables
@@ -163,6 +164,7 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
                 break;
             default:
                 new RangeError('This style is not valid!');
+                break;
         }
         plotHeatmap(opt, sty);
     });
@@ -291,8 +293,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 250;
-let xNum = 250;
+let zNum = 10;
+let xNum = 10;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64';
@@ -359,12 +361,12 @@ function updateMask() {
      Note greaterEqualThan0 and lessThan0 will not change in this simulation.
      */
     // 1 for positive z, 0 otherwise
-    let greaterEqualThan0 = pool.malloc(iMesh.shape);
-    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a 1/0 grid.
+    let greaterEqualThan0 = pool.malloc(zMesh.shape);
+    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a grid filled with 1 or 0.
 
     // 1 for negative z, 0 otherwise
-    let lessThan0 = pool.malloc(iMesh.shape);
-    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a 1/0 grid.
+    let lessThan0 = pool.malloc(zMesh.shape);
+    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a a grid filled with 1 or 0.
     return [greaterEqualThan0, lessThan0];
 }
 
@@ -378,7 +380,7 @@ function updateGeneralAmplitude() { // correct
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
     let A = pool.zeros(iMesh.shape);
     let aux = pool.zeros(iMesh.shape); // Auxiliary grid
-    ops.eqs(A, iMesh, 0); // aux[i,j,k] = 1 if iMesh[i,j,k] === 0
+    ops.eqs(A, iMesh, 0); // A[i,j,k] = true if iMesh[i,j,k] === 0
     ops.eqs(aux, iMesh, 1); // aux[i,j,k] = true if iMesh[i,j,k] === 1
     ops.addeq(A, ops.mulseq(aux, r)); // A += np.equal(iMesh, 1) * r
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
@@ -418,11 +420,12 @@ function updateEachAmplitude() {
     let rePhase, imPhase;
     rePhase = pool.zeros(aux.shape);
     imPhase = pool.zeros(aux.shape);
-    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
-    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
-    cops.muleq(reA, imA, rePhase, imPhase);
+    // ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
+    // ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
+    // cops.muleq(reA, imA, rePhase, imPhase);
     return [reA, imA];
 }
+updateEachAmplitude()
 
 function selectField(option) {
     let reA, imA;
@@ -481,6 +484,7 @@ function chooseIntensity(option, style) {
             break;
         case 2:
             return unpack(selectField(option)[0]);
+            break;
         default:
             throw new Error('You have inputted a wrong style!');
     }
@@ -588,19 +592,19 @@ function updateFrame() {
                 cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
             }
         }
-            break; // Don't forget break!
+            break; // Don't forget to break!
         case 0: // Fallthrough, incident field
         case 1: // Fallthrough, reflected field
         case 2: // Transmitted field
             [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
-            break; // Don't forget break!
+            break; // Don't forget to break!
     }
     switch (sty) {
         case 0:
             ops.powseq(ANIMATE.reField, 2); // a^2
             ops.powseq(ANIMATE.imField, 2); // b^2
             ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-            break; // Don't forget break!
+            break; // Don't forget to break!
         case 1:
             ops.powseq(ANIMATE.reField, 2); // a^2
             ops.powseq(ANIMATE.imField, 2); // b^2
@@ -643,9 +647,9 @@ $('#n1SliderVal')
 $('#n2SliderVal')
     .text(n2);
 // Left panel
-opt = 3;
+opt = 1;
 sty = 0;
-createHeatmap(opt, sty);
+// createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
