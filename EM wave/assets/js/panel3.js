@@ -496,8 +496,15 @@ function updateInstantaneousIntensity(option) {
      */
     let reField, imField;
     [reField, imField] = selectField(option);
-    cops.muleq(reField, imField, reField, imField); // reField = np.real(reField * reField)
-    return unpack(reField);
+    let re = pool.zeros(reField.shape);
+    let im = pool.zeros(imField.shape);
+    let foo = pool.zeros(reField.shape); // Auxiliary field
+    let bar = pool.zeros(imField.shape); // Auxiliary field
+    cops.mul(re, im, reField, imField, reField, imField); // field *= field
+    cops.conj(foo, bar, reField, imField);
+    cops.mul(foo, bar, reField, imField, foo, bar);
+    cops.addeq(re, im, foo, bar);
+    return unpack(re);
 }
 
 function updateAveragedIntensity(option) {
