@@ -333,7 +333,7 @@ let zNum = 10;
 let xNum = 10;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
-zCoord.dtype = 'float64';
+zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
 let xCoord = linspace(ndarray([], [xNum]), 0, 10);
 xCoord.dtype = 'float64';
 let optionIndices = linspace(ndarray([], [3]), 0, 2);
@@ -507,8 +507,10 @@ function updateAveragedIntensity(option) {
      */
     let reField, imField;
     [reField, imField] = selectField(option);
-    cops.mag(reField, reField, imField); // reField = np.real(reField * np.conj(reField))
-    return unpack(reField);
+    let intensity = pool.zeros(reField.shape);
+    cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
+    // Note that cops.mag function calculates complex magnitude (squared length).
+    return unpack(intensity);
 }
 
 function updateFieldAmplitude(option) {
@@ -516,7 +518,13 @@ function updateFieldAmplitude(option) {
      This function calculates instantaneous field incident/reflected/transmitted amplitude,
      depending on the option argument.
      */
-    return unpack(selectField(option)[0]);
+    let reField, imField;
+    [reField, imField] = selectField(option);
+    let amplitude = pool.zeros(reField.shape);
+    // amplitude = sqrt(field * conj(field)) = sqrt(reField^2 + imField^2),
+    // Note that cops.abs function calculates complex length.
+    cops.abs(amplitude, reField, imField);
+    return unpack(amplitude);
 }
 
 
@@ -657,6 +665,9 @@ function updateFrame() {
             break; // Don't forget to break!
         case 1:
             cops.mag(ANIMATE.reField, ANIMATE.reField, ANIMATE.imField);
+            break;
+        case 2:
+            cops.abs(ANIMATE.reField, ANIMATE.reField, ANIMATE.imField);
             break;
     }
 }
