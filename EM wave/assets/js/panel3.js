@@ -31,7 +31,6 @@ let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-
 let cops = require('ndarray-complex'); // Complex arithmetic operations for ndarrays.
 let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
-let show = require('ndarray-show')
 
 
 // Variables
@@ -199,12 +198,22 @@ let reflectRatioList, transmitRatioList;
 let thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
+function updatePermittivity() {
+    /*
+     Update global variables---2 permitivities whenever you change n1 and n2.
+     This function is crucial, don't forget!
+     */
+    epsilon1 = Math.pow(n1, 2);
+    epsilon2 = Math.pow(n2, 2);
+}
+
 function updateRatioValues(tI) {
     /*
      Accept an incident angle tI,
      return the reflection ratio and transmission ratio.
      */
-    let alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    updatePermittivity();
+    let alpha = Math.sqrt(1 - (n1 / n2 * Math.sin(tI)) ** 2) / Math.cos(tI);
     let beta = n1 / n2 * epsilon2 / epsilon1;
     let t = 2 / (alpha + beta);
     let r = (alpha - beta) / (alpha + beta);
@@ -316,6 +325,16 @@ function reshape(oldNdarr, newShape) {
     return ndarray(oldNdarr.data, newShape);
 }
 
+function flatten(arr) {
+    /*
+     Here's a short function that uses some of the newer JavaScript array methods to flatten an n-dimensional array.
+     https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript/15030117#15030117
+     */
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+}
+
 function meshgrid(xArray, yArray, zArray) {
     /*
      Here xArray, yArray, zArray should all be 1d arrays.
@@ -371,7 +390,7 @@ function updateMask() {
 }
 
 function updateGeneralAmplitude() { // correct
-    /* 
+    /*
      Consider amplitudes for the three waves together.
      Amplitude A has dimension [xNum, zNum, 3].
      A changes when thetaI, lambda, n1, or n2 change.
@@ -406,6 +425,8 @@ function updateEachAmplitude() {
      Generate individual wave amplitudes for incident, reflected, and transmitted.
      Real amplitude reA has dimension [xNum, zNum, 3].
      Imaginary amplitude imA has dimension [xNum, zNum, 3].
+     Real phase has dimension [xNum, zNum, 3].
+     Imaginary phase imA has dimension [xNum, zNum, 3].
      */
     let reA = updateGeneralAmplitude();
     let imA = pool.zeros(reA.shape);
@@ -417,15 +438,15 @@ function updateEachAmplitude() {
     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
     ops.subseq(aux, omega * time); // aux -= w * t
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    let rePhase, imPhase;
+    let rePhase, imPhase; // The real and imaginary parts of phase np.exp(1j * (kx * x + kz * z))
     rePhase = pool.zeros(aux.shape);
     imPhase = pool.zeros(aux.shape);
-    // ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
-    // ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
-    // cops.muleq(reA, imA, rePhase, imPhase);
-    return [reA, imA];
+    cops.exp(rePhase, imPhase, pool.zeros(aux.shape), aux); // rePhase = re( np.exp(1j * (kx * x + kz * z)) ), imPhase = im( np.exp(1j * (kx * x + kz * z))
+    let re = pool.zeros(reA.shape);
+    let im = pool.zeros(imA.shape);
+    cops.mul(re, im, reA, imA, rePhase, imPhase);
+    return [re, im]
 }
-updateEachAmplitude()
 
 function selectField(option) {
     let reA, imA;
@@ -450,24 +471,27 @@ function selectField(option) {
 }
 
 function updateInstantaneousIntensity(option) {
+    /*
+     This function calculates instantaneous intensity, which is related to Poynting vector.
+     */
     let reField, imField;
     [reField, imField] = selectField(option);
-    // re( (a + i b)*(a + i b) ) = a^2 - b^2
-    ops.powseq(reField, 2); // a^2
-    ops.powseq(imField, 2); // b^2
-    ops.subeq(reField, imField); // a^2 - b^2
-    return reField;
+    cops.muleq(reField, imField, reField, imField); // reField = np.real(reField * reField)
+    console.log(unpack(reField))
+    return unpack(reField);
 }
 
 function updateAveragedIntensity(option) {
+    /*
+     This function calculates time-averaged intensity of Poynting vector, which is
+     proportional to the square of the field's magnitude.
+     */
     let reField, imField;
     [reField, imField] = selectField(option);
-    // re( (a + i b)*(a - i b) ) = a^2 + b^2
-    ops.powseq(reField, 2); // a^2
-    ops.powseq(imField, 2); // b^2
-    ops.addeq(reField, imField); // a^2 - b^2
-    return reField;
+    cops.mag(reField, reField, imField); // reField = np.real(reField * np.conj(reField))
+    return unpack(reField);
 }
+
 
 // Plot
 function chooseIntensity(option, style) {
@@ -477,13 +501,13 @@ function chooseIntensity(option, style) {
      */
     switch (style) {
         case 0:
-            return unpack(updateInstantaneousIntensity(option));
+            return updateInstantaneousIntensity(option);
             break;
         case 1:
-            return unpack(updateAveragedIntensity(option));
+            return updateAveragedIntensity(option);
             break;
         case 2:
-            return unpack(selectField(option)[0]);
+            return selectField(option)[0];
             break;
         default:
             throw new Error('You have inputted a wrong style!');
@@ -491,12 +515,15 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
+    plt0.data[0].x = unpack(zCoord);
+    plt0.data[0].y = unpack(xCoord);
     plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
+
     let trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
@@ -601,14 +628,10 @@ function updateFrame() {
     }
     switch (sty) {
         case 0:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+            cops.muleq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reField, ANIMATE.imField);
             break; // Don't forget to break!
         case 1:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+            cops.mag(ANIMATE.reField, ANIMATE.reField, ANIMATE.imField);
             break;
     }
 }
@@ -646,10 +669,12 @@ $('#n1SliderVal')
     .text(n1);
 $('#n2SliderVal')
     .text(n2);
+$('#timeSliderVal')
+    .text(time);
 // Left panel
-opt = 1;
+opt = 3;
 sty = 0;
-// createHeatmap(opt, sty);
+createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
 createRatioPlot();
