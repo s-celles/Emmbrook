@@ -19,7 +19,8 @@
         "ndarray-show": "^2.0.0",
         "ndarray-tile": "^1.0.3",
         "ndarray-unpack": "^1.0.0",
-        "numeric": "^1.2.6"
+        "numeric": "^1.2.6",
+        "zeros": "^1.0.0"
     },
     "devDependencies": {
         "babel-eslint": "^7.2.3",

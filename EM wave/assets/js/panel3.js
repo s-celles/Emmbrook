@@ -89,6 +89,7 @@ n1Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateAnimationInitials();
 
     $('#n1SliderVal')
@@ -101,6 +102,7 @@ n2Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateAnimationInitials();
 
     $('#n2SliderVal')
@@ -163,6 +165,7 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
                 break;
             default:
                 new RangeError('This style is not valid!');
+                break;
         }
         plotHeatmap(opt, sty);
     });
@@ -197,12 +200,22 @@ let reflectRatioList, transmitRatioList;
 let thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
+function updatePermittivity() {
+    /*
+     Update global variables---2 permitivities whenever you change n1 and n2.
+     This function is crucial, don't forget!
+     */
+    epsilon1 = Math.pow(n1, 2);
+    epsilon2 = Math.pow(n2, 2);
+}
+
 function updateRatioValues(tI) {
     /*
      Accept an incident angle tI,
      return the reflection ratio and transmission ratio.
      */
-    let alpha = Math.sqrt(1 - Math.pow(n1 / n2, 2) * Math.pow(Math.sin(tI), 2)) / Math.cos(tI);
+    updatePermittivity();
+    let alpha = Math.sqrt(1 - (n1 / n2 * Math.sin(tI)) ** 2) / Math.cos(tI);
     let beta = n1 / n2 * epsilon2 / epsilon1;
     let t = 2 / (alpha + beta);
     let r = (alpha - beta) / (alpha + beta);
@@ -214,6 +227,15 @@ function updateRatioLists() {
      Return: An array of [[r0, r1, ...], [t0, t1, ...]].
      */
     return numeric.transpose(thetaIList.map(updateRatioValues));
+}
+
+function updateBrewsterAngle() {
+    /*
+     Brewster angle changes when n1, n2 changes.
+     */
+    epsilon1 = Math.pow(n1, 2);
+    epsilon2 = Math.pow(n2, 2);
+    return Math.atan(n1 / n2 * epsilon2 / epsilon1);
 }
 
 
@@ -234,6 +256,14 @@ function plotRatioLists() {
     plt1.data[0].y = reflectRatioList;
     plt1.data[1].y = transmitRatioList;
 
+    Plotly.redraw(plt1);
+}
+
+function plotBrewsterAngle() {
+    /*
+     Re-plot Brewster angle.
+     */
+    plt1.data[3].x = [updateBrewsterAngle()];
     Plotly.redraw(plt1);
 }
 
@@ -282,7 +312,15 @@ function createRatioPlot() {
         name: 'ratios',
     };
 
-    let data = [trace0, trace1, trace2];
+    let trace3 = {
+        x: [updateBrewsterAngle()],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Brewster angle'
+    };
+
+    let data = [trace0, trace1, trace2, trace3];
 
     Plotly.newPlot(plt1, data, layout);
 }
@@ -291,11 +329,11 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 250;
-let xNum = 250;
+let zNum = 10;
+let xNum = 10;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
-zCoord.dtype = 'float64';
+zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
 let xCoord = linspace(ndarray([], [xNum]), 0, 10);
 xCoord.dtype = 'float64';
 let optionIndices = linspace(ndarray([], [3]), 0, 2);
@@ -359,17 +397,17 @@ function updateMask() {
      Note greaterEqualThan0 and lessThan0 will not change in this simulation.
      */
     // 1 for positive z, 0 otherwise
-    let greaterEqualThan0 = pool.malloc(iMesh.shape);
-    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a 1/0 grid.
+    let greaterEqualThan0 = pool.malloc(zMesh.shape);
+    ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a grid filled with 1 or 0.
 
     // 1 for negative z, 0 otherwise
-    let lessThan0 = pool.malloc(iMesh.shape);
-    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a 1/0 grid.
+    let lessThan0 = pool.malloc(zMesh.shape);
+    ops.lts(lessThan0, zMesh, 0); // lessThan0 is a a grid filled with 1 or 0.
     return [greaterEqualThan0, lessThan0];
 }
 
 function updateGeneralAmplitude() { // correct
-    /* 
+    /*
      Consider amplitudes for the three waves together.
      Amplitude A has dimension [xNum, zNum, 3].
      A changes when thetaI, lambda, n1, or n2 change.
@@ -378,7 +416,7 @@ function updateGeneralAmplitude() { // correct
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
     let A = pool.zeros(iMesh.shape);
     let aux = pool.zeros(iMesh.shape); // Auxiliary grid
-    ops.eqs(A, iMesh, 0); // aux[i,j,k] = 1 if iMesh[i,j,k] === 0
+    ops.eqs(A, iMesh, 0); // A[i,j,k] = true if iMesh[i,j,k] === 0
     ops.eqs(aux, iMesh, 1); // aux[i,j,k] = true if iMesh[i,j,k] === 1
     ops.addeq(A, ops.mulseq(aux, r)); // A += np.equal(iMesh, 1) * r
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
@@ -404,6 +442,8 @@ function updateEachAmplitude() {
      Generate individual wave amplitudes for incident, reflected, and transmitted.
      Real amplitude reA has dimension [xNum, zNum, 3].
      Imaginary amplitude imA has dimension [xNum, zNum, 3].
+     Real phase has dimension [xNum, zNum, 3].
+     Imaginary phase imA has dimension [xNum, zNum, 3].
      */
     let reA = updateGeneralAmplitude();
     let imA = pool.zeros(reA.shape);
@@ -415,16 +455,20 @@ function updateEachAmplitude() {
     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
     ops.subseq(aux, omega * time); // aux -= w * t
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    let rePhase, imPhase;
+    let rePhase, imPhase; // The real and imaginary parts of phase np.exp(1j * (kx * x + kz * z))
     rePhase = pool.zeros(aux.shape);
     imPhase = pool.zeros(aux.shape);
-    ops.cos(rePhase, aux); // re( np.exp(1j * (kx * x + kz * z)) )
-    ops.sin(imPhase, aux); // im( np.exp(1j * (kx * x + kz * z)) )
-    cops.muleq(reA, imA, rePhase, imPhase);
-    return [reA, imA];
+    cops.exp(rePhase, imPhase, pool.zeros(aux.shape), aux); // rePhase = re( np.exp(1j * (kx * x + kz * z)) ), imPhase = im( np.exp(1j * (kx * x + kz * z))
+    let re = pool.zeros(reA.shape);
+    let im = pool.zeros(imA.shape);
+    cops.mul(re, im, reA, imA, rePhase, imPhase);
+    return [re, im]
 }
 
 function selectField(option) {
+    /*
+     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
+     */
     let reA, imA;
     [reA, imA] = updateEachAmplitude();
     switch (option) {
@@ -446,41 +490,64 @@ function selectField(option) {
     }
 }
 
-function updateInstantaneousIntensity(option) {
-    let reField, imField;
-    [reField, imField] = selectField(option);
-    // re( (a + i b)*(a + i b) ) = a^2 - b^2
-    ops.powseq(reField, 2); // a^2
-    ops.powseq(imField, 2); // b^2
-    ops.subeq(reField, imField); // a^2 - b^2
-    return reField;
+function updateInstantaneousIntensity(reField, imField) {
+    /*
+     This function calculates instantaneous intensity, which is related to Poynting vector.
+     */
+    let re = pool.zeros(reField.shape);
+    let im = pool.zeros(imField.shape);
+    let foo = pool.zeros(reField.shape); // Auxiliary field
+    let bar = pool.zeros(imField.shape); // Auxiliary field
+    cops.mul(re, im, reField, imField, reField, imField); // field *= field
+    cops.conj(foo, bar, reField, imField);
+    cops.mul(foo, bar, reField, imField, foo, bar);
+    cops.addeq(re, im, foo, bar);
+    return unpack(re); // Always remember to unpack an ndarray!
 }
 
-function updateAveragedIntensity(option) {
-    let reField, imField;
-    [reField, imField] = selectField(option);
-    // re( (a + i b)*(a - i b) ) = a^2 + b^2
-    ops.powseq(reField, 2); // a^2
-    ops.powseq(imField, 2); // b^2
-    ops.addeq(reField, imField); // a^2 - b^2
-    return reField;
+function updateAveragedIntensity(reField, imField) {
+    /*
+     This function calculates time-averaged intensity of Poynting vector, which is
+     proportional to the square of the field's magnitude.
+     */
+    let intensity = pool.zeros(reField.shape);
+    cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
+    // Note that cops.mag function calculates complex magnitude (squared length).
+    return unpack(intensity);
 }
+
+function updateFieldAmplitude(reField, imField) {
+    /*
+     This function calculates instantaneous field incident/reflected/transmitted amplitude,
+     depending on the option argument.
+     */
+    let amplitude = pool.zeros(reField.shape);
+    // amplitude = sqrt(field * conj(field)) = sqrt(reField^2 + imField^2),
+    // Note that cops.abs function calculates complex length.
+    cops.abs(amplitude, reField, imField);
+    return unpack(amplitude);
+}
+
 
 // Plot
 function chooseIntensity(option, style) {
     /*
-     option: {0: incident, 1: reflected intensity, 2: transmitted intensity, 3: total intensity},
+     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
      style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}.
      */
+    let reField, imField;
+    [reField, imField] = selectField(option);
+
     switch (style) {
         case 0:
-            return unpack(updateInstantaneousIntensity(option));
+            return updateInstantaneousIntensity(reField, imField);
             break;
         case 1:
-            return unpack(updateAveragedIntensity(option));
+            return updateAveragedIntensity(reField, imField);
             break;
         case 2:
-            return unpack(selectField(option)[0]);
+            return updateFieldAmplitude(reField, imField);
+            break;
         default:
             throw new Error('You have inputted a wrong style!');
     }
@@ -497,7 +564,7 @@ function createHeatmap(option, style) {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
-        type: 'heatmap'
+        type: 'heatmap',
     };
 
     let trace1 = {
@@ -528,6 +595,7 @@ function createHeatmap(option, style) {
             titlefont: {
                 size: 18,
             },
+            autorange: "reversed", // This is very important because Plotly draws from the bottom left corner!
         },
         xaxis: {
             title: 'z',
@@ -548,7 +616,7 @@ function createHeatmap(option, style) {
 // Define a new global namespace ANIMATE for variables which have the
 // same name as those in the plotting subroutines.
 let ANIMATE = {};
-let dt = Math.E;
+let dt = Math.E; // Just randomly choose a number
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
 
@@ -588,23 +656,22 @@ function updateFrame() {
                 cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
             }
         }
-            break; // Don't forget break!
+            break; // Don't forget to break!
         case 0: // Fallthrough, incident field
         case 1: // Fallthrough, reflected field
         case 2: // Transmitted field
             [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
-            break; // Don't forget break!
+            break; // Don't forget to break!
     }
     switch (sty) {
         case 0:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.subeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
-            break; // Don't forget break!
+            ANIMATE.main = updateInstantaneousIntensity(ANIMATE.reField, ANIMATE.imField);
+            break; // Don't forget to break!
         case 1:
-            ops.powseq(ANIMATE.reField, 2); // a^2
-            ops.powseq(ANIMATE.imField, 2); // b^2
-            ops.addeq(ANIMATE.reField, ANIMATE.imField); // a^2 - b^2
+            ANIMATE.main = updateAveragedIntensity(ANIMATE.reField, ANIMATE.imField);
+            break;
+        case 2:
+            ANIMATE.main = updateFieldAmplitude(ANIMATE.reField, ANIMATE.imField);
             break;
     }
 }
@@ -614,7 +681,7 @@ function animatePlot0() {
 
     Plotly.animate('plt0', {
         data: [{
-            z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
+            z: ANIMATE.main,
             type: 'heatmap',
         }],
     }, {
@@ -642,6 +709,8 @@ $('#n1SliderVal')
     .text(n1);
 $('#n2SliderVal')
     .text(n2);
+$('#timeSliderVal')
+    .text(time);
 // Left panel
 opt = 3;
 sty = 0;
