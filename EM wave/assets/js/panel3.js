@@ -89,6 +89,7 @@ n1Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateAnimationInitials();
 
     $('#n1SliderVal')
@@ -101,6 +102,7 @@ n2Slider.on('change', function () {
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
+    plotBrewsterAngle();
     updateAnimationInitials();
 
     $('#n2SliderVal')
@@ -227,6 +229,15 @@ function updateRatioLists() {
     return numeric.transpose(thetaIList.map(updateRatioValues));
 }
 
+function updateBrewsterAngle() {
+    /*
+     Brewster angle changes when n1, n2 changes.
+     */
+    epsilon1 = Math.pow(n1, 2);
+    epsilon2 = Math.pow(n2, 2);
+    return Math.atan(n1 / n2 * epsilon2 / epsilon1);
+}
+
 
 // Plot
 function plotRatios() {
@@ -245,6 +256,14 @@ function plotRatioLists() {
     plt1.data[0].y = reflectRatioList;
     plt1.data[1].y = transmitRatioList;
 
+    Plotly.redraw(plt1);
+}
+
+function plotBrewsterAngle() {
+    /*
+     Re-plot Brewster angle.
+     */
+    plt1.data[3].x = [updateBrewsterAngle()];
     Plotly.redraw(plt1);
 }
 
@@ -293,7 +312,15 @@ function createRatioPlot() {
         name: 'ratios',
     };
 
-    let data = [trace0, trace1, trace2];
+    let trace3 = {
+        x: [updateBrewsterAngle()],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'Brewster angle'
+    };
+
+    let data = [trace0, trace1, trace2, trace3];
 
     Plotly.newPlot(plt1, data, layout);
 }
@@ -323,16 +350,6 @@ function reshape(oldNdarr, newShape) {
      Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
      */
     return ndarray(oldNdarr.data, newShape);
-}
-
-function flatten(arr) {
-    /*
-     Here's a short function that uses some of the newer JavaScript array methods to flatten an n-dimensional array.
-     https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays-in-javascript/15030117#15030117
-     */
-    return arr.reduce(function (flat, toFlatten) {
-        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
 }
 
 function meshgrid(xArray, yArray, zArray) {
@@ -449,6 +466,9 @@ function updateEachAmplitude() {
 }
 
 function selectField(option) {
+    /*
+     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
+     */
     let reA, imA;
     [reA, imA] = updateEachAmplitude();
     switch (option) {
@@ -477,7 +497,6 @@ function updateInstantaneousIntensity(option) {
     let reField, imField;
     [reField, imField] = selectField(option);
     cops.muleq(reField, imField, reField, imField); // reField = np.real(reField * reField)
-    console.log(unpack(reField))
     return unpack(reField);
 }
 
@@ -492,11 +511,19 @@ function updateAveragedIntensity(option) {
     return unpack(reField);
 }
 
+function updateFieldAmplitude(option) {
+    /*
+     This function calculates instantaneous field incident/reflected/transmitted amplitude,
+     depending on the option argument.
+     */
+    return unpack(selectField(option)[0]);
+}
+
 
 // Plot
 function chooseIntensity(option, style) {
     /*
-     option: {0: incident, 1: reflected intensity, 2: transmitted intensity, 3: total intensity},
+     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
      style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}.
      */
     switch (style) {
@@ -507,7 +534,7 @@ function chooseIntensity(option, style) {
             return updateAveragedIntensity(option);
             break;
         case 2:
-            return selectField(option)[0];
+            return updateFieldAmplitude(option);
             break;
         default:
             throw new Error('You have inputted a wrong style!');
@@ -515,20 +542,17 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
-    plt0.data[0].x = unpack(zCoord);
-    plt0.data[0].y = unpack(xCoord);
     plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-
     let trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
-        type: 'heatmap'
+        type: 'heatmap',
     };
 
     let trace1 = {
@@ -559,6 +583,7 @@ function createHeatmap(option, style) {
             titlefont: {
                 size: 18,
             },
+            autorange: "reversed", // This is very important because Plotly draws from the bottom left corner!
         },
         xaxis: {
             title: 'z',
