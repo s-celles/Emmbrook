@@ -490,12 +490,10 @@ function selectField(option) {
     }
 }
 
-function updateInstantaneousIntensity(option) {
+function updateInstantaneousIntensity(reField, imField) {
     /*
      This function calculates instantaneous intensity, which is related to Poynting vector.
      */
-    let reField, imField;
-    [reField, imField] = selectField(option);
     let re = pool.zeros(reField.shape);
     let im = pool.zeros(imField.shape);
     let foo = pool.zeros(reField.shape); // Auxiliary field
@@ -504,29 +502,25 @@ function updateInstantaneousIntensity(option) {
     cops.conj(foo, bar, reField, imField);
     cops.mul(foo, bar, reField, imField, foo, bar);
     cops.addeq(re, im, foo, bar);
-    return unpack(re);
+    return unpack(re); // Always remember to unpack an ndarray!
 }
 
-function updateAveragedIntensity(option) {
+function updateAveragedIntensity(reField, imField) {
     /*
      This function calculates time-averaged intensity of Poynting vector, which is
      proportional to the square of the field's magnitude.
      */
-    let reField, imField;
-    [reField, imField] = selectField(option);
     let intensity = pool.zeros(reField.shape);
     cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
     // Note that cops.mag function calculates complex magnitude (squared length).
     return unpack(intensity);
 }
 
-function updateFieldAmplitude(option) {
+function updateFieldAmplitude(reField, imField) {
     /*
      This function calculates instantaneous field incident/reflected/transmitted amplitude,
      depending on the option argument.
      */
-    let reField, imField;
-    [reField, imField] = selectField(option);
     let amplitude = pool.zeros(reField.shape);
     // amplitude = sqrt(field * conj(field)) = sqrt(reField^2 + imField^2),
     // Note that cops.abs function calculates complex length.
@@ -541,15 +535,18 @@ function chooseIntensity(option, style) {
      option: {0: incident, 1: reflected, 2: transmitted, 3: total},
      style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}.
      */
+    let reField, imField;
+    [reField, imField] = selectField(option);
+
     switch (style) {
         case 0:
-            return updateInstantaneousIntensity(option);
+            return updateInstantaneousIntensity(reField, imField);
             break;
         case 1:
-            return updateAveragedIntensity(option);
+            return updateAveragedIntensity(reField, imField);
             break;
         case 2:
-            return updateFieldAmplitude(option);
+            return updateFieldAmplitude(reField, imField);
             break;
         default:
             throw new Error('You have inputted a wrong style!');
@@ -619,7 +616,7 @@ function createHeatmap(option, style) {
 // Define a new global namespace ANIMATE for variables which have the
 // same name as those in the plotting subroutines.
 let ANIMATE = {};
-let dt = Math.E;
+let dt = Math.E; // Just randomly choose a number
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
 
@@ -668,13 +665,13 @@ function updateFrame() {
     }
     switch (sty) {
         case 0:
-            cops.muleq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateInstantaneousIntensity(ANIMATE.reField, ANIMATE.imField);
             break; // Don't forget to break!
         case 1:
-            cops.mag(ANIMATE.reField, ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateAveragedIntensity(ANIMATE.reField, ANIMATE.imField);
             break;
         case 2:
-            cops.abs(ANIMATE.reField, ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateFieldAmplitude(ANIMATE.reField, ANIMATE.imField);
             break;
     }
 }
@@ -684,7 +681,7 @@ function animatePlot0() {
 
     Plotly.animate('plt0', {
         data: [{
-            z: unpack(ANIMATE.reField), // Always remember to unpack ndarray!
+            z: ANIMATE.main,
             type: 'heatmap',
         }],
     }, {
