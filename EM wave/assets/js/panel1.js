@@ -20,8 +20,8 @@ if (supportsES6) {
 }
 
 // Initialize variables
-const nX = 5;
-const nY = 5;
+const nX = 250;
+const nY = 250;
 let xPrime = new Array(nX);
 let yPrime = new Array(nY);
 let eRe = new Array(nX);
@@ -49,6 +49,12 @@ const plt0 = document.getElementById('plt0');
 const plt1 = document.getElementById('plt1');
 
 
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+}
+
 function xPrimeUpdate() {
     /*
      xPrime will change when cl changes.
@@ -74,7 +80,7 @@ function intensityUpdate(re, im) {
     /*
      Take the logarithm of intensity. re and im are 2 real numbers.
      */
-    return (Math.pow(re, 2) + Math.pow(im, 2));
+    return Math.log(Math.pow(re, 2) + Math.pow(im, 2));
 }
 
 function eIntensityUpdate() {
@@ -107,8 +113,8 @@ function eIntensityUpdate() {
                 let r = Math.sqrt(Math.pow(yPrime[k], 2) +
                     Math.pow(xPrime[i] - x[j], 2) +
                     Math.pow(z, 2));
-                eRe[i] += Math.cos(kv * r);
-                eIm[i] += Math.sin(kv * r);
+                eRe[i] += Math.cos(kv * r) * a / r;
+                eIm[i] += Math.sin(kv * r) * a / r;
             }
             // Intensity = E times its complex conjugate.
             if (k === nY - 1) { // Take the intensity of last line of y
@@ -118,7 +124,7 @@ function eIntensityUpdate() {
             eIntensityHeatmap[k][i] = intensityUpdate(eRe[i], eIm[i]);
         }
     }
-    console.log(eIntensityLine)
+    console.log(Math.max.apply(null, flatten(eIntensityHeatmap)))
 }
 
 function isEven(n) {
@@ -145,14 +151,12 @@ function createPlots() {
             titlefont: {
                 size: 18
             },
-            range: [Math.log(Math.min(...eIntensityLine)), Math.log(Math.max(...eIntensityLine)) * 1.1] // Spread operator
         },
         xaxis: {
             title: 'Screen position x',
             titlefont: {
                 size: 18
             },
-            range: [xPrime[0] * 1.2, xPrime[xPrime.length - 1] * 1.2]
         }
     };
 
@@ -161,9 +165,6 @@ function createPlots() {
         titlefont: {
             size: 18
         },
-        xaxis: {
-            range: [xPrime[0] * 1.1, xPrime[xPrime.length - 1] * 1.1]
-        }
     };
 
     let data0 = [{
@@ -179,7 +180,7 @@ function createPlots() {
         y: yPrime,
         z: [eIntensityLine, eIntensityLine, eIntensityLine],
         type: 'heatmap',
-        zmin: 0
+        zmin: 0,
     }];
 
     Plotly.newPlot(plt0, data0, layout0);
@@ -189,7 +190,7 @@ function createPlots() {
 function plot() {
     plt0.data[0].x = xPrime;
     plt0.data[0].y = eIntensityLine;
-    plt0.layout.yaxis.range = [Math.log(Math.min(...eIntensityLine)), Math.log(Math.max(...eIntensityLine)) * 1.1]; // Spread operator
+    // plt0.layout.yaxis.range = [Math.log(Math.min(...eIntensityLine)), Math.log(Math.max(...eIntensityLine)) * 1.1]; // Spread operator
 
     plt1.data[0].z = eIntensityHeatmap;
 
