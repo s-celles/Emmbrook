@@ -21,20 +21,18 @@ if (supportsES6) {
 
 // Variables
 const pi = math.PI;
-let nc = 1000;
-let ns = 20;
-
-// Plot 1 Variables
-let xc = [];
-let xd;
+const nc = 1000;
+const ns = 20;
+// Panel 1
+let xc = nj.arange(0., 1., 1. / nc).tolist();
+let xd = nj.arange(0., 1., 1. / ns).tolist();
 let yc = new Array(nc);
 let yd = [];
 let yda = [];
-
-// Plot 2 Variables
+// Panel 2
 let k_x = [];
 let k_y = [];
-let k_plt = [];
+let k_plt = [0];
 let ka = null;
 let k_a = [];
 let bzp_x = [];
@@ -44,17 +42,74 @@ let bzm_y = [];
 // Interactive variables
 let kSlider = $('#k').bootstrapSlider({});
 let k = kSlider.bootstrapSlider('getValue');
-const plt0 = document.getElementById('plt0');
-const plt1 = document.getElementById('plt1');
+let plt0 = document.getElementById('plt0');
+let plt1 = document.getElementById('plt1');
 
 
 //Initializes Plots
+/*
+ Updates Waveform.
+ */
+function ycUpdate() {
+    for (let i = 0; i < (nc + 1); i++) {
+        yc[i] = Math.cos(2 * pi * k * xc[i]);
+    }
+}
+
+/*
+ Updates Sampled.
+ */
+function ydUpdate() {
+    for (let i = 0; i < (ns + 1); i++) {
+        yd[i] = Math.cos(2 * pi * k * xd[i]);
+    }
+}
+
+/*
+ Updates Aliased.
+ */
+function kaUpdate() {
+    if (k > ns / 2) {
+        ka = k - ns;
+        k_a = [ka];
+        for (let i = 0; i < (nc + 1); i++) {
+            yda[i] = Math.cos(2 * pi * ka * xc[i]);
+        }
+    } else if (k < -ns / 2) {
+        ka = parseInt(k) + ns;
+        k_a = [ka];
+        for (let i = 0; i < (nc + 1); i++) {
+            yda[i] = Math.cos(2 * pi * ka * xc[i]);
+        }
+    }
+    else {
+        yda = [];
+        k_a = [];
+    }
+
+    //Updates k space plot
+    for (let i = -ns; i <= ns; i++) {
+        k_x.push(i);
+        k_y.push(0);
+    }
+}
+
+function valsUpdate() {
+    k_plt = [k];
+    ycUpdate();
+    ydUpdate();
+    kaUpdate();
+}
+
+
+// Plot
 function initial() {
     for (let i = -ns; i <= ns; i++) {
         k_x.push(i);
         k_y.push(0);
     }
-    for (let i = -.2; i <= .2; i += .05) {
+
+    for (let i = -0.2; i <= 0.2; i += 0.05) {
         bzp_x.push(ns / 2);
         bzp_y.push(i);
         bzm_x.push(-ns / 2);
@@ -64,48 +119,6 @@ function initial() {
     createPlots();
 }
 
-function valsUpdate() {
-    k_x = [];
-    k_y = [];
-    k_plt = [k];
-    ka = null;
-    //Updates Wavefom
-    xc = nj.arange(0., 1., 1. / nc).tolist();
-    for (let i = 0; i < (nc + 1); i++) {
-        yc[i] = math.cos(2 * pi * k * xc[i])
-    }
-    // Updates Sampled
-    xd = nj.arange(0., 1., 1. / ns).tolist();
-    for (let i = 0; i < (ns + 1); i++) {
-        yd[i] = math.cos(2 * pi * k * xd[i])
-    }
-    //Updates Aliased
-    if (k > ns / 2) {
-        ka = k - ns;
-        k_a = [ka];
-        for (let i = 0; i < (nc + 1); i++) {
-            yda[i] = math.cos(2 * pi * ka * xc[i])
-        }
-    } else if (k < -ns / 2) {
-        ka = parseInt(k) + ns;
-        k_a = [ka];
-        for (let i = 0; i < (nc + 1); i++) {
-            yda[i] = math.cos(2 * pi * ka * xc[i])
-        }
-    }
-    else {
-        yda = [];
-        k_a = [];
-    }
-    //Updates k space plot
-    for (let i = -ns; i <= ns; i++) {
-        k_x.push(i);
-        k_y.push(0);
-    }
-}
-
-
-// Plot
 function plot() {
     plt0.data[0].x = xc;
     plt0.data[0].y = yc;
@@ -221,7 +234,7 @@ function createPlots() {
             line: {
                 color: 'red'
             },
-            name: "<br>First Brillouin Zone"
+            name: "First Brillouin Zone"
         },
         {
             x: bzm_x,
@@ -231,7 +244,7 @@ function createPlots() {
             line: {
                 color: 'red'
             },
-            name: ""
+            showlegend: false,
         },
     ];
 
@@ -251,13 +264,11 @@ kSlider.on('change', function () {
 
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
-    Plotly.Plots.resize(plt);
+    Plotly.Plots.resize(plt0);
+    Plotly.Plots.resize(plt1);
 };
 
 
 // Initialize
-// ycUpdate();
-// ydUpdate();
-// yc2Update();
-createPlots();
+initial();
 $('#kSliderVal').text(k);
