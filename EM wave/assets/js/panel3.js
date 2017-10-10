@@ -558,7 +558,7 @@ function plotHeatmap(option, style) {
 }
 
 function createHeatmap(option, style) {
-    console.log(chooseIntensity(option, style))
+    // console.log(chooseIntensity(option, style))
     let trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
