@@ -294,3 +294,5 @@ package-lock.json
 
 # macOS
 .DS_Store
+Aliasing/assets/js/math.js
+Aliasing/aliasing 2.html

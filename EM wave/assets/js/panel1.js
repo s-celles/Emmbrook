@@ -2,43 +2,66 @@
  * Created by Qi on 6/16/17.
  */
 
+/* jshint -W097 */
+'use strict';
+// Check if your browser supports ES6 feature
+var supportsES6 = function () { // Test if ES6 is ~fully supported
+    try {
+        new Function('(a = 0) => a');
+        return true;
+    } catch (err) {
+        return false;
+    }
+}();
+
+if (supportsES6) {
+} else {
+    alert('Your browser is too old! Please use a modern browser!');
+}
+
 // Initialize variables
-var nX = 250;
-var nY = 250;
-var xPrime = new Array(nX);
-var yPrime = new Array(nY);
-var eRe = new Array(nX);
-var eIm = new Array(nX);
-var eIntensityLine = new Array(nX);
-var eIntensityHeatmap = create2DArray(nY, nX);
-var thetaMax = 0.2;
+const nX = 250;
+const nY = 250;
+let xPrime = new Array(nX);
+let yPrime = new Array(nY);
+let eRe = new Array(nX);
+let eIm = new Array(nX);
+let eIntensityLine = new Array(nX);
+let eIntensityHeatmap = create2DArray(nY, nX);
+const thetaMax = 0.2;
 
-var nSlider = $('#N')
+let nSlider = $('#N')
     .bootstrapSlider({});
-var lambdaSlider = $('#lambda')
+let lambdaSlider = $('#lambda')
     .bootstrapSlider({});
-var aSlider = $('#a')
+let aSlider = $('#a')
     .bootstrapSlider({});
-var clSlider = $('#cl')
+let clSlider = $('#cl')
     .bootstrapSlider({});
-var zSlider = $('#z')
+let zSlider = $('#z')
     .bootstrapSlider({});
-var n = nSlider.bootstrapSlider('getValue');
-var lambda = lambdaSlider.bootstrapSlider('getValue');
-var a = aSlider.bootstrapSlider('getValue');
-var cl = clSlider.bootstrapSlider('getValue');
-var z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
-var plt0 = document.getElementById('plt0');
-var plt1 = document.getElementById('plt1');
+let n = nSlider.bootstrapSlider('getValue');
+let lambda = lambdaSlider.bootstrapSlider('getValue');
+let a = aSlider.bootstrapSlider('getValue');
+let cl = clSlider.bootstrapSlider('getValue');
+let z = Math.pow(10, zSlider.bootstrapSlider('getValue'));
+const plt0 = document.getElementById('plt0');
+const plt1 = document.getElementById('plt1');
 
+
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+}
 
 function xPrimeUpdate() {
     /*
      xPrime will change when cl changes.
      xPrime is the x split of the screen.
      */
-    var q0 = 2 * Math.sin(thetaMax) * cl;
-    for (var i = 0; i < nX; i++) {
+    let q0 = 2 * Math.sin(thetaMax) * cl;
+    for (let i = 0; i < nX; i++) {
         xPrime[i] = q0 * (i / nX - 0.5);
     }
 }
@@ -48,9 +71,16 @@ function yPrimeUpdate() {
      yPrime will change when cl changes.
      yPrime is the y split of the screen.
      */
-    for (var i = 0; i < nY; i++) {
+    for (let i = 0; i < nY; i++) {
         yPrime[i] = i / nY * cl;
     }
+}
+
+function intensityUpdate(re, im) {
+    /*
+     Take the logarithm of intensity. re and im are 2 real numbers.
+     */
+    return Math.log(Math.pow(re, 2) + Math.pow(im, 2));
 }
 
 function eIntensityUpdate() {
@@ -58,42 +88,43 @@ function eIntensityUpdate() {
      zRe, zIm, zIntensity, zHM will change when lambda, a, n, cl change.
      x is the array of scatters, it is formed by a lattice.
      */
-    var x = new Array(n);
+    let x = new Array(n);
     if (Number.isInteger(n)) {
         // If n is integer, then determine whether odd or even.
         if (isEven(n)) {
-            for (var i = 0; i < n; i++) {
+            for (let i = 0; i < n; i++) {
                 x[i] = 1e-6 * a * (i - n / 2 + 0.5);
             }
         } else {
-            for (var j = 0; j < n; j++) {
-                x[j] = 1e-6 * a * (j - (n - 1) / 2);
+            for (let i = 0; i < n; i++) {
+                x[i] = 1e-6 * a * (i - (n - 1) / 2);
             }
         }
-    } else new TypeError('N is neither even nor odd!');
+    } else new TypeError('N is not integers!');
 
-    var kv = 1e9 * 2 * Math.PI / lambda;
-    for (var k = 0; k < nY; k++) {
-        for (i = 0; i < nX; i++) {
+    let kv = 1e9 * 2 * Math.PI / lambda;
+    for (let k = 0; k < nY; k++) {
+        for (let i = 0; i < nX; i++) {
             // Outer loop over positions on the screen
             eRe[i] = 0;
             eIm[i] = 0;
-            for (j = 0; j < n; j++) {
+            for (let j = 0; j < n; j++) {
                 // Inner loop over particles
-                var r = Math.sqrt(Math.pow(yPrime[k], 2) +
+                let r = Math.sqrt(Math.pow(yPrime[k], 2) +
                     Math.pow(xPrime[i] - x[j], 2) +
                     Math.pow(z, 2));
-                eRe[i] += Math.cos(kv * r);
-                eIm[i] += Math.sin(kv * r);
+                eRe[i] += Math.cos(kv * r) * a / r;
+                eIm[i] += Math.sin(kv * r) * a / r;
             }
             // Intensity = E times its complex conjugate.
             if (k === nY - 1) { // Take the intensity of last line of y
-                eIntensityLine[i] = Math.pow(eRe[i], 2) + Math.pow(eIm[i], 2);
+                eIntensityLine[i] = intensityUpdate(eRe[i], eIm[i]);
             }
             // Intensity forms a 2D heatmap.
-            eIntensityHeatmap[k][i] = Math.pow(eRe[i], 2) + Math.pow(eIm[i], 2);
+            eIntensityHeatmap[k][i] = intensityUpdate(eRe[i], eIm[i]);
         }
     }
+    console.log(Math.max.apply(null, flatten(eIntensityHeatmap)))
 }
 
 function isEven(n) {
@@ -101,8 +132,8 @@ function isEven(n) {
 }
 
 function create2DArray(rows, columns) {
-    var arr = new Array(rows);
-    for (var i = 0; i < rows; i++) {
+    let arr = new Array(rows);
+    for (let i = 0; i < rows; i++) {
         arr[i] = new Array(columns);
     }
     return arr;
@@ -111,37 +142,32 @@ function create2DArray(rows, columns) {
 
 // Plot
 function createPlots() {
-    var layout0 = {
+    let layout0 = {
         margin: {
             t: 50
         },
         yaxis: {
-            title: 'Light intensity',
+            title: 'Logarithmic light intensity',
             titlefont: {
                 size: 18
             },
-            range: [0, Math.max(...eIntensityLine) * 1.2] // Spread operator
         },
         xaxis: {
             title: 'Screen position x',
             titlefont: {
                 size: 18
             },
-            range: [xPrime[0] * 1.2, xPrime[xPrime.length - 1] * 1.2]
         }
     };
 
-    var layout1 = {
-        title: 'heatmap',
+    let layout1 = {
+        title: 'Logarithmic heatmap',
         titlefont: {
             size: 18
         },
-        xaxis: {
-            range: [xPrime[0] * 1.1, xPrime[xPrime.length - 1] * 1.1]
-        }
     };
 
-    var data0 = [{
+    let data0 = [{
         x: xPrime,
         y: eIntensityLine,
         type: 'scatter',
@@ -149,12 +175,12 @@ function createPlots() {
         name: 'continuous'
     }];
 
-    var data1 = [{
+    let data1 = [{
         x: xPrime,
         y: yPrime,
         z: [eIntensityLine, eIntensityLine, eIntensityLine],
         type: 'heatmap',
-        zmin: 0
+        zmin: 0,
     }];
 
     Plotly.newPlot(plt0, data0, layout0);
@@ -164,7 +190,7 @@ function createPlots() {
 function plot() {
     plt0.data[0].x = xPrime;
     plt0.data[0].y = eIntensityLine;
-    plt0.layout.yaxis.range = [0, Math.max(...eIntensityLine) * 1.1]
+    // plt0.layout.yaxis.range = [Math.log(Math.min(...eIntensityLine)), Math.log(Math.max(...eIntensityLine)) * 1.1]; // Spread operator
 
     plt1.data[0].z = eIntensityHeatmap;
 

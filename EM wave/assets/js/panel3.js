@@ -329,8 +329,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 10;
-let xNum = 10;
+let zNum = 250;
+let xNum = 250;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
@@ -498,10 +498,10 @@ function updateInstantaneousIntensity(reField, imField) {
     let im = pool.zeros(imField.shape);
     let foo = pool.zeros(reField.shape); // Auxiliary field
     let bar = pool.zeros(imField.shape); // Auxiliary field
-    cops.mul(re, im, reField, imField, reField, imField); // field *= field
-    cops.conj(foo, bar, reField, imField);
-    cops.mul(foo, bar, reField, imField, foo, bar);
-    cops.addeq(re, im, foo, bar);
+    cops.mul(re, im, reField, imField, reField, imField); // \tilde{E} * \tilde{B}
+    cops.conj(foo, bar, reField, imField); // (foo, bar) = conj(re, im)
+    cops.mul(foo, bar, reField, imField, foo, bar); // tilde{E} * \tilde{B}^\ast
+    cops.addeq(re, im, foo, bar); // \tilde{E} * \tilde{B} + tilde{E} * \tilde{B}^\ast
     return unpack(re); // Always remember to unpack an ndarray!
 }
 
@@ -516,16 +516,13 @@ function updateAveragedIntensity(reField, imField) {
     return unpack(intensity);
 }
 
-function updateFieldAmplitude(reField, imField) {
+function updateFieldAmplitude(reField) {
     /*
      This function calculates instantaneous field incident/reflected/transmitted amplitude,
      depending on the option argument.
+     This only calculates its real part.
      */
-    let amplitude = pool.zeros(reField.shape);
-    // amplitude = sqrt(field * conj(field)) = sqrt(reField^2 + imField^2),
-    // Note that cops.abs function calculates complex length.
-    cops.abs(amplitude, reField, imField);
-    return unpack(amplitude);
+    return unpack(reField);
 }
 
 
@@ -546,7 +543,7 @@ function chooseIntensity(option, style) {
             return updateAveragedIntensity(reField, imField);
             break;
         case 2:
-            return updateFieldAmplitude(reField, imField);
+            return updateFieldAmplitude(reField);
             break;
         default:
             throw new Error('You have inputted a wrong style!');
@@ -554,12 +551,14 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
+    console.log(chooseIntensity(option, style))
     plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
+    // console.log(chooseIntensity(option, style))
     let trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
