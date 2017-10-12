@@ -64,9 +64,32 @@
                 <!-- Heading text-->
                 <div class="page-header">
                     <h1>
-                        Aliasing
+                        Bloch Theorem: Computing the Bands
                     </h1>
                 </div>
+                <p>
+                    At the zone boundaries, we approximated by taking two Fourier components,
+                    \( c_{\pm G/2} \), as dominant. In the more general case, we can solve for all
+                    Fourier components numerically, writing a \( (M+1)^2 \) matrix rather than
+                    a \( 2 \times 2 \) matrix.
+                </p>
+                <p>
+                    For any Bloch wave state index \( k \) in the first Brillouin zone,
+                    \( -N/2 \le k \le N/2 \), there will be a system of \( M+1 \) linear equations
+                    to write for the coupling of the \( c_k \) amplitude to \( c_k \pm N, c_k \pm2N \),
+                    etc (states which differ by a reciprocal lattice vector).
+                </p>
+                <p>
+                    We can write the demensionless equation, where energies are normalized to
+                    \( E_0 = \hbar^2\Delta\alpha^2_\psi/(2m) \),
+                    $$
+                    \sum_{j=-M/2}^{M/2} \tilde{c}_{k-jN} V'_j = (E'_k - k^2)\tilde{c}_k
+                    $$
+                    with dimensionless state energies \( E'_k = E_k/E_0 \) and potential commponents
+                    \( V'_i = V_i/E_0 \). for \( M=8 \), with a frequency cutoff for the Fourier expansion
+                    of the potential \( V \) at \( 4\Delta \alpha_V \), we would have the system of
+                    equations
+                </p>
                 <p>
                     $$
                     \begin{bmatrix}
@@ -84,6 +107,23 @@
                     c_{k-2N} \\ c_{k-N} \\ c_k \\ c_{k+N} \\ c_{k+2N}
                     \end{bmatrix}
                     $$
+                </p>
+                <p>
+                    This is an eigenvalue equation which can solved numerically. The Fourier
+                    components \( V'_i \) can be found through the DFT of any discretized potential.
+                    The unknown energies \( E' \) and Fourier components \( c_k \) of the wavefunction
+                    by finding the eigenvalues and eigenvectors of the left-hand side matrix will
+                    have \( M/2+1 \), in this case five, solutions for each \( k \)-point in the first BZ,
+                    corresponding to five bands of Bloch states.
+                </p>
+                <p>
+                    Bands calculated according to this method are shown in the right figure,
+                    assuming a potential with Fourier components
+                    $$
+                    V = [V_{-4},V_{-3},V_{-2},V_{-1},V_{1},V_{2},V_{3},V_{4}].
+                    $$
+                    We have taken \( N = 32 \) points in the irst BZ, which can be seen from the
+                    discrete points.
                 </p>
             </div>
         </div>

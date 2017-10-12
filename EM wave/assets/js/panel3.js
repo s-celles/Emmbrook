@@ -157,10 +157,10 @@ $('#stySelect') // See https://silviomoreto.github.io/bootstrap-select/options/
                     title: 'time-averaged light intensity',
                 });
                 break;
-            case 'Field amplitude':
+            case 'E-field':
                 sty = 2;
                 Plotly.relayout('plt0', {
-                    title: 'e-field amplitude',
+                    title: 'E-field',
                 });
                 break;
             default:
@@ -200,20 +200,21 @@ let reflectRatioList, transmitRatioList;
 let thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
+/**
+ * Update global variables---2 permitivities whenever you change n1 and n2.
+ * This function is crucial, don't forget!
+ */
 function updatePermittivity() {
-    /*
-     Update global variables---2 permitivities whenever you change n1 and n2.
-     This function is crucial, don't forget!
-     */
     epsilon1 = Math.pow(n1, 2);
     epsilon2 = Math.pow(n2, 2);
 }
 
+/**
+ * Accept an incident angle tI, return the reflection ratio and transmission ratio.
+ * @param tI {number}
+ * @returns {[null,null]}
+ */
 function updateRatioValues(tI) {
-    /*
-     Accept an incident angle tI,
-     return the reflection ratio and transmission ratio.
-     */
     updatePermittivity();
     let alpha = Math.sqrt(1 - (n1 / n2 * Math.sin(tI)) ** 2) / Math.cos(tI);
     let beta = n1 / n2 * epsilon2 / epsilon1;
@@ -222,17 +223,17 @@ function updateRatioValues(tI) {
     return [r, t];
 }
 
+/**
+ * Return: An array of [[r0, r1, ...], [t0, t1, ...]].
+ */
 function updateRatioLists() {
-    /*
-     Return: An array of [[r0, r1, ...], [t0, t1, ...]].
-     */
     return numeric.transpose(thetaIList.map(updateRatioValues));
 }
 
+/**
+ * Brewster angle changes when n1, n2 changes.
+ */
 function updateBrewsterAngle() {
-    /*
-     Brewster angle changes when n1, n2 changes.
-     */
     epsilon1 = Math.pow(n1, 2);
     epsilon2 = Math.pow(n2, 2);
     return Math.atan(n1 / n2 * epsilon2 / epsilon1);
@@ -240,29 +241,29 @@ function updateBrewsterAngle() {
 
 
 // Plot
+/**
+ * Make 2 "ratios" points move as their real values.
+ */
 function plotRatios() {
-    /*
-     Make 2 "ratios" points move as their real values.
-     */
     plt1.data[2].x = [thetaI, thetaI];
     plt1.data[2].y = updateRatioValues(thetaI);
     Plotly.redraw(plt1);
 }
 
+/**
+ * Re-plot 2 curves.
+ */
 function plotRatioLists() {
-    /*
-     Re-plot 2 curves.
-     */
     plt1.data[0].y = reflectRatioList;
     plt1.data[1].y = transmitRatioList;
 
     Plotly.redraw(plt1);
 }
 
+/**
+ * Re-plot Brewster angle.
+ */
 function plotBrewsterAngle() {
-    /*
-     Re-plot Brewster angle.
-     */
     plt1.data[3].x = [updateBrewsterAngle()];
     Plotly.redraw(plt1);
 }
@@ -345,17 +346,24 @@ let zMesh, xMesh, iMesh;
 let greaterEqualThan0, lessThan0;
 [greaterEqualThan0, lessThan0] = updateMask();
 
+/**
+ * Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
+ * @param oldNdarr
+ * @param newShape
+ * @returns {*}
+ */
 function reshape(oldNdarr, newShape) {
-    /*
-     Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
-     */
     return ndarray(oldNdarr.data, newShape);
 }
 
+/**
+ * Here xArray, yArray, zArray should all be 1d arrays.
+ * @param xArray
+ * @param yArray
+ * @param zArray
+ * @returns {[null,null,null]}
+ */
 function meshgrid(xArray, yArray, zArray) {
-    /*
-     Here xArray, yArray, zArray should all be 1d arrays.
-     */
     let xNum = xArray.size;
     let yNum = yArray.size;
     let zNum = zArray.size;
@@ -365,23 +373,25 @@ function meshgrid(xArray, yArray, zArray) {
     return [xMesh, yMesh, zMesh];
 }
 
+/**
+ * kVector = k0 * [n1, n1, n2]
+ * kVector will change if lambda, n1 or n2 change.
+ * @returns {*}
+ */
 function updateKVector() {
-    /*
-     kVector = k0 * [n1, n1, n2]
-     kVector will change if lambda, n1 or n2 change.
-     */
     let k0 = 2 * Math.PI / lambda; // Free-space wavenumber
     let kVector = ndarray(new Float64Array(3)); // Wavenumbers for incident, reflected, transmitted waves
     ops.muls(kVector, ndarray(new Float64Array([n1, n1, n2])), k0);
     return kVector;
 }
 
+/**
+ * Calculate z component for incident, reflected, and transmitted wave's k vector,
+ * and x component for incident, reflected, and transmitted wave's k vector.
+ * kZ and kX will change if thetaI, lambda, n1 or n2 change.
+ * @returns {[null,null]}
+ */
 function updateKxAndKz() {
-    /*
-     Calculate z component for incident, reflected, and transmitted wave's k vector,
-     and x component for incident, reflected, and transmitted wave's k vector.
-     kZ and kX will change if thetaI, lambda, n1 or n2 change.
-     */
     let kVector = updateKVector();
     let thetaT = Math.asin(n1 / n2 * Math.sin(thetaI)); // Transmitted angle from Snell's law
     let kZ = ndarray(new Float64Array(3)); // Incident, reflected, transmit wave's kz
@@ -391,11 +401,12 @@ function updateKxAndKz() {
     return [kZ, kX];
 }
 
+/**
+ * Masks regions: z<0 for incident and reflected; z>=0 for transmitted.
+ * Note greaterEqualThan0 and lessThan0 will not change in this simulation.
+ * @returns {[null,null]}
+ */
 function updateMask() {
-    /*
-     Masks regions: z<0 for incident and reflected; z>=0 for transmitted.
-     Note greaterEqualThan0 and lessThan0 will not change in this simulation.
-     */
     // 1 for positive z, 0 otherwise
     let greaterEqualThan0 = pool.malloc(zMesh.shape);
     ops.geqs(greaterEqualThan0, zMesh, 0); // greaterEqualThan0 is a grid filled with 1 or 0.
@@ -406,12 +417,13 @@ function updateMask() {
     return [greaterEqualThan0, lessThan0];
 }
 
+/**
+ * Consider amplitudes for the three waves together.
+ * Amplitude A has dimension [xNum, zNum, 3].
+ * A changes when thetaI, lambda, n1, or n2 change.
+ * @returns {*}
+ */
 function updateGeneralAmplitude() { // correct
-    /*
-     Consider amplitudes for the three waves together.
-     Amplitude A has dimension [xNum, zNum, 3].
-     A changes when thetaI, lambda, n1, or n2 change.
-     */
     let r, t;
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
     let A = pool.zeros(iMesh.shape);
@@ -437,14 +449,15 @@ function tensorProduct(mesh, vec) {
     return aux;
 }
 
+/**
+ * Generate individual wave amplitudes for incident, reflected, and transmitted.
+ * Real amplitude reA has dimension [xNum, zNum, 3].
+ * Imaginary amplitude imA has dimension [xNum, zNum, 3].
+ * Real phase has dimension [xNum, zNum, 3].
+ * Imaginary phase imA has dimension [xNum, zNum, 3].
+ * @returns {[null,null]}
+ */
 function updateEachAmplitude() {
-    /*
-     Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum, zNum, 3].
-     Imaginary amplitude imA has dimension [xNum, zNum, 3].
-     Real phase has dimension [xNum, zNum, 3].
-     Imaginary phase imA has dimension [xNum, zNum, 3].
-     */
     let reA = updateGeneralAmplitude();
     let imA = pool.zeros(reA.shape);
     let kZ, kX;
@@ -465,10 +478,12 @@ function updateEachAmplitude() {
     return [re, im]
 }
 
+/**
+ *
+ * @param option {number} option: {0: incident, 1: reflected, 2: transmitted, 3: total}
+ * @returns {[null,null]}
+ */
 function selectField(option) {
-    /*
-     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
-     */
     let reA, imA;
     [reA, imA] = updateEachAmplitude();
     switch (option) {
@@ -490,10 +505,14 @@ function selectField(option) {
     }
 }
 
+/**
+ * This function calculates instantaneous intensity, which is the magnitude of the Poynting vector, at each point.
+ * That is \Re{ (\tilde{E}\tilde{E}) } / c + \Re{ (\tilde{E}\tilde{E}^\ast) } / c
+ * @param reField
+ * @param imField
+ * @returns {result}
+ */
 function updateInstantaneousIntensity(reField, imField) {
-    /*
-     This function calculates instantaneous intensity, which is related to Poynting vector.
-     */
     let re = pool.zeros(reField.shape);
     let im = pool.zeros(imField.shape);
     let foo = pool.zeros(reField.shape); // Auxiliary field
@@ -505,33 +524,41 @@ function updateInstantaneousIntensity(reField, imField) {
     return unpack(re); // Always remember to unpack an ndarray!
 }
 
+/**
+ * This function calculates time-averaged intensity of the Poynting vector, which is proportional to the square of the
+ * E-field's amplitude, at each point.
+ * That is, E_0^2 = \tilde{E} \tilde{E}^\ast.
+ * @param reField
+ * @param imField
+ * @returns {result}
+ */
 function updateAveragedIntensity(reField, imField) {
-    /*
-     This function calculates time-averaged intensity of Poynting vector, which is
-     proportional to the square of the field's magnitude.
-     */
     let intensity = pool.zeros(reField.shape);
     cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
     // Note that cops.mag function calculates complex magnitude (squared length).
     return unpack(intensity);
 }
 
+/**
+ * This function calculates instantaneous field incident/reflected/transmitted amplitude,
+ * depending on the option argument. This only calculates its real part.
+ * That is, \Re{ \tilde{E} }.
+ * @param reField
+ * @returns {result}
+ */
 function updateFieldAmplitude(reField) {
-    /*
-     This function calculates instantaneous field incident/reflected/transmitted amplitude,
-     depending on the option argument.
-     This only calculates its real part.
-     */
     return unpack(reField);
 }
 
 
 // Plot
+/**
+ *
+ * @param option {number} option: {0: incident, 1: reflected, 2: transmitted, 3: total}
+ * @param style {number} style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}
+ * @returns {result}
+ */
 function chooseIntensity(option, style) {
-    /*
-     option: {0: incident, 1: reflected, 2: transmitted, 3: total},
-     style: {0: instantaneous intensity, 1: time-averaged intensity, 2: field amplitude}.
-     */
     let reField, imField;
     [reField, imField] = selectField(option);
 
@@ -551,14 +578,12 @@ function chooseIntensity(option, style) {
 }
 
 function plotHeatmap(option, style) {
-    console.log(chooseIntensity(option, style))
     plt0.data[0].z = chooseIntensity(option, style);
 
     Plotly.redraw(plt0);
 }
 
 function createHeatmap(option, style) {
-    // console.log(chooseIntensity(option, style))
     let trace0 = {
         x: unpack(zCoord),
         y: unpack(xCoord),
@@ -619,12 +644,12 @@ let dt = Math.E; // Just randomly choose a number
 ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initialize at first.
 
 
+/**
+ * This subroutine defines some initial values for the animation,
+ * so it can follow the user's controlling of slider bars or dropdown
+ * menus. This function is fired when those controllers are cliked/dragged.
+ */
 function updateAnimationInitials() {
-    /*
-     This subroutine defines some initial values for the animation,
-     so it can follow the user's controlling of slider bars or dropdown
-     menus. This function is fired when those controllers are cliked/dragged.
-     */
     [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
     // Here kxx and kzz are not used by other subroutines, so they are defined locally.
     let kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
@@ -632,12 +657,12 @@ function updateAnimationInitials() {
     ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
 }
 
+/**
+ * Generate individual wave amplitudes for incident, reflected, and transmitted.
+ * Real amplitude reA has dimension [xNum, zNum, 3].
+ * Imaginary amplitude imA has dimension [xNum, zNum, 3].
+ */
 function updateFrame() {
-    /*
-     Generate individual wave amplitudes for incident, reflected, and transmitted.
-     Real amplitude reA has dimension [xNum, zNum, 3].
-     Imaginary amplitude imA has dimension [xNum, zNum, 3].
-     */
     ANIMATE.reA = updateGeneralAmplitude();
     ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
     ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt

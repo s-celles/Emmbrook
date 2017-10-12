@@ -19,6 +19,7 @@ if (supportsES6) {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
+
 // Variables
 const nc = 1000;
 const ns = 20;
@@ -46,8 +47,8 @@ let plt1 = document.getElementById('plt1');
 
 
 //Initializes Plots
-/*
- Updates Waveform.
+/**
+ * Updates Waveform.
  */
 function ycUpdate() {
     for (let i = 0; i < (nc + 1); i++) {
@@ -55,8 +56,8 @@ function ycUpdate() {
     }
 }
 
-/*
- Updates Sampled.
+/**
+ * Updates Sampled.
  */
 function ydUpdate() {
     for (let i = 0; i < (ns + 1); i++) {
@@ -64,8 +65,8 @@ function ydUpdate() {
     }
 }
 
-/*
- Updates Aliased.
+/**
+ * Updates Aliased.
  */
 function kaUpdate() {
     if (k > ns / 2) {

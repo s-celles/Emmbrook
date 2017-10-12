@@ -127,7 +127,7 @@
                     \Re{(\tilde{E})} \Re{( \tilde{B} )} \hat{\mathbf{ k }} \\
                     &= \frac{ 1 }{ 4\mu_0 } (\tilde{E}\tilde{B} + \tilde{E}\tilde{B}^\ast + \tilde{E}^\ast\tilde{B} +
                     \tilde{E}^\ast\tilde{B}^\ast)\hat{\mathbf{ k }} \\
-                    &= \frac{ 1 }{ 2\mu_0 } \Big[ \Re{(\tilde{E}\tilde{B})} + \Re{(\tilde{E}\tilde{B}^\ast)}
+                    &= \frac{ 1 }{ 2\mu_0 } \Big[ \Re{ (\tilde{E} \tilde{B}) } + \Re{ (\tilde{E} \tilde{B}^\ast) }
                     \Big]\hat{\mathbf{ k }},
                     \end{split}
                     \end{equation}
@@ -136,13 +136,19 @@
                     \tilde{B} = \tilde{B}_0 e^{i (\mathbf{ k } \cdot \mathbf{ r } - \omega t)} \).
                 </p>
                 <p>
-                    The time average intensity is
+                    The time-averaged intensity is
                     $$
                     I = \langle S \rangle = \frac{ \omega }{ 2\pi } \int_{0}^{2\pi/\omega} S(t) \, dt = \frac{ 1 }{ 2 }
                     \sqrt{\frac{ \varepsilon_0 \varepsilon_r }{ \mu_0 }} E_0^2
                     = \frac{ 1 }{ 2 } c \varepsilon_0 n E_0^2,
                     $$
-                    where \( E_0 = \sqrt{\tilde{E} \tilde{E}^\ast} \), with \( E_0 \) to be e-field amplitude.
+                    where \( E_0 = \sqrt{\tilde{E} \tilde{E}^\ast} \).
+                </p>
+                <p>
+                    In the simulation below, for instantaneous intensity, I plot the norm of the Poynting vector at
+                    every spatial point;
+                    for time-averaged intensity, I plot \( \langle S \rangle \) at every point;
+                    for E-field, I plot the magnitude of the real-part of E-field.
                 </p>
             </div>
         </div>
@@ -224,7 +230,7 @@
                             <select class="selectpicker" id="stySelect">
                                 <option selected>Instantaneous intensity</option>
                                 <option>Time-averaged intensity</option>
-                                <option>Field amplitude</option>
+                                <option>E-field</option>
                             </select>
                         </div>
                     </div>
