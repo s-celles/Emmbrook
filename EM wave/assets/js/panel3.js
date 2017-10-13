@@ -379,7 +379,7 @@ function meshgrid(xArray, yArray, zArray) {
  * @returns {*}
  */
 function updateKVector() {
-    let k0 = 2 * Math.PI / lambda; // Free-space wavenumber
+    let k0 = 2 * Math.PI / lambda; // Free-space waveNumber
     let kVector = ndarray(new Float64Array(3)); // Wavenumbers for incident, reflected, transmitted waves
     ops.muls(kVector, ndarray(new Float64Array([n1, n1, n2])), k0);
     return kVector;

@@ -47,8 +47,8 @@ let q4 = [];
 
 /**
  * Creates LHS matrix from Fourier components of periodic potential V.
- * @param k {number} index, -nk/2<=k<nk/2, where \alpha_k = k \pi * /(nk*a) is the wavenumber of the eclectronic state.
- * @param nk {number} total number of wavenumber points sampled in First Brillouin zone.
+ * @param k {number} index, -nk/2<=k<nk/2, where \alpha_k = k \pi * /(nk*a) is the waveNumber of the eclectronic state.
+ * @param nk {number} total number of waveNumber points sampled in First Brillouin zone.
  * @param m {number} m/2+1 is the total number of bands to solve for at each k point.
  * @param va potential discrete Fourier components arranged: (-N_max/2,...-2,-1,+1,+2,...N_max/2).
  * @returns {Array}
@@ -62,7 +62,7 @@ function createA(k, nk, m, va) {
     ];
     rv = [];
     let Da = 2. * Math.PI / nk;
-    // Smallest wavenumber
+    // Smallest waveNumber
     let mv = va.length;
     //number of total Fourier components of potential (highest: m - 1/2)
 
