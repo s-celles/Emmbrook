@@ -37,6 +37,7 @@ let pLSlider = $('#pL').bootstrapSlider({});
 let pRSlider = $('#pR').bootstrapSlider({});
 let pLeft = pLSlider.bootstrapSlider('getValue');
 let pRight = pRSlider.bootstrapSlider('getValue');
+let plt = document.getElementById('plt');
 
 
 // Basic interfaces
@@ -138,8 +139,7 @@ function generateData(dArray) {
     return [RArray, TArray];
 }
 
-// Plotting
-function createPlot() {
+function gdata() {
     let RArray = [];
     let TArray = [];
     for (let i = 0; i < 1000; i++) {
@@ -147,6 +147,22 @@ function createPlot() {
         RArray.push(R);
         TArray.push(T);
     }
+    return [RArray, TArray];
+}
+
+// Plotting
+function plot() {
+    let [RArray, TArray] = gdata();
+    console.log(RArray)
+
+    plt.data[0].y = RArray;
+    plt.data[1].y = TArray;
+    Plotly.redraw(plt);
+}
+
+
+function createPlot() {
+    let [RArray, TArray] = gdata();
 
     let trace0 = {
         x: dArray._data,
@@ -187,12 +203,12 @@ function createPlot() {
 // Interactive interfaces
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
-    Plotly.Plots.resize(plt0);
-    Plotly.Plots.resize(plt1);
+    Plotly.Plots.resize(plt);
 };
 
 pLSlider.on('change', function () {
     pLeft = pLSlider.bootstrapSlider('getValue');
+    plot();
 
     $('#pLSliderVal')
         .text(pLeft);
@@ -200,6 +216,7 @@ pLSlider.on('change', function () {
 
 pRSlider.on('change', function () {
     pRight = pRSlider.bootstrapSlider('getValue');
+    plot();
 
     $('#pRSliderVal')
         .text(pRight);
