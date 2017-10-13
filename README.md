@@ -3,7 +3,7 @@
 Todo:
 - [x] EM oblique incidence
 - [x] Diffraction
-- [ ] Aliasing
+- [x] Aliasing
 - [x] DFT simulation
 - [ ] Main page
 - [x] Polarization
