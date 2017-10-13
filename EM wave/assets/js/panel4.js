@@ -25,27 +25,34 @@ if (supportsES6) {
 // Variables
 const epsilon0 = 8.85e-12;
 const mu0 = 4 * Math.PI * 1e-7;
-let refractiveIndecies = [1, 1, 1, 1];
-let p = refractiveIndecies.map(function (n) { // n is one refractive index
+let refractiveIndecies = [2 / 3];
+let pMedia = refractiveIndecies.map(function (n) { // n is one refractive index
     return Math.sqrt(epsilon0 / mu0) * n;
+    // return n
 });
-let waveNumber = 1; // k
-let pLeft = 1;
-let pRigth = 1;
+let waveNumber = 2 * Math.PI / 400; // k
 let dArray = math.range(0, 1000, 1);
+// Interactive variables
+let pLSlider = $('#pL').bootstrapSlider({});
+let pRSlider = $('#pR').bootstrapSlider({});
+let pLeft = pLSlider.bootstrapSlider('getValue');
+let pRight = pRSlider.bootstrapSlider('getValue');
 
 
 // Basic interfaces
 /**
  * Generate transfer matrix for given parameters.
- * @param d {number} the length of the film.
+ * @param z {number} the x coordinate in the film.
  * @param p {number} equals to sqrt(epsilon / mu).
  * @returns {object} A mathjs matrix object that represents the transfer matrix.
  */
-function generateTransferMatrix(d, p) {
-    let c = math.cos(waveNumber * d);
-    let s = math.sin(waveNumber * d);
-    return math.matrix([[c, math.complex({re: 0, im: p * s})], [math.complex({re: 0, im: s / p}), c]]);
+function generateTransferMatrix(z, p) {
+    let c = math.cos(waveNumber * z);
+    let s = math.sin(waveNumber * z);
+    return math.matrix(
+        [[math.complex({re: c, im: 0}), math.complex({re: 0, im: s / p})],
+            [math.complex({re: 0, im: s * p}), math.complex({re: c, im: 0})]]
+    );
 }
 
 /**
@@ -65,11 +72,11 @@ function multiplyTransferMatrices(matArray) {
 
 /**
  * This function gives the transmit intensity ratio T^2 and reflective intensity ratio T^2
- * after you provide a transfer matrix and p of left-hand-side material and p of right-hand-side material.
+ * after you provide a transfer matrix and pMedia of left-hand-side material and pMedia of right-hand-side material.
  * math.js utilizes Complex.js and manual can be found here: https://github.com/infusion/Complex.js.
  * @param transferMat {object} transfer matrix given by previous steps.
- * @param pL {number} p of left (incident) side material
- * @param pR {number} p of right (transmitted) side material
+ * @param pL {number} pMedia of left (incident) side material
+ * @param pR {number} pMedia of right (transmitted) side material
  * @returns {[number,number]} [R, T] = [r * conjugate(r), t * conjugate(t)]
  */
 function generateRT(transferMat, pL, pR) {
@@ -108,11 +115,11 @@ function generateRT(transferMat, pL, pR) {
  */
 function generateRTArray(d) {
     let transferMatArray = [];
-    p.forEach(function (item) {
+    pMedia.forEach(function (item) {
         transferMatArray.push(generateTransferMatrix(d, item));
     });
     let m = multiplyTransferMatrices(transferMatArray);
-    return generateRT(m, pLeft, pRigth);
+    return generateRT(m, pLeft, pRight);
 }
 
 /**
@@ -133,18 +140,24 @@ function generateData(dArray) {
 
 // Plotting
 function createPlot() {
-    let [RArray, TArray] = generateData(dArray);
+    let RArray = [];
+    let TArray = [];
+    for (let i = 0; i < 1000; i++) {
+        let [R, T] = generateRT(generateTransferMatrix(i, 2 / 3), pLeft, pRight);
+        RArray.push(R);
+        TArray.push(T);
+    }
 
     let trace0 = {
         x: dArray._data,
-        y: RArray._data,
+        y: RArray,
         mode: 'lines',
         name: 'R',
     };
 
     let trace1 = {
         x: dArray._data,
-        y: TArray._data,
+        y: TArray,
         mode: 'lines',
         name: 'T',
     };
@@ -167,7 +180,7 @@ function createPlot() {
         },
     };
 
-    Plotly.newPlot('plt0', data, layout);
+    Plotly.newPlot('plt', data, layout);
 }
 
 
@@ -178,6 +191,23 @@ window.onresize = function () {
     Plotly.Plots.resize(plt1);
 };
 
+pLSlider.on('change', function () {
+    pLeft = pLSlider.bootstrapSlider('getValue');
+
+    $('#pLSliderVal')
+        .text(pLeft);
+});
+
+pRSlider.on('change', function () {
+    pRight = pRSlider.bootstrapSlider('getValue');
+
+    $('#pRSliderVal')
+        .text(pRight);
+});
 
 // Initialize
 createPlot();
+$('#pLSliderVal')
+    .text(pLeft);
+$('#pRSliderVal')
+    .text(pRight);
