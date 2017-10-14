@@ -4,10 +4,10 @@
 
 $(document)
     .ready(function () {
-        var scroll_start = 0;
+        let scroll_start = 0;
         // Position where background color start to change
-        var startchange = $('#preview');
-        var offset = startchange.offset();
+        let startchange = $('#preview');
+        let offset = startchange.offset();
         if (startchange.length) {
             $(document)
                 .scroll(function () {

@@ -35,8 +35,12 @@ let dArray = math.range(0, 1000, 1);
 // Interactive variables
 let pLSlider = $('#pL').bootstrapSlider({});
 let pRSlider = $('#pR').bootstrapSlider({});
+let p1Slider = $('#p1').bootstrapSlider({});
+let length1Slider = $('#length1').bootstrapSlider({});
 let pLeft = pLSlider.bootstrapSlider('getValue');
 let pRight = pRSlider.bootstrapSlider('getValue');
+let p1 = p1Slider.bootstrapSlider('getValue');
+let length1 = length1Slider.bootstrapSlider('getValue');
 let plt = document.getElementById('plt');
 
 
@@ -133,17 +137,17 @@ function generateData(dArray) {
     let TArray = [];
     dArray.forEach(function (item) {
         let [R, T] = generateRTArray(item);
-        RArray.push(R);
+        // RArray.push(R);
         TArray.push(T);
     });
     return [RArray, TArray];
 }
 
-function gdata() {
+function gdata(p, length) {
     let RArray = [];
     let TArray = [];
-    for (let i = 0; i < 1000; i++) {
-        let [R, T] = generateRT(generateTransferMatrix(i, 2 / 3), pLeft, pRight);
+    for (let i = 0; i < length; i++) {
+        let [R, T] = generateRT(generateTransferMatrix(i, p), pLeft, pRight);
         RArray.push(R);
         TArray.push(T);
     }
@@ -152,8 +156,7 @@ function gdata() {
 
 // Plotting
 function plot() {
-    let [RArray, TArray] = gdata();
-    console.log(RArray)
+    let [RArray, TArray] = gdata(p1, length1);
 
     plt.data[0].y = RArray;
     plt.data[1].y = TArray;
@@ -162,7 +165,7 @@ function plot() {
 
 
 function createPlot() {
-    let [RArray, TArray] = gdata();
+    let [RArray, TArray] = gdata(p1, length1);
 
     let trace0 = {
         x: dArray._data,
@@ -183,7 +186,7 @@ function createPlot() {
     let layout = {
         title: 'R and T',
         xaxis: {
-            title: 'x (nm)',
+            title: 'z (nm)',
             titlefont: {
                 size: 18,
             },
@@ -222,9 +225,29 @@ pRSlider.on('change', function () {
         .text(pRight);
 });
 
+p1Slider.on('change', function () {
+    p1 = p1Slider.bootstrapSlider('getValue');
+    plot();
+
+    $('#p1SliderVal')
+        .text(p1);
+});
+
+length1Slider.on('change', function () {
+    length1 = length1Slider.bootstrapSlider('getValue');
+    plot();
+
+    $('#length1SliderVal')
+        .text(length1);
+});
+
 // Initialize
 createPlot();
 $('#pLSliderVal')
     .text(pLeft);
 $('#pRSliderVal')
     .text(pRight);
+$('#p1SliderVal')
+    .text(p1);
+$('#length1SliderVal')
+    .text(length1);
