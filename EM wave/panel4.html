@@ -128,6 +128,28 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <figure class="figure">
+                    <img src="images/Antireflection%20coating.png" class="rounded img-fluid img-responsive center-block"
+                         alt="antireflect">
+                    <figcaption class="figure-caption text-center">This is an antireflection coating (AR coating).
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col-md-6">
+                <figure class="figure">
+                    <img src="images/Reflectance-enhancing%20coating.png"
+                         class="rounded img-fluid img-responsive center-block"
+                         alt="reflenhance">
+                    <figcaption class="figure-caption text-center">This is an reflectance-enhancing coating (Bragg
+                        mirror).
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
 
     <!-- The simulator -->
     <div class="container" id="app-div">
@@ -146,27 +168,39 @@
                     <!-- Slide bars -->
                     <div class="row">
                         <div class="col slider-row">
-                            <label for="pL" class="slideLables">\( p_L \): </label>
-                            <span id="pLSliderVal" class="sliderVal"></span>
-                            <input id="pL" data-slider-min="1.5" data-slider-max="4" data-slider-step="0.1"
+                            <label for="nL" class="slideLables">\( n_L \): </label>
+                            <span id="nLSliderVal" class="sliderVal"></span>
+                            <input id="nL" data-slider-min="1" data-slider-max="4" data-slider-step="0.1"
                                    data-slider-value="1">
                         </div>
                         <div class="col slider-row">
-                            <label for="pR" class="slideLables">\( p_R \): </label>
-                            <span id="pRSliderVal" class="sliderVal"></span>
-                            <input id="pR" data-slider-min="2" data-slider-max="4" data-slider-step="0.1"
+                            <label for="n1" class="slideLables">\( n_1 \): </label>
+                            <span id="n1SliderVal" class="sliderVal"></span>
+                            <input id="n1" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
                                    data-slider-value="1">
                         </div>
                         <div class="col slider-row">
-                            <label for="p1" class="slideLables">\( p_1 \): </label>
-                            <span id="p1SliderVal" class="sliderVal"></span>
-                            <input id="p1" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
+                            <label for="n2" class="slideLables">\( n_2 \): </label>
+                            <span id="n2SliderVal" class="sliderVal"></span>
+                            <input id="n2" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
                                    data-slider-value="1">
                         </div>
                         <div class="col slider-row">
-                            <label for="length1" class="slideLables">\( p_1 \): </label>
-                            <span id="length1SliderVal" class="sliderVal"></span>
-                            <input id="length1" data-slider-min="100" data-slider-max="1000" data-slider-step="100"
+                            <label for="n3" class="slideLables">\( n_3 \): </label>
+                            <span id="n3SliderVal" class="sliderVal"></span>
+                            <input id="n3" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="nR" class="slideLables">\( n_R \): </label>
+                            <span id="nRSliderVal" class="sliderVal"></span>
+                            <input id="nR" data-slider-min="1" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="length" class="slideLables">\( d_1 \): </label>
+                            <span id="lengthSliderVal" class="sliderVal"></span>
+                            <input id="length" data-slider-min="100" data-slider-max="1000" data-slider-step="100"
                                    data-slider-value="1">
                         </div>
                     </div>

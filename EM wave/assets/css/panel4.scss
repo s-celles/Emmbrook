@@ -7,6 +7,10 @@ $gradient1: rgb(229, 229, 229);
 $gradient2: rgb(255, 255, 255);
 $gradient3: rgb(210, 210, 210);
 
+img {
+  max-height: 300px;
+}
+
 #app-div {
   background-image: linear-gradient(to bottom, $color2 0, $color2 100%);
   border-radius: 10px;

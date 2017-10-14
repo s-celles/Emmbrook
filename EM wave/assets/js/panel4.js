@@ -19,35 +19,43 @@ if (supportsES6) {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
-// Import libraries
-
-
 // Variables
 const epsilon0 = 8.85e-12;
 const mu0 = 4 * Math.PI * 1e-7;
-let refractiveIndecies = [2 / 3];
-let pMedia = refractiveIndecies.map(function (n) { // n is one refractive index
-    return Math.sqrt(epsilon0 / mu0) * n;
-    // return n
-});
+let refractiveIndices;
+let pMedia;
 let waveNumber = 2 * Math.PI / 400; // k
-let dArray = math.range(0, 1000, 1);
+let dArray = math.range(0, 10, 1);
 // Interactive variables
-let pLSlider = $('#pL').bootstrapSlider({});
-let pRSlider = $('#pR').bootstrapSlider({});
-let p1Slider = $('#p1').bootstrapSlider({});
-let length1Slider = $('#length1').bootstrapSlider({});
-let pLeft = pLSlider.bootstrapSlider('getValue');
-let pRight = pRSlider.bootstrapSlider('getValue');
-let p1 = p1Slider.bootstrapSlider('getValue');
-let length1 = length1Slider.bootstrapSlider('getValue');
+let nLSlider = $('#nL').bootstrapSlider({});
+let n1Slider = $('#n1').bootstrapSlider({});
+let n2Slider = $('#n2').bootstrapSlider({});
+let n3Slider = $('#n3').bootstrapSlider({});
+let nRSlider = $('#nR').bootstrapSlider({});
+let lengthSlider = $('#length').bootstrapSlider({});
+let nL = nLSlider.bootstrapSlider('getValue');
+let n1 = n1Slider.bootstrapSlider('getValue');
+let n2 = n2Slider.bootstrapSlider('getValue');
+let n3 = n3Slider.bootstrapSlider('getValue');
+let nR = nRSlider.bootstrapSlider('getValue');
+let length = lengthSlider.bootstrapSlider('getValue');
 let plt = document.getElementById('plt');
 
 
 // Basic interfaces
 /**
+ * Update global variables---refractive indices and p's for 5 media (left and rightmost plus 3 intermediate media).
+ */
+function updateRefractiveIndices() {
+    refractiveIndices = [nL, n1, n2, n3, nR];
+    pMedia = refractiveIndices.map(function (n) { // n is one refractive index
+        return Math.sqrt(epsilon0 / mu0) * n;
+    });
+}
+
+/**
  * Generate transfer matrix for given parameters.
- * @param z {number} the x coordinate in the film.
+ * @param z {number} the horizontal coordinate of the axis.
  * @param p {number} equals to sqrt(epsilon / mu).
  * @returns {object} A mathjs matrix object that represents the transfer matrix.
  */
@@ -80,13 +88,13 @@ function multiplyTransferMatrices(matArray) {
  * after you provide a transfer matrix and pMedia of left-hand-side material and pMedia of right-hand-side material.
  * math.js utilizes Complex.js and manual can be found here: https://github.com/infusion/Complex.js.
  * @param transferMat {object} transfer matrix given by previous steps.
- * @param pL {number} pMedia of left (incident) side material
- * @param pR {number} pMedia of right (transmitted) side material
+ * @param pLeft {number} pMedia of left (incident) side material
+ * @param pRight {number} pMedia of right (transmitted) side material
  * @returns {[number,number]} [R, T] = [r * conjugate(r), t * conjugate(t)]
  */
-function generateRT(transferMat, pL, pR) {
-    let pl = math.complex({re: pL, im: 0});
-    let pr = math.complex({re: pR, im: 0});
+function generateRT(transferMat, pLeft, pRight) {
+    let pl = math.complex({re: pLeft, im: 0});
+    let pr = math.complex({re: pRight, im: 0});
     let m11 = math.subset(transferMat, math.index(0, 0));
     let m12 = math.subset(transferMat, math.index(0, 1));
     let m21 = math.subset(transferMat, math.index(1, 0));
@@ -114,74 +122,112 @@ function generateRT(transferMat, pL, pR) {
 }
 
 /**
- * Generate R and T, as mentioned in `generateRT`'s document, for a medium given its length d.
- * @param d {number} the length of the medium
+ * Generate R and T, as mentioned in generateRT's document, for a medium given its length d.
+ * @param d {number} the length of the medium, here we assume all 3 intermediate media have same length.
  * @returns {[number,number]} [R ,T] = [r * conjugate(r), t * conjugate(t)]
  */
 function generateRTArray(d) {
+    let RArray = [1];
+    let TArray = [1];
     let transferMatArray = [];
-    pMedia.forEach(function (item) {
-        transferMatArray.push(generateTransferMatrix(d, item));
-    });
-    let m = multiplyTransferMatrices(transferMatArray);
-    return generateRT(m, pLeft, pRight);
-}
-
-/**
- * Generate each
- * @param dArray
- * @returns {[null,null]}
- */
-function generateData(dArray) {
-    let RArray = [];
-    let TArray = [];
-    dArray.forEach(function (item) {
-        let [R, T] = generateRTArray(item);
-        // RArray.push(R);
-        TArray.push(T);
-    });
-    return [RArray, TArray];
-}
-
-function gdata(p, length) {
-    let RArray = [];
-    let TArray = [];
-    for (let i = 0; i < length; i++) {
-        let [R, T] = generateRT(generateTransferMatrix(i, p), pLeft, pRight);
+    for (let i = 1; i < pMedia.length - 1; i++) { // Neglect the head and tail of pMedia array.
+        transferMatArray.push(generateTransferMatrix(d, pMedia[i]));
+        let [R, T] = generateRT(transferMatArray[transferMatArray.length - 1], pMedia[i - 1], pMedia[i + 1]);
         RArray.push(R);
         TArray.push(T);
     }
     return [RArray, TArray];
 }
 
-// Plotting
-function plot() {
-    let [RArray, TArray] = gdata(p1, length1);
+/**
+ * Calculate intensity at each interface.
+ * @returns {[null,null]}
+ */
+function updateIntensity() {
+    let [RArray, TArray] = generateRTArray(length);
+    let incidentIntensityArray = [];
+    let reflectIntensityArray = [];
+    TArray.reduce((product, value) => incidentIntensityArray.push(product * value), 1);
+    RArray.reduce((product, value, index) => reflectIntensityArray.push(product * value * incidentIntensityArray[index]), 1);
+    return [incidentIntensityArray, reflectIntensityArray];
+}
 
-    plt.data[0].y = RArray;
-    plt.data[1].y = TArray;
+// function gdata(p, length) {
+//     let RArray = [];
+//     let TArray = [];
+//     for (let i = 0; i < length; i++) {
+//         let [R, T] = generateRT(generateTransferMatrix(i, p), nL, nR);
+//         RArray.push(R);
+//         TArray.push(T);
+//     }
+//     return [RArray, TArray];
+// }
+
+// Plotting
+function updateHorizontalAxis(hArray) {
+    return hArray.map((i) => length * i)
+}
+
+function plot() {
+    // let [RArray, TArray] = gdata(n1, length);
+    let [i, r] = updateIntensity();
+    console.log(i, r)
+
+    plt.data[0].x = updateHorizontalAxis([0, 1, 2, 3]);
+    plt.data[0].y = i;
+    plt.data[1].x = updateHorizontalAxis([0, 1, 2, 3]);
+    plt.data[1].y = r;
+    plt.data[2].x = updateHorizontalAxis([1, 1]);
+    plt.data[3].x = updateHorizontalAxis([2, 2]);
+    plt.data[4].x = updateHorizontalAxis([3, 3]);
     Plotly.redraw(plt);
 }
 
 
 function createPlot() {
-    let [RArray, TArray] = gdata(p1, length1);
+    // let [RArray, TArray] = gdata(n1, length);
+    let [i, r] = updateIntensity();
+    let max = Math.max(...i);
+    console.log(i, r)
 
     let trace0 = {
-        x: dArray._data,
-        y: RArray,
-        mode: 'lines',
+        x: updateHorizontalAxis([0, 1, 2, 3]),
+        y: i,
+        mode: 'markers',
+        type: 'scatter',
         name: 'R',
     };
 
     let trace1 = {
-        x: dArray._data,
-        y: TArray,
-        mode: 'lines',
+        x: updateHorizontalAxis([0, 1, 2, 3]),
+        y: r,
+        mode: 'markers',
+        type: 'scatter',
         name: 'T',
     };
 
-    let data = [trace0, trace1];
+    let trace2 = {
+        x: updateHorizontalAxis([1, 1]),
+        y: [0, max],
+        mode: 'lines',
+        name: 'interface 1'
+    };
+
+    let trace3 = {
+        x: updateHorizontalAxis([2, 2]),
+        y: [0, max],
+        mode: 'lines',
+        name: 'interface 2'
+    };
+
+    let trace4 = {
+        x: updateHorizontalAxis([3, 3]),
+        y: [0, max],
+        mode: 'lines',
+        name: 'interface 2'
+    };
+
+    let data = [trace0, trace1, trace2, trace3, trace4];
 
     let layout = {
         title: 'R and T',
@@ -209,45 +255,71 @@ window.onresize = function () {
     Plotly.Plots.resize(plt);
 };
 
-pLSlider.on('change', function () {
-    pLeft = pLSlider.bootstrapSlider('getValue');
+nLSlider.on('change', function () {
+    nL = nLSlider.bootstrapSlider('getValue');
+    updateRefractiveIndices();
     plot();
 
-    $('#pLSliderVal')
-        .text(pLeft);
+    $('#nLSliderVal')
+        .text(nL);
 });
 
-pRSlider.on('change', function () {
-    pRight = pRSlider.bootstrapSlider('getValue');
+nRSlider.on('change', function () {
+    nR = nRSlider.bootstrapSlider('getValue');
+    updateRefractiveIndices();
     plot();
 
-    $('#pRSliderVal')
-        .text(pRight);
+    $('#nRSliderVal')
+        .text(nR);
 });
 
-p1Slider.on('change', function () {
-    p1 = p1Slider.bootstrapSlider('getValue');
+n1Slider.on('change', function () {
+    n1 = n1Slider.bootstrapSlider('getValue');
+    updateRefractiveIndices();
     plot();
 
-    $('#p1SliderVal')
-        .text(p1);
+    $('#n1SliderVal')
+        .text(n1);
 });
 
-length1Slider.on('change', function () {
-    length1 = length1Slider.bootstrapSlider('getValue');
+n2Slider.on('change', function () {
+    n2 = n2Slider.bootstrapSlider('getValue');
+    updateRefractiveIndices();
     plot();
 
-    $('#length1SliderVal')
-        .text(length1);
+    $('#n2SliderVal')
+        .text(n2);
+});
+
+n3Slider.on('change', function () {
+    n3 = n3Slider.bootstrapSlider('getValue');
+    updateRefractiveIndices();
+    plot();
+
+    $('#n3SliderVal')
+        .text(n3);
+});
+
+lengthSlider.on('change', function () {
+    length = lengthSlider.bootstrapSlider('getValue');
+    plot();
+
+    $('#lengthSliderVal')
+        .text(length);
 });
 
 // Initialize
+updateRefractiveIndices();
 createPlot();
-$('#pLSliderVal')
-    .text(pLeft);
-$('#pRSliderVal')
-    .text(pRight);
-$('#p1SliderVal')
-    .text(p1);
-$('#length1SliderVal')
-    .text(length1);
+$('#nLSliderVal')
+    .text(nL);
+$('#nRSliderVal')
+    .text(nR);
+$('#n1SliderVal')
+    .text(n1);
+$('#lengthSliderVal')
+    .text(length);
+$('#n2SliderVal')
+    .text(n2);
+$('#n3SliderVal')
+    .text(n3);
