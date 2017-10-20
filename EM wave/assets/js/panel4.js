@@ -53,6 +53,10 @@ function updateRefractiveIndices() {
     });
 }
 
+function calculateN(p) {
+    return p.div(Math.sqrt(epsilon0 / mu0));
+}
+
 /**
  * Generate transfer matrix for given parameters.
  * @param z {number} the horizontal coordinate of the axis.
@@ -103,12 +107,14 @@ function generateRT(transferMat, pLeft, pRight) {
     if (m11.equals(m22)) { // m11 should be equal to m22 according to mathematics.
         let denominator = m11 // m11 * (pr + pl) - m12 * pr * pl - m21
             .mul(pr.add(pl))
-            .sub(m12.mul(pr)
+            .sub(m12
+                .mul(pr)
                 .mul(pl))
             .sub(m21);
         r = m11 // (m11 * (pl - pr) - m12 * pr * pl + m21) / (m11 * (pr + pl) - m12 * pr * pl - m21)
             .mul(pl.sub(pr))
-            .sub(m12.mul(pr)
+            .sub(m12
+                .mul(pr)
                 .mul(pl))
             .add(m21)
             .div(denominator);
@@ -118,7 +124,10 @@ function generateRT(transferMat, pLeft, pRight) {
     } else {
         throw new Error('m11 /= m22! Check your transfer matrix!');
     }
-    return [math.abs(r) ** 2, math.abs(t) ** 2];
+    let nl = calculateN(pl);
+    let nr = calculateN(pr);
+    console.log(math.abs(r) ** 2, math.abs(t) ** 2 * nl / nr)
+    return [math.abs(r) ** 2, math.abs(t) ** 2 * nl / nr];
 }
 
 /**
@@ -171,24 +180,21 @@ function updateHorizontalAxis(hArray) {
 function plot() {
     // let [RArray, TArray] = gdata(n1, length);
     let [i, r] = updateIntensity();
-    console.log(i, r)
 
     plt.data[0].x = updateHorizontalAxis([0, 1, 2, 3]);
-    plt.data[0].y = i;
-    plt.data[1].x = updateHorizontalAxis([0, 1, 2, 3]);
-    plt.data[1].y = r;
-    plt.data[2].x = updateHorizontalAxis([1, 1]);
-    plt.data[3].x = updateHorizontalAxis([2, 2]);
-    plt.data[4].x = updateHorizontalAxis([3, 3]);
+    plt.data[0].z = [i];
+    // plt.data[1].x = updateHorizontalAxis([0, 1, 2, 3]);
+    // plt.data[1].y = r;
+    // plt.data[2].x = updateHorizontalAxis([1, 1]);
+    // plt.data[3].x = updateHorizontalAxis([2, 2]);
+    // plt.data[4].x = updateHorizontalAxis([3, 3]);
     Plotly.redraw(plt);
 }
-
 
 function createPlot() {
     // let [RArray, TArray] = gdata(n1, length);
     let [i, r] = updateIntensity();
     let max = Math.max(...i);
-    console.log(i, r)
 
     let trace0 = {
         x: updateHorizontalAxis([0, 1, 2, 3]),
@@ -228,6 +234,37 @@ function createPlot() {
     };
 
     let data = [trace0, trace1, trace2, trace3, trace4];
+
+    let layout = {
+        title: 'R and T',
+        xaxis: {
+            title: 'z (nm)',
+            titlefont: {
+                size: 18,
+            },
+        },
+        yaxis: {
+            title: 'intensity',
+            titlefont: {
+                size: 18,
+            },
+        },
+    };
+
+    Plotly.newPlot('plt', data, layout);
+}
+
+function createHeatmap() {
+    let [i, r] = updateIntensity();
+
+    let trace0 = {
+        z: [i],
+        type: 'heatmap',
+        colorscale: 'Portland',
+        reversescale: true,
+    };
+
+    let data = [trace0];
 
     let layout = {
         title: 'R and T',
@@ -310,7 +347,7 @@ lengthSlider.on('change', function () {
 
 // Initialize
 updateRefractiveIndices();
-createPlot();
+createHeatmap();
 $('#nLSliderVal')
     .text(nL);
 $('#nRSliderVal')
