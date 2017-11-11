@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="assets/css/index.css" type="text/css">
 </head>
 
-<body id="page-top">
+<body id="page-top" data-spy="scroll" data-target=".navbar-light" data-offset="60">
 <!-- Navigation -->
 <nav class="navbar fixed-top navbar-toggleable-md navbar-light bg-faded">
     <div class="container">
@@ -25,21 +25,13 @@
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="#">Navbar</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#page-top">Home
-                        <span class="sr-only">(current)</span>
-                    </a>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="#preview">Preview</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#preview">Preview</a>
+                    <a class="nav-link" href="#students-comments">Students' Comments</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="http://magnet.ap.columbia.edu/home">My page</a>
@@ -93,41 +85,25 @@
                     </div>
                 </div>
                 <div class="card my-3">
-                    <a href="EM%20wave/panel1.html">
+                    <a href="EM%20wave/index.html">
                         <img class="card-img-top img-fluid rounded-top"
                              src="images/light.png" alt="">
                     </a>
                     <div class="card-block">
                         <h4 class="card-title">
-                            Light scattering from a subwavelength array<br>
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit.
-                        </p>
-                    </div>
-                </div>
-                <div class="card my-3">
-                    <a href="DFT/index.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/DFT_index.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Spectral Analysis<br>
+                            Electromagnetic waves<br>
                             <small>
-                                learn about fourier transforms
+                                "let there be light"
                             </small>
                         </h4>
                         <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit. Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.
+                            These interactive exercises will help you get a feel for electromagnetic waves and their
+                            behavior.
                         </p>
                     </div>
                 </div>
                 <div class="card my-3">
-                    <a href="Aliasing/panel1.html">
+                    <a href="Aliasing/index.html">
                         <img class="card-img-top img-fluid rounded-top"
                              src="images/aliasing.png" alt="">
                     </a>
@@ -140,104 +116,59 @@
                         </p>
                     </div>
                 </div>
-                <div class="card my-3">
-                    <a href="Aliasing/panel2.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/Bloch.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Bloch-Wave Solver<br>
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit.
-                        </p>
-                    </div>
-                </div>
-                <div class="card my-3">
-                    <a href="EM%20wave/index.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/DFT_index.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Spectral Analysis<br>
-                            <small>
-                                learn about fourier transforms
-                            </small>
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit. Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit. Lorem ipsum
-                            dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore
-                            harum ex magni, dicta impedit.
-                        </p>
-                    </div>
-                </div>
-                <div class="card my-3">
-                    <a href="DFT/index.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/DFT_index.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Spectral Analysis<br>
-                            <small>
-                                learn about fourier transforms
-                            </small>
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit. Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit.
-                        </p>
-                    </div>
-                </div>
-                <div class="card my-3">
-                    <a href="DFT/index.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/DFT_index.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Spectral Analysis<br>
-                            <small>
-                                learn about fourier transforms
-                            </small>
-                        </h4>
-                        <p class="card-text">
-                            These interactive exercises will help you get a feel for what the discrete Fourier transform
-                            (DFT) does.
-                        </p>
-                    </div>
-                </div>
-                <div class="card my-3">
-                    <a href="DFT/index.html">
-                        <img class="card-img-top img-fluid rounded-top"
-                             src="images/DFT_index.png" alt="">
-                    </a>
-                    <div class="card-block">
-                        <h4 class="card-title">
-                            Spectral Analysis<br>
-                            <small>
-                                learn about fourier transforms
-                            </small>
-                        </h4>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo
-                            inventore harum ex magni, dicta impedit. Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Minima maxime quam architecto quo inventore harum ex magni, dicta impedit. Lorem ipsum
-                            dolor sit amet, consectetur adipisicing elit. Minima maxime quam architecto quo inventore
-                            harum ex magni, dicta impedit.
-                        </p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </section>
+
+
+<div class="container-fluid" id="students-comments">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h2 class="section-heading">
+                Students' comments
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Carousel -->
+            <div id="carouselContent" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselContent" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselContent" data-slide-to="1"></li>
+                    <li data-target="#carouselContent" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox">
+                    <div class="carousel-item active text-center">
+                        <h4>"This company is the best. I am so happy with the result!"<br>
+                            <span>Michael Roe, Vice President, Comment Box</span>
+                        </h4>
+                    </div>
+                    <div class="carousel-item text-center">
+                        <h4>"This company is the best. I am so happy with the result!"<br>
+                            <span>Michael Roe, Vice President, Comment Box</span>
+                        </h4>
+                    </div>
+                    <div class="carousel-item text-center">
+                        <h4>"This company is the best. I am so happy with the result!"<br>
+                            <span>Michael Roe, Vice President, Comment Box</span>
+                        </h4>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselContent" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselContent" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- Footer -->
@@ -254,15 +185,12 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
-<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
-        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
         integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
         crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"
-        integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.0.4/popper.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 <!-- User script -->
 <script src="assets/js/index.js"></script>
 </body>
