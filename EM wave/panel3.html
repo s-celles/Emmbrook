@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title> EM propagation at oblique incidence</title>
+    <title>EM propagation at oblique incidence</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -54,6 +54,9 @@
             <li>
                 <a class="nav-link" href="panel3.html">Panel 3</a>
             </li>
+            <!--<li>-->
+                <!--<a class="nav-link" href="panel4.html">Panel 4</a>-->
+            <!--</li>-->
         </ul>
     </div>
 </nav>
@@ -127,7 +130,7 @@
                     \Re{(\tilde{E})} \Re{( \tilde{B} )} \hat{\mathbf{ k }} \\
                     &= \frac{ 1 }{ 4\mu_0 } (\tilde{E}\tilde{B} + \tilde{E}\tilde{B}^\ast + \tilde{E}^\ast\tilde{B} +
                     \tilde{E}^\ast\tilde{B}^\ast)\hat{\mathbf{ k }} \\
-                    &= \frac{ 1 }{ 2\mu_0 } \Big[ \Re{(\tilde{E}\tilde{B})} + \Re{(\tilde{E}\tilde{B}^\ast)}
+                    &= \frac{ 1 }{ 2\mu_0 } \Big[ \Re{ (\tilde{E} \tilde{B}) } + \Re{ (\tilde{E} \tilde{B}^\ast) }
                     \Big]\hat{\mathbf{ k }},
                     \end{split}
                     \end{equation}
@@ -136,13 +139,22 @@
                     \tilde{B} = \tilde{B}_0 e^{i (\mathbf{ k } \cdot \mathbf{ r } - \omega t)} \).
                 </p>
                 <p>
-                    The time average intensity is
+                    The time-averaged intensity is
                     $$
                     I = \langle S \rangle = \frac{ \omega }{ 2\pi } \int_{0}^{2\pi/\omega} S(t) \, dt = \frac{ 1 }{ 2 }
                     \sqrt{\frac{ \varepsilon_0 \varepsilon_r }{ \mu_0 }} E_0^2
                     = \frac{ 1 }{ 2 } c \varepsilon_0 n E_0^2,
                     $$
-                    where \( E_0 = \sqrt{\tilde{E} \tilde{E}^\ast} \), with \( E_0 \) to be e-field amplitude.
+                    where \( E_0 = \sqrt{\tilde{E} \tilde{E}^\ast} \).
+                </p>
+                <p>
+                    In the simulation below, for instantaneous intensity, I plot the norm of the Poynting vector at
+                    every spatial point;
+                    for time-averaged intensity, I plot \( \langle S \rangle \) at every point;
+                    for E-field, I plot the magnitude of the real-part of E-field.
+                </p>
+                <p>
+                    <strong>Note:</strong> This simulation does not consider total internal reflection.
                 </p>
             </div>
         </div>
@@ -224,7 +236,7 @@
                             <select class="selectpicker" id="stySelect">
                                 <option selected>Instantaneous intensity</option>
                                 <option>Time-averaged intensity</option>
-                                <option>Field amplitude</option>
+                                <option>E-field</option>
                             </select>
                         </div>
                     </div>
@@ -253,9 +265,6 @@
                         Observe the amplitude of reflective and transmitted light. How do they change when \( \theta_I
                         \), \( n_1 \), and \( n_2 \) change? How do reflected and transmitted intensity change?
                     </li>
-                    <!--<li>-->
-                        <!--Observe total reflection phenomenon. What is the sufficient condition for this phenomenon?-->
-                    <!--</li>-->
                 </ol>
             </div>
         </div>

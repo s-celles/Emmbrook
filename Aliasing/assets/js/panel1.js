@@ -19,8 +19,8 @@ if (supportsES6) {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
+
 // Variables
-const pi = math.PI;
 const nc = 1000;
 const ns = 20;
 // Panel 1
@@ -47,39 +47,39 @@ let plt1 = document.getElementById('plt1');
 
 
 //Initializes Plots
-/*
- Updates Waveform.
+/**
+ * Updates Waveform.
  */
 function ycUpdate() {
     for (let i = 0; i < (nc + 1); i++) {
-        yc[i] = Math.cos(2 * pi * k * xc[i]);
+        yc[i] = Math.cos(2 * Math.PI * k * xc[i]);
     }
 }
 
-/*
- Updates Sampled.
+/**
+ * Updates Sampled.
  */
 function ydUpdate() {
     for (let i = 0; i < (ns + 1); i++) {
-        yd[i] = Math.cos(2 * pi * k * xd[i]);
+        yd[i] = Math.cos(2 * Math.PI * k * xd[i]);
     }
 }
 
-/*
- Updates Aliased.
+/**
+ * Updates Aliased.
  */
 function kaUpdate() {
     if (k > ns / 2) {
         ka = k - ns;
         k_a = [ka];
         for (let i = 0; i < (nc + 1); i++) {
-            yda[i] = Math.cos(2 * pi * ka * xc[i]);
+            yda[i] = Math.cos(2 * Math.PI * ka * xc[i]);
         }
     } else if (k < -ns / 2) {
         ka = parseInt(k) + ns;
         k_a = [ka];
         for (let i = 0; i < (nc + 1); i++) {
-            yda[i] = Math.cos(2 * pi * ka * xc[i]);
+            yda[i] = Math.cos(2 * Math.PI * ka * xc[i]);
         }
     }
     else {

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Transfer matrix</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/panel4.css" type="text/css">
+</head>
+
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel2.html">Panel 2</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel3.html">Panel 3</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel4.html">Panel 4</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        Transfer matrix
+                    </h1>
+                </div>
+                <p>
+                    The transfer matrix \( M \) for optics relates the electric field \( E \) and magnetic field \( H \)
+                    at different points for a propagating EM wave. We let the radiation propagate along \( \hat{
+                    \mathbf{ z } } \) and have polarization on \( \hat{ \mathbf{ x } } \). The medium is bounded on the
+                    left \( -z \) by medium \( L \) and on the right \( z > d \) by medium \( R \). The fields are
+                    related at points \( z = 0 \) and \( z = d \) through
+                    $$
+                    \begin{bmatrix}
+                    E(d) \\
+                    H(d)
+                    \end{bmatrix}
+                    = M(\varepsilon, \mu, d)
+                    \begin{bmatrix}
+                    E(0) \\
+                    H(0)
+                    \end{bmatrix},
+                    $$
+                    where
+                    $$
+                    M(\varepsilon, \mu, z) =
+                    \begin{bmatrix}
+                    \cos(k z) & \frac{ i }{ p } \sin(k z) \\
+                    i p \sin(k z) & \cos(k z)
+                    \end{bmatrix}
+                    $$
+                    is called transfer matrix, \( k = 2\pi / \lambda \) is the wavenumber, and \( p \) characterizes the
+                    medium by
+                    $$
+                    p = \sqrt{ \frac{ \varepsilon }{ \mu } }
+                    $$
+                    as shown above.
+                </p>
+                <p>
+                    We can express reflection and transmission coefficients \( r \) and \( t \) in terms of \( M \).
+                    For waves incident from one side only, (e.g. from the top, propagating towards \( +z \), we have
+                    $$
+                    \begin{bmatrix}
+                    t\\
+                    p_R t
+                    \end{bmatrix}
+                    =
+                    \begin{bmatrix}
+                    \cos(k z) & \frac{ i }{ p } \sin(k z) \\
+                    i p \sin(k z) & \cos(k z)
+                    \end{bmatrix}
+                    \begin{bmatrix}
+                    1 + r\\
+                    p_L (1 - r)
+                    \end{bmatrix}.
+                    $$
+                </p>
+                <p>
+                    The intensity ratios \( R \) and \( T \) are given by \( R = | r |^2 \) and
+                    \( T = | t |^2 n_1 / n_2 \).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <figure class="figure">
+                    <img src="images/Antireflection%20coating.png" class="rounded img-fluid img-responsive center-block"
+                         alt="antireflect">
+                    <figcaption class="figure-caption text-center">This is an antireflection coating (AR coating).
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col-md-6">
+                <figure class="figure">
+                    <img src="images/Reflectance-enhancing%20coating.png"
+                         class="rounded img-fluid img-responsive center-block"
+                         alt="reflenhance">
+                    <figcaption class="figure-caption text-center">This is an reflectance-enhancing coating (Bragg
+                        mirror).
+                    </figcaption>
+                </figure>
+            </div>
+        </div>
+    </div>
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Simulator
+        </h4>
+        <div class="row" id="plots">
+            <div class="col-sm-12">
+                <div id="plt" class="plot"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="nL" class="slideLables">\( n_L \): </label>
+                            <span id="nLSliderVal" class="sliderVal"></span>
+                            <input id="nL" data-slider-min="1" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="n1" class="slideLables">\( n_1 \): </label>
+                            <span id="n1SliderVal" class="sliderVal"></span>
+                            <input id="n1" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="n2" class="slideLables">\( n_2 \): </label>
+                            <span id="n2SliderVal" class="sliderVal"></span>
+                            <input id="n2" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="n3" class="slideLables">\( n_3 \): </label>
+                            <span id="n3SliderVal" class="sliderVal"></span>
+                            <input id="n3" data-slider-min="0.67" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="nR" class="slideLables">\( n_R \): </label>
+                            <span id="nRSliderVal" class="sliderVal"></span>
+                            <input id="nR" data-slider-min="1" data-slider-max="4" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="length" class="slideLables">\( d_1 \): </label>
+                            <span id="lengthSliderVal" class="sliderVal"></span>
+                            <input id="length" data-slider-min="100" data-slider-max="1000" data-slider-step="1"
+                                   data-slider-value="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.4/math.min.js"></script>
+
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel4.js"></script>
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
