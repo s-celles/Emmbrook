@@ -23,6 +23,8 @@
     <!-- CDN script -->
     <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+
+
     </script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML">
@@ -81,7 +83,7 @@
         <div class="row">
             <div class="col">
                 <div class="page-header">
-                    <h1 class="text-center">
+                    <h1>
                         Semiconductor Doping
                     </h1>
                 </div>
@@ -98,21 +100,22 @@
                         its parent atom, the electron becomes free to move throughout the crystal lattice.
                         This is donor activation, providing one additional <i>negative</i> carrier to the lattice.
                         The donor activation reaction is:
-                        $$
-                        D \leftrightarrow D^+ + e^-
-                        $$
+                        <div class="well well-sm">
+                            $D \leftrightarrow D^+ + e^-$
+                        </div>
                         Such a dopant is known as a <i>donor</i> , or $n-type$ (negative). Examples of $n$-type
                         dopants are P and As in Si or Ge.
                     </li>
+                    <br>
                     <li>
                         <b>Acceptor (p-type):</b> If an impurity from column <b><i>III</i></b> is substituted
                         onto a lattice site, <i>and</i> the missing valence electron is compensated by one from
                         the electron sea, a <i>hole</i> becomes free to move throughout the crystal lattice.
                         This acceptor activation provides one additional positive charge carrier (hole) to the
                         lattice. The reaction here is
-                        $$
-                        A \leftrightarrow A^- +h^+
-                        $$
+                        <div class="well well-sm">
+                            $A \leftrightarrow A^- +h^+$
+                        </div>
                         Such a dopant is known as an <i>acceptor</i> , or $p-type$ (positive) Examples of
                         $p$-type dopants are B, Al, Ga, In in Si and Ge.
                     </li>
@@ -125,57 +128,55 @@
                     estimated by assuming that the electron is bound as it is to the nucleus in a (singly
                     charged) hydrogen atom. Recalling the bonding energy or an electron in a hydrogen atom
                     (Rydberg constant),
-                    $$
-                    \begin{align}
-                    E_n &= -\mathbb{R}/n^2\\
-                    \mathbb{R} \equiv (1/4) ((e^2/4\pi\epsilon_0))^2 (\hbar^2/2m_e)^{-1} (1/n^2)
-                    \end{align}
-                    $$
+                </p>
+                <div class="well well-sm">
+                    $E_n = -\mathbb{R}/n^2$
+                    <br>
+                    $\mathbb{R} \equiv (1/4) ((e^2/4\pi\epsilon_0))^2 (\hbar^2/2m_e)^{-1} (1/n^2)$
+                </div>
+                <p>
                     Recognize here (and it is good to remember) that
-                    $$
-                    e^2/(4\pi\epsilon_0)= 14.4 \text{eV\AA}
-                    $$
+                </p>
+                <div class="well well-sm">
+                    $e^2/(4\pi\epsilon_0)= 14.4 eV$\$AA$
+                </div>
+                <p>
                     and combined with $\hbar^2/(2m_e)= 3.81 eV$\$AA^2$, the Rydberg constant <i>in vacuum</i>
                     is $\mathbb{R} = 13.6 eV$. The effect of placing th eimputity inside the crystal host
                     is to increae the dielectric constant by a factor$\epsilon_r$, which weakens the Coulomb
                     attraction by shielding, and to decrease the kinetic energy of the electron by the
                     renormalization factor of the effective mass, $m'$. Assuming $n = 1$, the binding formula
                     then becomes
-                    $$
-                    \Delta E_D = \mathbb{R} m'_e/{\epsilon^2_r}
-                    $$
+                </p>
+                <div class="well well-sm">
+                    $\Delta E_D = \mathbb{R} m'_e/{\epsilon^2_r}$
+                </div>
+                <p>
                     The same approach is relevant for p-type dopant activation, $\Delta E_A$, where one would
                     substitute the hole effective mass.
                 </p>
-
                 <h2>Charge Neutrality: Complete and Incomplete Ionization</h2>
                 <p>
                     By Gauss's law, a sample at zero electric field mush maintain charge nuetrality, with no
                     net charge density. The charge neutrality condition for doped semiconductors
-                    $$
-                    n + N^-_A = p + N^+_D
-                    $$
                 </p>
+                <div class="well well-sm">
+                    $n + N^-_A = p + N^+_D$
+                </div>
                 <ul>
                     <li><b>Complete Ionization</b><br>
                         The best case for doping is where dopants are availabl whith small activation energies
                         compared with the thermal energy, $\Delta E_{A,D}/(k_BT) \llless 1$. This is the case for
                         shallow donors such as Sb in Si at room temperature, or shallow acceptors such as B in Si.
                         Here we can write
-                        $$
-                        \begin{align}
-                        N^+_D &= N_D \text{(n-type)}\\
-                        N^-_A &= N_A \text{(p-type)}
-                        \end{align}
-                        $$
+                        <div class="well well-sm">
+                            $N^+_D = N_D$ (n-type) &nbsp&nbsp&nbsp&nbsp $N^-_A = N_A$ (p-type)
+                        </div>
                         where the concentrations $N_A$ and/or $N_D$ are controlled by the concentration of dopants
                         added. This implies, respectively for n- and p-type material,
-                        $$
-                        \begin{align}
-                        n &\simeq N_D \text{(n-type)}\\
-                        p &\simeq N_A \text{(p-type)}
-                        \end{align}
-                        $$
+                        <div class="well well-sm">
+                            $n \simeq N_D$ (n-type) &nbsp&nbsp&nbsp&nbsp $p \simeq N_A$ (p-type)
+                        </div>
                     </li>
                     <li><b>Incomplete Ionization</b><br>
                         We can use the Fermi-Dirac distribution functions to account for incomplete ionization of
@@ -187,77 +188,70 @@
                                 dissociated from the parent atom, and the donor is not ionized. If the donor level is
                                 unoccupied, it is ionized. Ionization is then the complement of occupancy for the donor
                                 energy $E_g - \Delta E_D$
-                                $$
-                                \begin{align}
-                                N^+_D &= N_D(1 - f(E_g - \Delta E_D)) \\
-                                N^+_D &= N_D(1 - 1/(exp(\frac{E_g-\Delta E_D - \mu}{k_BT})+1))
-                                \end{align}
-                                $$
+                                <div class="well well-sm">
+                                    $N^+_D = N_D(1 - f(E_g - \Delta E_D))$<br>
+                                    $N^+_D = N_D(1 - 1/(exp(\frac{E_g-\Delta E_D - \mu}{k_BT})+1))$
+                                </div>
                             </li>
                             <li><b>Acceptor:</b> If the acceptor level is <i>unoccupied by an electron</i>, the
                                 <i>hole</i> has not dissociated form the parent atom, and the acceptor is <i>not</i>
                                 ionized. If the acceptor level is <i>occupied</i>, it is ionized: an electron jumps
                                 up out of the valence band to sit on the acceptor level, leaving a mobile hole behind.
                                 Ionization is <i>equivalent</i> to occupancy for the acceptor energy $\Delta E_A$:
-                                $$
-                                \begin{align}
-                                N^-_A &= N_A(f(\Delta E_A))\\
-                                N^-_A &= N_A(1/(exp(\frac{\Delta E_A - \mu}{k_BT})+1))
-                                \end{align}
-                                $$
+                                <div class="well well-sm">
+                                    $N^-_A = N_A(f(\Delta E_A))$<br>
+                                    $N^-_A = N_A(1/(exp(\frac{\Delta E_A - \mu}{k_BT})+1))$
+                                </div>
                             </li>
                         </ul>
                     </li>
                 </ul>
-
                 <h2>Dominant Carrier</h2>
                 <p>
                     In most cases, it makes sense to assume that the material is dominant $n-$ or $p-$type. This
                     implies that one carrier type can be neglected, e.g. for $p \gggtr n$,
-                    $$
-                    \begin{align}
-                    p &\simeq N^-_A \\
-                    p &\simeq N_A(1/(exp(\frac{\Delta E_A - \mu}{k_BT})+1))
-                    \end{align}
-                    $$
-                    Now, we can substitute in or the expression in terms of the chemical potential,
-                    $$
-                    \begin{align}
-                    p &\simeq N_A(1/(e^{\Delta E_A/{k_BT}}p/N_V+1))\\
-                    p &\simeq (N_A N_Ve^{-\Delta E_A/k_BT})/(p + N_Ve^{-\Delta E_A/k_BT})
-                    \end{align}
-                    $$
-                    Defining $q \equiv e^{-\Delta E_A/(k_BT)}$
-                    $$
-                    \begin{align}
-                    p^2 + q N_V p - q N_A N_V &= 0\\
-                    (qN_V/2) (-1 \pm \sqrt{1 + 4N_A/(qN_V)}) &= p
-                    \end{align}
-                    $$
                 </p>
+                <div class="well well-sm">
+                    $p \simeq N^-_A$<br><br>
+                    $p \simeq N_A(1/(exp(\frac{\Delta E_A - \mu}{k_BT})+1))$
+                </div>
+                <p>
+                    Now, we can substitute in or the expression in terms of the chemical potential,
+                </p>
+                <div class="well well-sm">
+                    $p \simeq N_A(1/(e^{\Delta E_A/{k_BT}}p/N_V+1))$<br><br>
+                    $p \simeq (N_A N_Ve^{-\Delta E_A/k_BT})/(p + N_Ve^{-\Delta E_A/k_BT})$
+                </div>
+                <p>
+                    Defining $q \equiv e^{-\Delta E_A/(k_BT)}$
+                </p>
+                <div class="well well-sm">
+                    $p^2 + q N_V p - q N_A N_V = 0$<br><br>
+                    $p = (qN_V/2) (-1 \pm \sqrt{1 + 4N_A/(qN_V)})$
+                </div>
                 <p>
                     There are two relevant limits. For low doping, the second term in the radical is negligable,
                     so we can Taylor expand
-                    $$
-                    \begin{align}
-                    p &= (qN_V/2) (-1 \pm \sqrt{1 + 4N_A/(qN_V)}) \simeq (qN_V/2) (-1 + 1 + 2N_A/(qN_V))\\
-                    p &\simeq N_A \quad (N_A \llless N_V e^{-\Delta E_A/(k_BT)})
-                    \end{align}
-                    $$
+                </p>
+                <div class="well well-sm">
+                    $p = (qN_V/2) (-1 \pm \sqrt{1 + 4N_A/(qN_V)}) \simeq (qN_V/2) (-1 + 1 + 2N_A/(qN_V))$<br><br>
+                    $p \simeq N_A$ &nbsp&nbsp&nbsp&nbsp $(N_A \llless N_V e^{-\Delta E_A/(k_BT)})$
+                </div>
+                <p>
                     which is the limit of complete dopant ionization. For high doping, the $N_A$ term under
                     the radical dominates,
-                    $$
-                    \begin{align}
-                    p &= (q N_V/2) \sqrt{4N_A/(qN_V)} \simeq \sqrt{N_A N_V q}\\
-                    p &\simeq \sqrt{N_AN_V}e^{-\Delta E_A/(2k_BT)} \quad (N_A \gggtr N_Ve^{-\Delta E_A/(k_BT)})
-                    \end{align}
-                    $$
+                </p>
+                <div class="well well-sm">
+                    $p = (q N_V/2) \sqrt{4N_A/(qN_V)} \simeq \sqrt{N_A N_V q}$<br><br>
+                    $p \simeq \sqrt{N_AN_V}e^{-\Delta E_A/(2k_BT)}$ &nbsp&nbsp&nbsp&nbsp $(N_A \gggtr N_Ve^{-\Delta
+                    E_A/(k_BT)})$
+                </div>
+                <p>
                     This shows that the effectivenes of doping becomes poor when hole concentrations beyond
                     $p = N_V e^{E_A/(k_BT)}$ are attempted.
                 </p>
             </div>
         </div>
-    </div>
 </section>
 
 <!-- container for interactive plot -->
