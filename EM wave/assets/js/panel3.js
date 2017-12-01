@@ -330,8 +330,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 250;
-let xNum = 250;
+let zNum = 10;
+let xNum = 10;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
@@ -426,18 +426,32 @@ function updateMask() {
 function updateGeneralAmplitude() { // correct
     let r, t;
     [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
+    let beta = n1 / n2 * epsilon2 / epsilon1;
     let A = pool.zeros(iMesh.shape);
+    let B = pool.zeros(iMesh.shape);
     let aux = pool.zeros(iMesh.shape); // Auxiliary grid
     ops.eqs(A, iMesh, 0); // A[i,j,k] = true if iMesh[i,j,k] === 0
     ops.eqs(aux, iMesh, 1); // aux[i,j,k] = true if iMesh[i,j,k] === 1
-    ops.addeq(A, ops.mulseq(aux, r)); // A += np.equal(iMesh, 1) * r
+    ops.mulseq(aux, r);
+    ops.addeq(A, aux); // A += np.equal(iMesh, 1) * r
     ops.eqs(aux, iMesh, 2); // aux[i,j,k] = true if iMesh[i,j,k] === 2
-    ops.addeq(A, ops.mulseq(aux, t)); // A += np.equal(iMesh, 2) * t
+    ops.mulseq(aux, t);
+    ops.addeq(A, aux); // A += np.equal(iMesh, 2) * t
+    ops.eqs(B, iMesh, 0);
+    ops.eqs(aux, iMesh, 1);
+    ops.mulseq(aux, -r);
+    ops.addeq(B, aux);
+    ops.eqs(aux, iMesh, 2);
+    ops.mulseq(aux, t / beta);
+    ops.addeq(B, aux);
 
     ops.muleq(A.pick(null, null, 0), lessThan0.pick(null, null, 0)); // A[:, :, 0] *= lessThan0[:, :, 0]
     ops.muleq(A.pick(null, null, 1), lessThan0.pick(null, null, 1)); // A[:, :, 1] *= lessThan0[:, :, 1]
     ops.muleq(A.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2)); // A[:, :, 2] *= greaterEqualThan0[:, :, 2]
-    return A;
+    ops.muleq(B.pick(null, null, 0), lessThan0.pick(null, null, 0));
+    ops.muleq(B.pick(null, null, 1), lessThan0.pick(null, null, 1));
+    ops.muleq(B.pick(null, null, 2), greaterEqualThan0.pick(null, null, 2));
+    return [A, B];
 }
 
 function tensorProduct(mesh, vec) {
@@ -458,8 +472,8 @@ function tensorProduct(mesh, vec) {
  * @returns {[null,null]}
  */
 function updateEachAmplitude() {
-    let reA = updateGeneralAmplitude();
-    let imA = pool.zeros(reA.shape);
+    let [reA, reB] = updateGeneralAmplitude();
+    let [imA, imB] = [pool.zeros(reA.shape), pool.zeros(reB.shape)];
     let kZ, kX;
     [kZ, kX] = updateKxAndKz();
     let kzz = tensorProduct(zMesh, kZ); // kzz = kz * z
@@ -467,15 +481,21 @@ function updateEachAmplitude() {
     let aux = pool.zeros(kxx.shape);
     ops.add(aux, kxx, kzz); // aux = kx * x + kz * z
     ops.subseq(aux, omega * time); // aux -= w * t
+    ops.mulseq(aux, 0.5);  // temporally
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
     let rePhase, imPhase; // The real and imaginary parts of phase np.exp(1j * (kx * x + kz * z))
     rePhase = pool.zeros(aux.shape);
     imPhase = pool.zeros(aux.shape);
     cops.exp(rePhase, imPhase, pool.zeros(aux.shape), aux); // rePhase = re( np.exp(1j * (kx * x + kz * z)) ), imPhase = im( np.exp(1j * (kx * x + kz * z))
-    let re = pool.zeros(reA.shape);
-    let im = pool.zeros(imA.shape);
-    cops.mul(re, im, reA, imA, rePhase, imPhase);
-    return [re, im]
+    let rea = pool.zeros(reA.shape);
+    let ima = pool.zeros(imA.shape);
+    let reb = pool.zeros(reB.shape);
+    let imb = pool.zeros(imB.shape);
+    cops.mul(rea, ima, reA, imA, rePhase, imPhase);
+    cops.mul(reb, imb, reB, imB, rePhase, imPhase);
+    // console.log(unpack(rePhase))
+    // console.log(unpack(rea))
+    return [rea, ima, reb, imb];
 }
 
 /**
@@ -484,22 +504,25 @@ function updateEachAmplitude() {
  * @returns {[null,null]}
  */
 function selectField(option) {
-    let reA, imA;
-    [reA, imA] = updateEachAmplitude();
+    let [reA, imA, reB, imB] = updateEachAmplitude();
     switch (option) {
         case 3: {
-            let reField, imField;
-            reField = pool.zeros(reA.shape.slice(0, -1));
-            imField = pool.zeros(imA.shape.slice(0, -1));
+            let reFieldA, imFieldA, reFieldB, imFieldB;
+            reFieldA = pool.zeros(reA.shape.slice(0, -1));
+            imFieldA = pool.zeros(imA.shape.slice(0, -1));
+            reFieldB = pool.zeros(reB.shape.slice(0, -1));
+            imFieldB = pool.zeros(imB.shape.slice(0, -1));
             for (let i = 0; i < 3; i++) {
-                cops.addeq(reField, imField, reA.pick(null, null, i), imA.pick(null, null, i));
+                cops.addeq(reFieldA, imFieldA, reA.pick(null, null, i), imA.pick(null, null, i));
+                cops.addeq(reFieldB, imFieldB, reB.pick(null, null, i), imB.pick(null, null, i));
             }
-            return [reField, imField];
+            return [reFieldA, imFieldA, reFieldB, imFieldB];
         }
         case 0: // Fallthrough, incident field
         case 1: // Fallthrough, reflected field
         case 2: // Transmitted field
-            return [reA.pick(null, null, option), imA.pick(null, null, option)];
+            return [reA.pick(null, null, option), imA.pick(null, null, option),
+                reB.pick(null, null, option), imB.pick(null, null, option)];
         default:
             throw new Error('You have inputted a wrong option!');
     }
@@ -508,35 +531,41 @@ function selectField(option) {
 /**
  * This function calculates instantaneous intensity, which is the magnitude of the Poynting vector, at each point.
  * That is \Re{ (\tilde{E}\tilde{E}) } / c + \Re{ (\tilde{E}\tilde{E}^\ast) } / c
- * @param reField
- * @param imField
  * @returns {result}
  */
-function updateInstantaneousIntensity(reField, imField) {
-    let re = pool.zeros(reField.shape);
-    let im = pool.zeros(imField.shape);
-    let foo = pool.zeros(reField.shape); // Auxiliary field
-    let bar = pool.zeros(imField.shape); // Auxiliary field
-    cops.mul(re, im, reField, imField, reField, imField); // \tilde{E} * \tilde{B}
-    cops.conj(foo, bar, reField, imField); // (foo, bar) = conj(re, im)
-    cops.mul(foo, bar, reField, imField, foo, bar); // tilde{E} * \tilde{B}^\ast
-    cops.addeq(re, im, foo, bar); // \tilde{E} * \tilde{B} + tilde{E} * \tilde{B}^\ast
-    return unpack(re); // Always remember to unpack an ndarray!
+function updateInstantaneousIntensity(reFieldA, imFieldA, reFieldB, imFieldB) {
+    let re = pool.zeros(reFieldA.shape);
+    let im = pool.zeros(reFieldA.shape);
+    // let foo = pool.zeros(reField.shape); // Auxiliary field
+    // let bar = pool.zeros(imField.shape); // Auxiliary field
+    // cops.mul(reA, imA, reField, imField, reField, imField); // \tilde{E} * \tilde{B}
+    // cops.conj(foo, bar, reField, imField); // (foo, bar) = conj(re, im)
+    // cops.mul(foo, bar, reField, imField, foo, bar); // tilde{E} * \tilde{B}^\ast
+    // cops.addeq(reA, imA, foo, bar); // \tilde{E} * \tilde{B} + tilde{E} * \tilde{B}^\ast
+    // return unpack(re); // Always remember to unpack an ndarray!
+    cops.mul(re, im, reFieldA, imFieldA, reFieldB, imFieldB);
+    console.log(unpack(re))
+    return unpack(re);
 }
 
 /**
  * This function calculates time-averaged intensity of the Poynting vector, which is proportional to the square of the
  * E-field's amplitude, at each point.
  * That is, E_0^2 = \tilde{E} \tilde{E}^\ast.
- * @param reField
- * @param imField
  * @returns {result}
  */
-function updateAveragedIntensity(reField, imField) {
-    let intensity = pool.zeros(reField.shape);
-    cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
+function updateAveragedIntensity(reFieldA, imFieldA, reFieldB, imFieldB) {
+    // let intensity = pool.zeros(reField.shape);
+    let re = pool.zeros(reFieldA.shape);
+    let im = pool.zeros(imFieldA.shape);
+    let foo = pool.zeros(reFieldB.shape); // Auxiliary field
+    let bar = pool.zeros(imFieldB.shape); // Auxiliary field
+    cops.conj(foo, bar, reFieldB, imFieldB);
+    // cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
     // Note that cops.mag function calculates complex magnitude (squared length).
-    return unpack(intensity);
+    cops.mul(re, im, reFieldA, imFieldA, foo, bar);
+    console.log(unpack(re))
+    return unpack(re);
 }
 
 /**
@@ -559,18 +588,17 @@ function updateFieldAmplitude(reField) {
  * @returns {result}
  */
 function chooseIntensity(option, style) {
-    let reField, imField;
-    [reField, imField] = selectField(option);
+    let [reFieldA, imFieldA, reFieldB, imFieldB] = selectField(option);
 
     switch (style) {
         case 0:
-            return updateInstantaneousIntensity(reField, imField);
+            return updateInstantaneousIntensity(reFieldA, imFieldA, reFieldB, imFieldB);
             break;
         case 1:
-            return updateAveragedIntensity(reField, imField);
+            return updateAveragedIntensity(reFieldA, imFieldA, reFieldB, imFieldB);
             break;
         case 2:
-            return updateFieldAmplitude(reField);
+            return updateFieldAmplitude(reFieldA);
             break;
         default:
             throw new Error('You have inputted a wrong style!');
@@ -737,7 +765,7 @@ $('#timeSliderVal')
     .text(time);
 // Left panel
 opt = 3;
-sty = 0;
+sty = 1;
 createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();
