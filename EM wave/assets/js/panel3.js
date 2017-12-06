@@ -330,8 +330,8 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 10;
-let xNum = 10;
+let zNum = 250;
+let xNum = 250;
 let omega = 2 * Math.PI;
 let zCoord = linspace(ndarray([], [zNum]), -10, 10);
 zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
