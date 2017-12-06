@@ -40,6 +40,8 @@ let T = TSlider.bootstrapSlider('getValue');
 let plt0 = document.getElementById('plt0');
 let plt1 = document.getElementById('plt1');
 
+
+// Interfaces
 function calculateN_CV(t, m) {
     return 0.0449 * Math.pow(kb * t * 2 * m * m_e / Math.pow(hbar, 2), 3 / 2);
 }
@@ -153,12 +155,12 @@ TSlider.on('change', function () {
     $('#TSliderVal').text(T);
 });
 
-
 // Adjust Plotly's plotRatios size responsively according to window motion
 window.onresize = function () {
     Plotly.Plots.resize(plt0);
     Plotly.Plots.resize(plt1);
 };
+
 
 // Initialize
 N_V = calculateN_CV(T, 1.15);
