@@ -47,36 +47,76 @@ let reqId; // Cancels an animation frame request previously scheduled through a 
 
 
 // Interfaces
-function initialize() {
+/**
+ * Global variable kBar changes whenever k1 or k2 changes.
+ */
+function updateKBar() {
     kBar = (k1 + k2) / 2;
-    wBar = (w1 + w2) / 2;
-    deltaK = (k1 - k2) / 2;
-    deltaW = (w1 - w2) / 2;
-    calculate();
-    createPlot();
 }
 
-function calculate() {
+/**
+ * Global variable wBar changes whenever w1 or w2 changes.
+ */
+function updateWBar() {
+    wBar = (w1 + w2) / 2;
+}
+
+/**
+ * Global variable deltaK changes whenever k1 or k2 changes.
+ */
+function updateDeltaK() {
+    deltaK = (k1 - k2) / 2;
+}
+
+/**
+ * Global variable deltaW changes whenever w1 or w2 changes.
+ */
+function updateDeltaW() {
+    deltaW = (w1 - w2) / 2;
+}
+
+/**
+ * Global variable y changes whenever k1, k2, w1 or w2 changes.
+ */
+function updateY() {
     y = [];
     for (let i = 0; i < 400; i++) {
         y.push(2 * Math.cos(deltaK * x[i] - deltaW * t) * Math.cos(kBar * x[i] - wBar * t));
     }
 }
 
+/**
+ * When y changes, re-plot.
+ */
+function plot() {
+    plt.data[0].y = y;
+
+    Plotly.redraw(plt);
+}
+
+/**
+ * Initial plot
+ */
 function createPlot() {
     let layout = {
         margin: {
             t: 20,
-            l: 50,
-            r: 20,
+            l: 70,
+            r: 30,
         },
         yaxis: {
             title: '<i>f(z,t)</i>',
-            range: [-4, 4]
+            range: [-4, 4],
+            titlefont: {
+                size: 18,
+            },
         },
         xaxis: {
             title: '<i>z</i>',
-            range: [0, 200]
+            range: [0, 200],
+            titlefont: {
+                size: 18,
+            },
         }
     };
 
@@ -94,28 +134,40 @@ function createPlot() {
 // Interactive interfaces
 k1Slider.on('change', function () {
     k1 = k1Slider.bootstrapSlider('getValue');  // Get new "global" value
-    initialize();
+    updateKBar();
+    updateDeltaK();
+    updateY();
+    plot();
 
     $('#k1SliderVal').text(k1);
 });
 
 k2Slider.on('change', function () {
     k2 = k2Slider.bootstrapSlider('getValue');  // Get new "global" value
-    initialize();
+    updateKBar();
+    updateDeltaK();
+    updateY();
+    plot();
 
     $('#k2SliderVal').text(k2);
 });
 
 w1Slider.on('change', function () {
     w1 = w1Slider.bootstrapSlider('getValue');  // Get new "global" value
-    initialize();
+    updateWBar();
+    updateDeltaW();
+    updateY();
+    plot();
 
     $('#w1SliderVal').text(w1);
 });
 
 w2Slider.on('change', function () {
     w2 = w2Slider.bootstrapSlider('getValue');  // Get new "global" value
-    initialize();
+    updateWBar();
+    updateDeltaW();
+    updateY();
+    plot();
 
     $('#w2SliderVal').text(w2);
 });
@@ -140,9 +192,16 @@ $('#animate')
         }
     });
 
+/**
+ * Use PlotlyJS to create animation
+ */
 function animatePlot() {
-    // Advances t and animates the plot
-    calculate();
+    // Advances dt and animates the plot
+    updateKBar();
+    updateDeltaK();
+    updateWBar();
+    updateDeltaW();
+    updateY();
 
     let data = [{
         x: x,
@@ -169,6 +228,12 @@ function animatePlot() {
 
 
 // Initialize
+updateKBar();
+updateDeltaK();
+updateWBar();
+updateDeltaW();
+updateY();
+createPlot();
 $('#k1SliderVal')
     .text(k1);
 $('#k2SliderVal')
@@ -177,4 +242,3 @@ $('#w1SliderVal')
     .text(w1);
 $('#w2SliderVal')
     .text(w2);
-initialize();
