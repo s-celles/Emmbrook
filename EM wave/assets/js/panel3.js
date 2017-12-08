@@ -85,11 +85,12 @@ lambdaSlider.on('change', function () {
 
 n1Slider.on('change', function () {
     n1 = n1Slider.bootstrapSlider('getValue');
-    [reflectRatioList, transmitRatioList] = updateRatioLists();
+    [reflectivityList, transmissivityList] = updateAmplitudeRatioLists();
+    [reflectIntensityRatioList, transmitIntensityRatioList] = updateIntensityRatioLists();
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
-    plotBrewsterAngle();
+    plotAngles();
     updateAnimationInitials();
 
     $('#n1SliderVal')
@@ -98,11 +99,12 @@ n1Slider.on('change', function () {
 
 n2Slider.on('change', function () {
     n2 = n2Slider.bootstrapSlider('getValue');
-    [reflectRatioList, transmitRatioList] = updateRatioLists();
+    [reflectivityList, transmissivityList] = updateAmplitudeRatioLists();
+    [reflectIntensityRatioList, transmitIntensityRatioList] = updateIntensityRatioLists();
     plotHeatmap(opt, sty);
     plotRatios();
     plotRatioLists();
-    plotBrewsterAngle();
+    plotAngles();
     updateAnimationInitials();
 
     $('#n2SliderVal')
@@ -196,7 +198,7 @@ window.onresize = function () {
 ///////////////////////////////////////////////////////////////////////////
 ////////////////// Reflection and transmission ratios /////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let reflectRatioList, transmitRatioList;
+let reflectivityList, transmissivityList, reflectIntensityRatioList, transmitIntensityRatioList;
 let thetaIList = numeric.linspace(0, Math.PI / 2, 250);
 
 
@@ -212,9 +214,9 @@ function updatePermittivity() {
 /**
  * Accept an incident angle tI, return the reflection ratio and transmission ratio.
  * @param tI {number}
- * @returns {[null,null]}
+ * @returns {[number,number]}
  */
-function updateRatioValues(tI) {
+function updateAmplitudeRatioValues(tI) {
     updatePermittivity();
     let alpha = Math.sqrt(1 - (n1 / n2 * Math.sin(tI)) ** 2) / Math.cos(tI);
     let beta = n1 / n2 * epsilon2 / epsilon1;
@@ -224,10 +226,31 @@ function updateRatioValues(tI) {
 }
 
 /**
+ * Accept an incident angle tI, return the reflection intensity ratio and transmission intensity ratio.
+ * @param tI {number}
+ * @returns {[number,number]}
+ */
+function updateIntensityRatioValues(tI) {
+    let r, t, R, T;
+    let thetaT = Math.asin(n1 / n2 * Math.sin(tI)); // Transmitted angle from Snell's law
+    [r, t] = updateAmplitudeRatioValues(tI);
+    R = r ** 2;
+    T = t ** 2 * n2 / n1 * Math.cos(thetaT) / Math.cos(tI);
+    return [R, T];
+}
+
+/**
  * Return: An array of [[r0, r1, ...], [t0, t1, ...]].
  */
-function updateRatioLists() {
-    return numeric.transpose(thetaIList.map(updateRatioValues));
+function updateAmplitudeRatioLists() {
+    return numeric.transpose(thetaIList.map(updateAmplitudeRatioValues));
+}
+
+/**
+ * Return: An array of [[R0, R1, ...], [T0, T1, ...]].
+ */
+function updateIntensityRatioLists() {
+    return numeric.transpose(thetaIList.map(updateIntensityRatioValues));
 }
 
 /**
@@ -239,6 +262,13 @@ function updateBrewsterAngle() {
     return Math.atan(n1 / n2 * epsilon2 / epsilon1);
 }
 
+/**
+ * Critical angle changes when n1, n2 changes.
+ * @returns {number}
+ */
+function updateCriticalAngle() {
+    return Math.asin(n2 / n1);
+}
 
 // Plot
 /**
@@ -246,7 +276,7 @@ function updateBrewsterAngle() {
  */
 function plotRatios() {
     plt1.data[2].x = [thetaI, thetaI];
-    plt1.data[2].y = updateRatioValues(thetaI);
+    plt1.data[2].y = updateAmplitudeRatioValues(thetaI);
     Plotly.redraw(plt1);
 }
 
@@ -254,8 +284,10 @@ function plotRatios() {
  * Re-plot 2 curves.
  */
 function plotRatioLists() {
-    plt1.data[0].y = reflectRatioList;
-    plt1.data[1].y = transmitRatioList;
+    plt1.data[0].y = reflectivityList;
+    plt1.data[1].y = transmissivityList;
+    plt1.data[4].y = reflectIntensityRatioList;
+    plt1.data[5].y = transmitIntensityRatioList;
 
     Plotly.redraw(plt1);
 }
@@ -263,8 +295,10 @@ function plotRatioLists() {
 /**
  * Re-plot Brewster angle.
  */
-function plotBrewsterAngle() {
+function plotAngles() {
     plt1.data[3].x = [updateBrewsterAngle()];
+    plt1.data[6].x = [updateCriticalAngle()];
+
     Plotly.redraw(plt1);
 }
 
@@ -272,7 +306,7 @@ function createRatioPlot() {
     let layout = {
         title: 'reflection and transmission ratio',
         xaxis: {
-            title: 'theta_I',
+            title: '<i>𝜃<sub>I</sub></i>',
             titlefont: {
                 size: 18,
             },
@@ -291,23 +325,23 @@ function createRatioPlot() {
 
     let trace0 = {
         x: thetaIList,
-        y: reflectRatioList,
+        y: reflectivityList,
         type: 'scatter',
         mode: 'lines',
-        name: 'r',
+        name: 'reflectivity',
     };
 
     let trace1 = {
         x: thetaIList,
-        y: transmitRatioList,
+        y: transmissivityList,
         type: 'scatter',
         mode: 'lines',
-        name: 't',
+        name: 'transmissivity',
     };
 
     let trace2 = {
         x: [thetaI, thetaI],
-        y: updateRatioValues(thetaI),
+        y: updateAmplitudeRatioValues(thetaI),
         type: 'scatter',
         mode: 'markers',
         name: 'ratios',
@@ -321,7 +355,31 @@ function createRatioPlot() {
         name: 'Brewster angle'
     };
 
-    let data = [trace0, trace1, trace2, trace3];
+    let trace4 = {
+        x: thetaIList,
+        y: reflectIntensityRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'R',
+    };
+
+    let trace5 = {
+        x: thetaIList,
+        y: transmitIntensityRatioList,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'T',
+    };
+
+    let trace6 = {
+        x: [updateCriticalAngle()],
+        y: [0],
+        type: 'scatter',
+        mode: 'markers',
+        name: 'critical angle'
+    };
+
+    let data = [trace0, trace1, trace2, trace3, trace4, trace5, trace6];
 
     Plotly.newPlot(plt1, data, layout);
 }
@@ -330,12 +388,17 @@ function createRatioPlot() {
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// EM oblique incidence on media ////////////////////////
 ///////////////////////////////////////////////////////////////////////////
-let zNum = 250;
-let xNum = 250;
+let lambda0 = 1;
+let zNum = 200;
+let xNum = 200;
+let zMin = -10 / lambda0;
+let zMax = 10 / lambda0;
+let xMin = -0.1 / lambda0;  // This is very important because Plotly draws from the bottom left corner!
+let xMax = 10 / lambda0;
 let omega = 2 * Math.PI;
-let zCoord = linspace(ndarray([], [zNum]), -10, 10);
+let zCoord = linspace(ndarray([], [zNum]), zMin, zMax);
 zCoord.dtype = 'float64'; // Change dtype in order to use meshgrid function.
-let xCoord = linspace(ndarray([], [xNum]), 0, 10);
+let xCoord = linspace(ndarray([], [xNum]), xMin, xMax);
 xCoord.dtype = 'float64';
 let optionIndices = linspace(ndarray([], [3]), 0, 2);
 optionIndices.dtype = 'float64';
@@ -425,7 +488,7 @@ function updateMask() {
  */
 function updateGeneralAmplitude() { // correct
     let r, t;
-    [r, t] = updateRatioValues(thetaI); // Reflected and transmitted amplitudes
+    [r, t] = updateAmplitudeRatioValues(thetaI); // Reflected and transmitted amplitudes
     let beta = n1 / n2 * epsilon2 / epsilon1;
     let A = pool.zeros(iMesh.shape);
     let B = pool.zeros(iMesh.shape);
@@ -589,13 +652,10 @@ function chooseIntensity(option, style) {
     switch (style) {
         case 0:
             return updateInstantaneousIntensity(reFieldA, imFieldA, reFieldB, imFieldB);
-            break;
         case 1:
             return updateAveragedIntensity(reFieldA, imFieldA, reFieldB, imFieldB);
-            break;
         case 2:
             return updateFieldAmplitude(reFieldA);
-            break;
         default:
             throw new Error('You have inputted a wrong style!');
     }
@@ -612,6 +672,8 @@ function createHeatmap(option, style) {
         x: unpack(zCoord),
         y: unpack(xCoord),
         z: chooseIntensity(option, style),
+        zmin: -5,
+        zmax: 5,
         type: 'heatmap',
     };
 
@@ -639,14 +701,13 @@ function createHeatmap(option, style) {
     let layout = {
         title: 'instantaneous light intensity',
         yaxis: {
-            title: 'x',
+            title: '<i>x/𝛌<sub>0</sub></i>',
             titlefont: {
                 size: 18,
             },
-            autorange: "reversed", // This is very important because Plotly draws from the bottom left corner!
         },
         xaxis: {
-            title: 'z',
+            title: '<i>z/𝛌<sub>0</sub></i>',
             titlefont: {
                 size: 18,
             },
@@ -775,5 +836,6 @@ opt = 3;
 sty = 0;
 createHeatmap(opt, sty);
 // Right panel
-[reflectRatioList, transmitRatioList] = updateRatioLists();
+[reflectivityList, transmissivityList] = updateAmplitudeRatioLists();
+[reflectIntensityRatioList, transmitIntensityRatioList] = updateIntensityRatioLists();
 createRatioPlot();
