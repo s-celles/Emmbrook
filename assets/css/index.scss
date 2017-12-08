@@ -5,9 +5,19 @@ $heading1: 30px;
   border-color: transparent;
 }
 
-.navbar-light .navbar-nav .nav-link {
-  color: white;
-  font-size: large;
+.navbar-light .navbar-nav {
+  .nav-link {
+    color: lightgrey;
+    font-size: large;
+
+    &:hover {
+      color: grey;
+    }
+  }
+
+  .nav-link.active {
+    color: grey;
+  }
 }
 
 @mixin background-size($size) {
@@ -28,6 +38,7 @@ header {
   .intro-text {
     padding-top: 150px;
     padding-bottom: 200px;
+    color: lightgrey;
 
     .intro-lead-in {
       font-size: 22px;
@@ -143,6 +154,7 @@ section {
 }
 
 #students-comments {
+  color: white;
   margin-top: 20px;
   padding: 0 0 0 0;
   background-color: lightskyblue;

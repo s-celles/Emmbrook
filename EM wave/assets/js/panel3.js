@@ -493,8 +493,6 @@ function updateEachAmplitude() {
     let imb = pool.zeros(imB.shape);
     cops.mul(rea, ima, reA, imA, rePhase, imPhase);
     cops.mul(reb, imb, reB, imB, rePhase, imPhase);
-    // console.log(unpack(rePhase))
-    // console.log(unpack(rea))
     return [rea, ima, reb, imb];
 }
 
@@ -504,25 +502,25 @@ function updateEachAmplitude() {
  * @returns {[null,null]}
  */
 function selectField(option) {
-    let [reA, imA, reB, imB] = updateEachAmplitude();
+    let [rea, ima, reb, imb] = updateEachAmplitude();
     switch (option) {
         case 3: {
             let reFieldA, imFieldA, reFieldB, imFieldB;
-            reFieldA = pool.zeros(reA.shape.slice(0, -1));
-            imFieldA = pool.zeros(imA.shape.slice(0, -1));
-            reFieldB = pool.zeros(reB.shape.slice(0, -1));
-            imFieldB = pool.zeros(imB.shape.slice(0, -1));
+            reFieldA = pool.zeros(rea.shape.slice(0, -1));
+            imFieldA = pool.zeros(ima.shape.slice(0, -1));
+            reFieldB = pool.zeros(reb.shape.slice(0, -1));
+            imFieldB = pool.zeros(imb.shape.slice(0, -1));
             for (let i = 0; i < 3; i++) {
-                cops.addeq(reFieldA, imFieldA, reA.pick(null, null, i), imA.pick(null, null, i));
-                cops.addeq(reFieldB, imFieldB, reB.pick(null, null, i), imB.pick(null, null, i));
+                cops.addeq(reFieldA, imFieldA, rea.pick(null, null, i), ima.pick(null, null, i));
+                cops.addeq(reFieldB, imFieldB, reb.pick(null, null, i), imb.pick(null, null, i));
             }
             return [reFieldA, imFieldA, reFieldB, imFieldB];
         }
         case 0: // Fallthrough, incident field
         case 1: // Fallthrough, reflected field
         case 2: // Transmitted field
-            return [reA.pick(null, null, option), imA.pick(null, null, option),
-                reB.pick(null, null, option), imB.pick(null, null, option)];
+            return [rea.pick(null, null, option), ima.pick(null, null, option),
+                reb.pick(null, null, option), imb.pick(null, null, option)];
         default:
             throw new Error('You have inputted a wrong option!');
     }
@@ -544,7 +542,6 @@ function updateInstantaneousIntensity(reFieldA, imFieldA, reFieldB, imFieldB) {
     // cops.addeq(reA, imA, foo, bar); // \tilde{E} * \tilde{B} + tilde{E} * \tilde{B}^\ast
     // return unpack(re); // Always remember to unpack an ndarray!
     cops.mul(re, im, reFieldA, imFieldA, reFieldB, imFieldB);
-    console.log(unpack(re))
     return unpack(re);
 }
 
@@ -564,7 +561,6 @@ function updateAveragedIntensity(reFieldA, imFieldA, reFieldB, imFieldB) {
     // cops.mag(intensity, reField, imField); // intensity = field * conj(field) = reField^2 + imField^2,
     // Note that cops.mag function calculates complex magnitude (squared length).
     cops.mul(re, im, reFieldA, imFieldA, foo, bar);
-    console.log(unpack(re))
     return unpack(re);
 }
 
@@ -680,9 +676,9 @@ ANIMATE.aux = pool.zeros(xMesh.shape); // This shape does not change, so initial
 function updateAnimationInitials() {
     [ANIMATE.kZ, ANIMATE.kX] = updateKxAndKz();
     // Here kxx and kzz are not used by other subroutines, so they are defined locally.
-    let kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
-    let kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
-    ops.add(ANIMATE.aux, kxx, kzz); // aux = kx * x + kz * z
+    ANIMATE.kzz = tensorProduct(zMesh, ANIMATE.kZ); // kzz = kz * z
+    ANIMATE.kxx = tensorProduct(xMesh, ANIMATE.kX); // kxx = kx * x
+    ops.add(ANIMATE.aux, ANIMATE.kxx, ANIMATE.kzz); // aux = kx * x + kz * z
 }
 
 /**
@@ -691,39 +687,50 @@ function updateAnimationInitials() {
  * Imaginary amplitude imA has dimension [xNum, zNum, 3].
  */
 function updateFrame() {
-    ANIMATE.reA = updateGeneralAmplitude();
-    ANIMATE.imA = pool.zeros(ANIMATE.reA.shape);
+    [ANIMATE.reA, ANIMATE.reB] = updateGeneralAmplitude();
+    [ANIMATE.imA, ANIMATE.imB] = [pool.zeros(ANIMATE.reA.shape), pool.zeros(ANIMATE.reB.shape)];
     ops.subseq(ANIMATE.aux, omega * dt); // aux -= omega * dt
     // If we want to use ndarray-complex package, we need to specify real and imaginary parts.
-    let rePhase = pool.zeros(ANIMATE.aux.shape);
-    let imPhase = pool.zeros(ANIMATE.aux.shape);
-    ops.cos(rePhase, ANIMATE.aux); // re( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
-    ops.sin(imPhase, ANIMATE.aux); // im( np.exp(1j * (kx * x + kz * z)) - 1j * omega * dt )
-    cops.muleq(ANIMATE.reA, ANIMATE.imA, rePhase, imPhase);
+    ANIMATE.rePhase = pool.zeros(ANIMATE.aux.shape);
+    ANIMATE.imPhase = pool.zeros(ANIMATE.aux.shape);
+    cops.exp(ANIMATE.rePhase, ANIMATE.imPhase, pool.zeros(ANIMATE.aux.shape), ANIMATE.aux); // rePhase = re( np.exp(1j * (kx * x + kz * z)) ), imPhase = im( np.exp(1j * (kx * x + kz * z))
+    ANIMATE.rea = pool.zeros(ANIMATE.reA.shape);
+    ANIMATE.ima = pool.zeros(ANIMATE.imA.shape);
+    ANIMATE.reb = pool.zeros(ANIMATE.reB.shape);
+    ANIMATE.imb = pool.zeros(ANIMATE.imB.shape);
+    cops.mul(ANIMATE.rea, ANIMATE.ima, ANIMATE.reA, ANIMATE.imA, ANIMATE.rePhase, ANIMATE.imPhase);
+    cops.mul(ANIMATE.reb, ANIMATE.imb, ANIMATE.reB, ANIMATE.imB, ANIMATE.rePhase, ANIMATE.imPhase);
     switch (opt) {
         case 3: {
-            ANIMATE.reField = pool.zeros(ANIMATE.reA.shape.slice(0, -1));
-            ANIMATE.imField = pool.zeros(ANIMATE.imA.shape.slice(0, -1));
+            ANIMATE.reFieldA = pool.zeros(ANIMATE.rea.shape.slice(0, -1));
+            ANIMATE.imFieldA = pool.zeros(ANIMATE.ima.shape.slice(0, -1));
+            ANIMATE.reFieldB = pool.zeros(ANIMATE.reb.shape.slice(0, -1));
+            ANIMATE.imFieldB = pool.zeros(ANIMATE.imb.shape.slice(0, -1));
             for (let i = 0; i < 3; i++) {
-                cops.addeq(ANIMATE.reField, ANIMATE.imField, ANIMATE.reA.pick(null, null, i), ANIMATE.imA.pick(null, null, i));
+                cops.addeq(ANIMATE.reFieldA, ANIMATE.imFieldA,
+                    ANIMATE.rea.pick(null, null, i), ANIMATE.ima.pick(null, null, i));
+                cops.addeq(ANIMATE.reFieldB, ANIMATE.imFieldB,
+                    ANIMATE.reb.pick(null, null, i), ANIMATE.imb.pick(null, null, i));
             }
         }
             break; // Don't forget to break!
         case 0: // Fallthrough, incident field
         case 1: // Fallthrough, reflected field
         case 2: // Transmitted field
-            [ANIMATE.reField, ANIMATE.imField] = [ANIMATE.reA.pick(null, null, opt), ANIMATE.imA.pick(null, null, opt)];
+            [ANIMATE.reFieldA, ANIMATE.imFieldA, ANIMATE.reFieldB, ANIMATE.imFieldB] =
+                [ANIMATE.rea.pick(null, null, opt), ANIMATE.ima.pick(null, null, opt),
+                    ANIMATE.reb.pick(null, null, opt), ANIMATE.imb.pick(null, null, opt)];
             break; // Don't forget to break!
     }
     switch (sty) {
         case 0:
-            ANIMATE.main = updateInstantaneousIntensity(ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateInstantaneousIntensity(ANIMATE.reFieldA, ANIMATE.imFieldA, ANIMATE.reFieldB, ANIMATE.imFieldB);
             break; // Don't forget to break!
         case 1:
-            ANIMATE.main = updateAveragedIntensity(ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateAveragedIntensity(ANIMATE.reFieldA, ANIMATE.imFieldA, ANIMATE.reFieldB, ANIMATE.imFieldB);
             break;
         case 2:
-            ANIMATE.main = updateFieldAmplitude(ANIMATE.reField, ANIMATE.imField);
+            ANIMATE.main = updateFieldAmplitude(ANIMATE.reFieldA);
             break;
     }
 }
@@ -765,7 +772,7 @@ $('#timeSliderVal')
     .text(time);
 // Left panel
 opt = 3;
-sty = 1;
+sty = 0;
 createHeatmap(opt, sty);
 // Right panel
 [reflectRatioList, transmitRatioList] = updateRatioLists();

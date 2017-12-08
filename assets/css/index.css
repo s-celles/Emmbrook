@@ -3,8 +3,12 @@
   border-color: transparent; }
 
 .navbar-light .navbar-nav .nav-link {
-  color: white;
+  color: lightgrey;
   font-size: large; }
+  .navbar-light .navbar-nav .nav-link:hover {
+    color: grey; }
+.navbar-light .navbar-nav .nav-link.active {
+  color: grey; }
 
 header {
   background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("../../images/enora_pic.jpg") no-repeat center center fixed;
@@ -18,7 +22,8 @@ header {
   text-align: center; }
   header .intro-text {
     padding-top: 150px;
-    padding-bottom: 200px; }
+    padding-bottom: 200px;
+    color: lightgrey; }
     header .intro-text .intro-lead-in {
       font-size: 22px;
       line-height: 22px;
@@ -105,6 +110,7 @@ section {
   height: 30px; }
 
 #students-comments {
+  color: white;
   margin-top: 20px;
   padding: 0 0 0 0;
   background-color: lightskyblue; }
