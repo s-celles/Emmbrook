@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>The Lorenz system</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/panel1.css" type="text/css">
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        The Lorenz system
+                    </h1>
+                </div>
+                <p>
+                    The Lorenz system (or "attractor") is a system of nonlinear ordinary differential equations in three
+                    variables, \( x \), \( y \), \( z \). \( x \), \( y \), \( z \) are not spatial coordinates for
+                    particles, but rather more abstract quantities in fluid flow. The equations are
+                    $$
+                    \begin{align}
+                    \dot{x} &=\sigma\left(y-x\right), \\
+                    \dot{y} &=x\left(\rho-z\right)-y, \\
+                    \dot{z} &=x y - \beta z,
+                    \end{align}
+                    $$
+                    where \( \sigma \), \( \rho \), \( \beta \) are constants.
+                </p>
+                <p>
+                    Lorenz proposed the equations in his
+                    <a href="http://journals.ametsoc.org/doi/abs/10.1175/1520-0469%281963%29020%3C0130%3ADNF%3E2.0.CO%3B2">1963
+                        paper</a> which described the difficulty of long-range weather
+                    prediction. They are the canonical "chaotic" dynamical system, exhibiting sensitive dependence of
+                    long-range trajectories on initial conditions. "Chaos" became a new branch of science in the 1980s
+                    as described in James Gleick's book.
+                </p>
+                <p>
+                    Here you can explore the dynamical behavior of the Lorenz system depending on the values of the
+                    constants \( \sigma \), \( \rho \), \( \beta \). The default arguments (reload page for them) show
+                    the famous
+                    chaotic behavior, where closely-spaced initial conditions (blue dots) converge to the evolution
+                    defined by the "attractor," but become completely separated from each other after a couple of orbits
+                    around it, effectively losing their memory of their starting points.
+
+                    The behavior of the system changes qualitatively for different values of the constants \( \sigma \),
+                    \( \rho \), \( \beta \). Equilibria can appear or disappear, and become stable or unstable,
+                    depending on these values.
+                </p>
+                <ul>
+                    <li>
+                        \( \rho \le 1 \): The two unstable equilibria (centers of "owl's eyes") become a single stable
+                        equilibrium at the origin.
+                    </li>
+                    <li>
+                        Large \( \sigma \): the two unstable equilibria become stable for large values of s. The
+                        stability criterion is given by
+                        $$
+                        \rho \le \sigma \frac{\sigma+\beta+3}{\sigma-\beta-1},
+                        $$
+                        now it is <span id="stabilityCriterion"></span>.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Simulator
+        </h4>
+        <div class="row" id="plots">
+            <div class="col-sm-12">
+                <div id="plt" class="plot"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="sigma" class="slideLables">\( \sigma \): </label>
+                            <span id="sigmaSliderVal" class="sliderVal"></span>
+                            <input id="sigma" data-slider-min="0" data-slider-max="100" data-slider-step="0.1"
+                                   data-slider-value="10">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="beta" class="slideLables">\( \beta \): </label>
+                            <span id="betaSliderVal" class="sliderVal"></span>
+                            <input id="beta" data-slider-min="0" data-slider-max="20" data-slider-step="0.1"
+                                   data-slider-value="2.33">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="rho" class="slideLables">\( \rho \): </label>
+                            <span id="rhoSliderVal" class="sliderVal"></span>
+                            <input id="rho" data-slider-min="0" data-slider-max="100" data-slider-step="0.1"
+                                   data-slider-value="28">
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false"
+                                    autocomplete="off" id="animate">On
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel1.js"></script>
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>

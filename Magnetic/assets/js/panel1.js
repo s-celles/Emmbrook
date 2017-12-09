@@ -1,9 +1,8 @@
 /**
- * Created by qz on 8/6/17.
+ * Created by qz on Aug 19th, 2017
  */
 
-'use strict';
-// Check if your browser supports ES6 feature
+// Check if your browser supports ES6 features
 var supportsES6 = function () { // Test if ES6 is ~fully supported
     try {
         new Function('(a = 0) => a');
@@ -13,337 +12,288 @@ var supportsES6 = function () { // Test if ES6 is ~fully supported
     }
 }();
 
-if (supportsES6) {} else {
+if (supportsES6) {
+} else {
     alert('Your browser is too old! Please use a modern browser!');
 }
 
 // Import libraries
-let ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
-let linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
-let ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
-let unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
-let fill = require('ndarray-fill');
-let show = require('ndarray-show');
-let pool = require("ndarray-scratch");
-let ncc = require('ndarray-concat-cols');
-let ncr = require('ndarray-concat-rows');
-let tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
+const ndarray = require('ndarray'); // Modular multidimensional arrays for JavaScript.
+const linspace = require('ndarray-linspace'); // Fill an ndarray with equally spaced values
+// const ops = require('ndarray-ops'); // A collection of common mathematical operations for ndarrays.
+const unpack = require('ndarray-unpack'); // Converts an ndarray into an array-of-native-arrays.
+// const show = require('ndarray-show');
+const tile = require('ndarray-tile'); // This module takes an input ndarray and repeats it some number of times in each dimension.
 
 
 // Variables
-let current = 0.1; // Current
-let xNum = 5;
-let yNum = 5;
-let zNum = 5;
-let wireNum = 400;
-let loopMul = 10;
-let opt;
-// Spatial coordinates
-let spatialRange = 6;
-let xCoord = myLinspace([xNum], -4, 4);
-let yCoord = myLinspace([yNum], -4, 4);
-let zCoord = myLinspace([zNum], -spatialRange, spatialRange);
-// Wire
-let wireRange = 8;
-let xWireCoord;
-let yWireCoord;
-let zWireCoord;
-// Delta L
-let dlx = ndarray(new Float64Array(wireNum));
-let dly = ndarray(new Float64Array(wireNum));
-let dlz = ndarray(new Float64Array(wireNum));
-// Meshgrid
-let xMesh;
-let yMesh;
-let zMesh;
-[xMesh, yMesh, zMesh] = meshgrid(xCoord, yCoord, zCoord); // 3D spatial coordinates on each point
+// Load pre-calculated magnetic field data
+// Front-view data
+const bx_1loop = require('./bx_1loop.json').data; // Read json file
+const bz_1loop = require('./bz_1loop.json').data;
+const U_1loop = require('./U_1loop.json').data;
+const bx_3loop = require('./bx_3loop.json').data;
+const bz_3loop = require('./bz_3loop.json').data;
+const U_3loop = require('./U_3loop.json').data;
+const bx_5loop = require('./bx_5loop.json').data;
+const bz_5loop = require('./bz_5loop.json').data;
+const U_5loop = require('./U_5loop.json').data;
+const bx_7loop = require('./bx_7loop.json').data;
+const bz_7loop = require('./bz_7loop.json').data;
+const U_7loop = require('./U_7loop.json').data;
+const bx_9loop = require('./bx_9loop.json').data;
+const bz_9loop = require('./bz_9loop.json').data;
+const U_9loop = require('./U_9loop.json').data;
+// Bird-view data
+const bx_1bird = require('./bx_1loop_birdview.json').data; // Read json file
+const by_1bird = require('./by_1loop_birdview.json').data;
+const U_1bird = require('./U_1loop_birdview.json').data;
+const bx_3bird = require('./bx_3loop_birdview.json').data;
+const by_3bird = require('./by_3loop_birdview.json').data;
+const U_3bird = require('./U_3loop_birdview.json').data;
+const bx_5bird = require('./bx_5loop_birdview.json').data;
+const by_5bird = require('./by_5loop_birdview.json').data;
+const U_5bird = require('./U_5loop_birdview.json').data;
+const bx_7bird = require('./bx_7loop_birdview.json').data;
+const by_7bird = require('./by_7loop_birdview.json').data;
+const U_7bird = require('./U_7loop_birdview.json').data;
+const bx_9bird = require('./bx_9loop_birdview.json').data;
+const by_9bird = require('./by_9loop_birdview.json').data;
+const U_9bird = require('./U_9loop_birdview.json').data;
+const xNum = 50;  // Number of grids
+const yNum = 50;
+const zNum = 50;
+const xMax = 3;  // Spatial range
+const yMax = 3;
+const zMax = 3;
+let x = linspace(ndarray([], [xNum]), -xMax, xMax);
+let y = linspace(ndarray([], [yNum]), -yMax, yMax);
+let z = linspace(ndarray([], [zNum]), -zMax, zMax);
+x.dtype = 'float64';  // You have to convert type before using "meshgrid".
+y.dtype = 'float64';
+z.dtype = 'float64';
+let X;
+let Y;
+let Z;
+[X, Z] = meshgrid(x, z);
+Y = meshgrid(x, y)[1];
+X = unpack(X);  // ndarray to array
+Y = unpack(Y);
+Z = unpack(Z);
+let bxs = [bx_1loop, bx_3loop, bx_5loop, bx_7loop, bx_9loop];
+let bxs_bird = [bx_1bird, bx_3bird, bx_5bird, bx_7bird, bx_9bird];
+let bys = [by_1bird, by_3bird, by_5bird, by_7bird, by_9bird];
+let bzs = [bz_1loop, bz_3loop, bz_5loop, bz_7loop, bz_9loop];
+let Uvals = [flatten(U_1loop), flatten(U_3loop), flatten(U_5loop), flatten(U_7loop), flatten(U_9loop)];
+let Uvals_bird = [flatten(U_1bird), flatten(U_3bird), flatten(U_5bird), flatten(U_7bird), flatten(U_9bird)];
+let opt;  // Option to choose different number of loops
 
 
-// Main interfaces
-function myLinspace(shape, start, end, options) {
-    /*
-     If we use ndarray-linspace package,
-     it returns a ndarray with dtype='array',
-     but this dtype cannot be used by ndarray-tile package, it needs 'float'.
-     So we need to transform dtype manually.
-     */
-    let tmp = linspace(ndarray([], shape), start, end, options);
-    return reshape(ndarray(new Float64Array(tmp.data)), shape);
+// Plotting
+// Frame setup
+// plot 0
+let width0 = document.getElementById('plt0').getAttribute('width');
+const height0 = document.getElementById('plt0').getAttribute('height');
+const canvas0 = document.getElementById('plt0');  // Initialize a "canvas" element
+let context0 = canvas0.getContext('2d');
+context0.lineWidth = 0.1;
+context0.strokeStyle = '#ff0000'; // Stroke color
+// Mapping from vfield coords to web page coords
+let xMap0 = d3.scaleLinear()
+    .domain([-xMax, xMax])
+    .range([0, xNum]);
+let yMap0 = d3.scaleLinear()
+    .domain([-zMax, zMax])
+    .range([0, zNum]);
+context0.fillRect(0, 0, width0, height0);
+context0.scale(canvas0.width / x.size, canvas0.height / z.size);
+let path0 = d3.geoPath(null, context0);  // Used by "fill" function
+let color0;  // Used by "fill" function
+// context0.font = '48px Helvetica';
+// // context0.textBaseline = "right"; // how to align the text vertically
+// // context0.textAlign = "end"; // how to align the text horizontally
+// context0.fillText("test1", xMap0(0), yMap0(0)); // text, x, y
+
+
+// plot 1
+let width1 = document.getElementById('plt1').getAttribute('width');
+const height1 = document.getElementById('plt1').getAttribute('height');
+const canvas1 = document.getElementById('plt1');  // Initialize a "canvas" element
+let context1 = canvas1.getContext('2d');
+context1.lineWidth = 0.1;
+context1.strokeStyle = '#ff0000'; // Stroke color
+// Mapping from vfield coords to web page coords
+let xMap1 = d3.scaleLinear()
+    .domain([-xMax, xMax])
+    .range([0, xNum]);
+let yMap1 = d3.scaleLinear()
+    .domain([-yMax, yMax])
+    .range([0, yNum]);
+context1.fillRect(0, 0, width1, height1);
+context1.scale(canvas1.width / x.size, canvas1.height / y.size);
+let path1 = d3.geoPath(null, context1);  // Used by "fill" function
+let color1;  // Used by "fill" function
+// context1.font = '48px Helvetica';
+// // context0.textBaseline = "right"; // how to align the text vertically
+// // context0.textAlign = "end"; // how to align the text horizontally
+// context1.fillText("test1", xMap1(0), yMap1(0)); // text, x, y
+
+
+function plotPlt0() {
+    let bx = bxs[opt];
+    let bz = bzs[opt];
+    let U = Uvals[opt];
+    // Plot contours
+    // Reference: https://bl.ocks.org/mbostock/bf2f5f02b62b5b3bb92ae1b59b53da36
+    let thresholds = d3.range(Math.min(...U), Math.max(...U), 0.01);
+    let contours = d3.contours()
+        .size([xNum, zNum])
+        .thresholds(thresholds);
+    color0 = d3.scaleSequential(d3.interpolateCubehelixDefault)
+        .domain(d3.extent(U));
+    contours(U).forEach(fill0);
+
+    // Plot vector field
+    // Reference: http://bl.ocks.org/newby-jay/767c5ffdbbe43b65902f
+    for (let i = 0; i < x.size; i++) {
+        for (let j = 0; j < z.size; j++) {
+            let r = Math.sqrt((bx[i][j] ** 2) + (bz[i][j] ** 2));
+            context0.beginPath();
+            context0.moveTo(xMap0(X[i][j]), yMap0(Z[i][j])); // the start point of the path
+            context0.lineTo(xMap0(X[i][j] + (bx[i][j] / r / 18)), yMap0(Z[i][j] + (bz[i][j] / r / 18))); // the end point
+            context0.stroke(); // final draw command
+        }
+    }
 }
 
-function meshgrid(xArray, yArray, zArray) {
-    /*
-     Here xArray, yArray, zArray should all be 1d arrays.
-     Then it returns 3 fortran-style 3D arrays, that is,
-     they are all column-major order:
-     http://www.wikiwand.com/en/Row-_and_column-major_order.
-     The returned xMesh, yMesh, and zMesh are all of shape
-     [zNum, xNum, yNum].
-     */
-    let xMesh = reshape(tile(xArray, [zNum, yNum]), [zNum, xNum, yNum]);
-    let yMesh = reshape(
-        tile(tile(yArray, [1, xNum]).transpose(1, 0), [zNum]), [zNum, xNum, yNum]
-    );
-    let zMesh = tile(zArray, [1, xNum, yNum]);
-    return [xMesh, yMesh, zMesh];
+function plotPlt1() {
+    let bx = bxs_bird[opt];
+    let by = bys[opt];
+    let U = Uvals_bird[opt];
+    // Plot contours
+    // Reference: https://bl.ocks.org/mbostock/bf2f5f02b62b5b3bb92ae1b59b53da36
+    let thresholds = d3.range(Math.min(...U), Math.max(...U), 0.01);
+    let contours = d3.contours()
+        .size([xNum, yNum])
+        .thresholds(thresholds);
+    color1 = d3.scaleSequential(d3.interpolateCubehelixDefault)
+        .domain(d3.extent(U));
+    contours(U).forEach(fill1);
+
+    // Plot vector field
+    // Reference: http://bl.ocks.org/newby-jay/767c5ffdbbe43b65902f
+    for (let i = 0; i < x.size; i++) {
+        for (let j = 0; j < y.size; j++) {
+            let r = Math.sqrt((bx[i][j] ** 2) + (by[i][j] ** 2));
+            context1.beginPath();
+            context1.moveTo(xMap1(X[i][j]), yMap1(Y[i][j])); // the start point of the path
+            context1.lineTo(xMap1(X[i][j] + (bx[i][j] / r / 18)), yMap1(Y[i][j] + (by[i][j] / r / 18))); // the end point
+            context1.stroke(); // final draw command
+        }
+    }
 }
 
+
+// Basic interfaces
+/**
+ *
+ * @param array
+ * @returns {*}
+ */
+function flatten(array) {
+    return array.reduce((a, b) => a.concat(b));
+}
+
+/**
+ * Here oldNdarray is a ndarray, newShape is an array spcifying the newer one's shape.
+ * @param oldNdarr
+ * @param newShape
+ * @returns {*}
+ */
 function reshape(oldNdarr, newShape) {
-    /*
-     Here oldNdarray is a ndarray,
-     newShape is an array spcifying the newer one's shape.
-     */
     return ndarray(oldNdarr.data, newShape);
 }
 
-function crossProduct(arr1, arr2) {
-    /*
-     Here arr1, arr2 are both 1D arrays.
-     */
-    let u1 = arr1[0];
-    let u2 = arr1[1];
-    let u3 = arr1[2];
-    let v1 = arr2[0];
-    let v2 = arr2[1];
-    let v3 = arr2[2];
-    return [u2 * v3 - u3 * v2, u3 * v1 - u1 * v3, u1 * v2 - u2 * v1];
+/**
+ * Here xArray, yArray should all be 1d arrays.
+ Then it returns 2 fortran-style 2D arrays, that is,
+ they are all column-major order:
+ http://www.wikiwand.com/en/Row-_and_column-major_order.
+ The returned xMesh and yMesh are all of shape [xNum, yNum].
+ * @param xArray
+ * @param yArray
+ * @returns {[* , *]}
+ */
+function meshgrid(xArray, yArray) {
+    let xNum = xArray.size;
+    let yNum = yArray.size;
+    let xMesh = reshape(tile(xArray, [yNum]), [xNum, yNum]);
+    let yMesh = reshape(tile(yArray, [1, xNum]).transpose(1, 0), [xNum, yNum]);
+    return [xMesh, yMesh];
 }
 
-function setDeltaLArray() {
-    /*
-     Delta l is the infinitesimal part of l---the wire.
-     */
-    fill(dlx, function (i) {
-        return xWireCoord.get(i + 1) - xWireCoord.get(i);
-    });
-    fill(dly, function (i) {
-        return yWireCoord.get(i + 1) - yWireCoord.get(i);
-    });
-    fill(dlz, function (i) {
-        return zWireCoord.get(i + 1) - zWireCoord.get(i);
-    });
-    dlx.set(wireNum - 1, 1 - xWireCoord.get(wireNum - 1));
-    dly.set(wireNum - 1, 1 - yWireCoord.get(wireNum - 1));
-    dlz.set(wireNum - 1, 1 - zWireCoord.get(wireNum - 1));
+/**
+ *
+ * @param geometry
+ */
+function fill0(geometry) {
+    context0.beginPath();
+    path0(geometry);
+    let rgb = color0(geometry.value).toString();
+    let rgba = 'rgba(' + rgb.slice(4, -1) + ', 1)';  // rgb to rgba
+    context0.fillStyle = rgba;
+    context0.fill();
 }
 
-function calculateR(x, y, z, i) {
-    /*
-     This function is used to calculate \mathbf{r} = \mathbf{x} - \mathbf{l}.
-     Here i labels the ith point on the wire.
-     */
-    let rx = x - xWireCoord.get(i);
-    let ry = y - yWireCoord.get(i);
-    let rz = z - zWireCoord.get(i);
-    return [rx, ry, rz];
+function fill1(geometry) {
+    context1.beginPath();
+    path1(geometry);
+    let rgb = color0(geometry.value).toString();
+    let rgba = 'rgba(' + rgb.slice(4, -1) + ', 1)';  // rgb to rgba
+    context1.fillStyle = rgba;
+    context1.fill();
 }
 
-function calculateB(x, y, z) {
-    /*
-     This function calculates the magnetic field generated by the
-     wire at point (x, y, z). That magnetic field is a sum of field
-     generated by each point on the wire.
-     */
-    let b = ndarray(new Float64Array(3));
-    let aux = ndarray(new Float64Array(3));
-    // This is the integration part of Biot--Savart law.
-    for (let i = 0; i < wireNum - 1; i++) {
-        let r = calculateR(x, y, z, i);
-        let rLength = ops.norm2(ndarray(r)); // L2 norm of vector r
-        let dl = [dlx.get(i), dly.get(i), dlz.get(i)];
-        ops.muls(aux, ndarray(crossProduct(dl, r)), 1 / Math.pow(rLength, 3));
-        ops.addeq(b, aux);
-    }
-    return ops.mulseq(b, current);
-}
 
-function generateBField() {
-    let bField = ndarray(new Float64Array(xNum * yNum * zNum * 3), [zNum, xNum, yNum, 3]);
-    for (let i = 0; i < zNum; i++) {
-        for (let j = 0; j < xNum; j++) {
-            for (let k = 0; k < yNum; k++) {
-                let bf = calculateB(xCoord.get(j), yCoord.get(k), zCoord.get(i));
-                // let bfnorm = ops.norm2(bf);
-                bField.set(i, j, k, 0, bf.get(0)); // / bfnorm * 0.5); // Normalized vector
-                bField.set(i, j, k, 1, bf.get(1)); /// bfnorm * 0.5);
-                bField.set(i, j, k, 2, bf.get(2)); /// bfnorm * 0.5);
-            }
-        }
-    }
-    return bField;
-}
+// Miscellaneous
+// Scaling HTML5 canvas width preserving w/h aspect ratio
+let plt0 = $('#plt0');
+plt0.css('width', '100%');
+$(window).resize(function () {
+    plt0.height(plt0.width());
+});
+let plt1 = $('#plt1');
+plt1.css('width', '100%');
+$(window).resize(function () {
+    plt1.height(plt1.width());
+});
 
-function parseBField() {
-    let bField = generateBField();
-    let bFieldX = bField.pick(null, null, null, 0);
-    let bFieldY = bField.pick(null, null, null, 1);
-    let bFieldZ = bField.pick(null, null, null, 2);
-    return [bFieldX, bFieldY, bFieldZ];
-}
-
-function vectorFieldEnd() {
-    let bFieldX;
-    let bFieldY;
-    let bFieldZ;
-    [bFieldX, bFieldY, bFieldZ] = parseBField();
-    ops.addeq(bFieldX, xMesh);
-    ops.addeq(bFieldY, yMesh);
-    ops.addeq(bFieldZ, zMesh);
-    return [bFieldX, bFieldY, bFieldZ];
-}
-
-// Plot
-function plot() {
-    let bFieldX;
-    let bFieldY;
-    let bFieldZ;
-    [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
-
-    plt0.data[0].x = unpack(xWireCoord);
-    plt0.data[0].y = unpack(yWireCoord);
-    plt0.data[0].z = unpack(zWireCoord);
-
-    for (let i = 0; i < zNum; i++) {
-        for (let j = 0; j < xNum; j++) {
-            for (let k = 1; k <= yNum; k++) {
-                plt0.data[i * xNum * yNum + j * yNum + k].x = [xMesh.get(j, k, i), bFieldX.get(j, k, i)];
-                plt0.data[i * xNum * yNum + j * yNum + k].y = [yMesh.get(j, k, i), bFieldY.get(j, k, i)];
-                plt0.data[i * xNum * yNum + j * yNum + k].z = [zMesh.get(j, k, i), bFieldZ.get(j, k, i)];
-            };
-        }
-    }
-
-    Plotly.redraw(plt0);
-}
-
-function createPlots() {
-    let bFieldX;
-    let bFieldY;
-    let bFieldZ;
-    [bFieldX, bFieldY, bFieldZ] = vectorFieldEnd();
-
-    let layout = {
-        scene: {
-            xaxis: {
-                range: [-4, 4],
-            },
-            yaxis: {
-                range: [-4, 4],
-            },
-            zaxis: {
-                range: [-spatialRange, spatialRange],
-            },
-        },
-        showlegend: false,
-        height: 800,
-    };
-
-    // Plot wire itself
-    let wire = {
-        mode: 'lines',
-        type: 'scatter3d',
-        x: unpack(xWireCoord),
-        y: unpack(yWireCoord),
-        z: unpack(zWireCoord),
-        line: {
-            color: '#ff0000',
-        },
-    };
-
-    // Plot field vectors
-    let startX = reshape(xMesh, xMesh.shape.concat([1]));
-    let startY = reshape(yMesh, yMesh.shape.concat([1]));
-    let startZ = reshape(zMesh, zMesh.shape.concat([1]));
-    bFieldX = reshape(bFieldX, bFieldX.shape.concat([1]));
-    bFieldY = reshape(bFieldY, bFieldY.shape.concat([1]));
-    bFieldZ = reshape(bFieldZ, bFieldZ.shape.concat([1]));
-    let groupX = ncc([startX, bFieldX]);
-    let groupY = ncc([startY, bFieldY]);
-    let groupZ = ncc([startZ, bFieldZ]);
-    console.log(unpack(groupX))
-    
-    // Plotly.newPlot('plt0', data0, layout);
-}
-
-// Adjust Plotly's plotRatios size responsively according to window motion
-window.onresize = function () {
-    Plotly.Plots.resize(plt0);
-};
-
-
-// Interactive interfaces
 $('#wireSelect') // See https://silviomoreto.github.io/bootstrap-select/options/
     .on('changed.bs.select', function () {
-        let selectedValue = $(this)
-            .val();
+        let selectedValue = $(this).val();
         switch (selectedValue) {
-        case 'Straight wire':
-            opt = 0;
-            break;
-        case 'Solenoid':
-            opt = 1;
-            break;
-        case 'Circle':
-            opt = 2;
-            break;
-        case 'Toroidal solenoid':
-            opt = 3;
-            break;
+            case '1':
+                opt = 0;
+                break;
+            case '3':
+                opt = 1;
+                break;
+            case '5':
+                opt = 2;
+                break;
+            case '7':
+                opt = 3;
+                break;
+            case '9':
+                opt = 4;
+                break;
         }
-        setWire(opt);
-        plot();
+        plotPlt0();
+        plotPlt1();
     });
-
-function setWire(opt) {
-    switch (opt) {
-    case 0: // Generate a straight wire
-        xWireCoord = ndarray(new Float64Array(wireNum));
-        yWireCoord = ndarray(new Float64Array(wireNum));
-        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-        break;
-    case 1: // Generate a solenoid
-        xWireCoord = ops.coseq(
-            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-        );
-        yWireCoord = ops.sineq(
-            ops.mulseq(myLinspace([wireNum], -wireRange, wireRange), loopMul)
-        );
-        zWireCoord = myLinspace([wireNum], -wireRange, wireRange);
-        break;
-    case 2: // Generate a circle
-        xWireCoord = ops.coseq(myLinspace([wireNum], 0, 2 * Math.PI, {
-            endpoint: false,
-        }));
-        yWireCoord = ops.sineq(myLinspace([wireNum], 0, 2 * Math.PI, {
-            endpoint: false,
-        }));
-        zWireCoord = myLinspace([wireNum], 0, 0);
-        zCoord = myLinspace([zNum], -2, 2);
-        break;
-    case 3: // Generate a toroidal solenoid
-        let R = 3;
-        let r = 0.5;
-        let n = 60;
-        let u = unpack(myLinspace([2 * wireNum], 0, 2 * Math.PI));
-        xWireCoord = u.map(function (x) {
-            return (R + r * Math.cos(n * x)) * Math.cos(x);
-        });
-        yWireCoord = u.map(function (x) {
-            return (R + r * Math.cos(n * x)) * Math.sin(x);
-        });
-        zWireCoord = u.map(function (x) {
-            return r * Math.sin(n * x);
-        });
-        xWireCoord = ndarray(new Float64Array(xWireCoord));
-        yWireCoord = ndarray(new Float64Array(yWireCoord));
-        zWireCoord = ndarray(new Float64Array(zWireCoord));
-    default:
-        new RangeError('This option is not valid!');
-    }
-}
 
 
 // Initialize
-setWire(1);
-setDeltaLArray();
-createPlots();
+opt = 0;
+plotPlt0();
+plotPlt1();

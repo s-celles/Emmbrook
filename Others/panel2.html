@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Minimal Wavepacket</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/panel2.css" type="text/css">
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel2.html">Panel 2</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        Minimal Wavepacket
+                    </h1>
+                </div>
+                <p>
+                    Consider a wave made up of two components with independent spatial and temporal
+                    frequencies (\( k_1, k_2 \) and \( \omega_1,\omega_2 \)). For simplicity we can assume they
+                    both have equal amplitudes, so the wave \( f(z,t) \) can be represented as
+                    $$
+                    \begin{align}
+                    f(z,t) &= \cos(k_1 z - \omega_1 t) + \cos(k_2z - \omega_2 t), \\
+                    2f(z,t) &= e^{i(k_1 z-\omega_1 t)} + e^{-i(k_1 z-\omega_1 t)} +
+                    e^{i(k_2 z-\omega_2t)} + e^{-i(k_2 z-\omega_2 t)}.
+                    \end{align}
+                    $$
+                    We can define the average and difference wave properties
+                    $$
+                    \begin{align}
+                    \bar{k} &\equiv (k_1+k_2)/2 \quad \bar{\omega} \equiv (\omega_1+\omega_2)/2, \\
+                    \Delta{k} &\equiv (k_1-k_2)/2 \quad \Delta{\omega} \equiv (\omega_1+\omega_2)/2,
+                    \end{align}
+                    $$
+                    so that the above equation becomes
+                    $$
+                    \begin{align}
+                    2f(z,t) &= (e^{i(\bar{k} z-\bar{\omega}t)} + e^{-i(\bar{k} z-\bar{\omega} t)})(e^{i(\Delta k
+                    z-\Delta
+                    \omega t)} + e^{-i(\Delta k z-\Delta \omega t)}), \\
+                    f(z,t) &= 2 \cos(\Delta k z - \Delta \omega t) \cos(\bar{k} z-\bar{\omega} t).
+                    \end{align}
+                    $$
+                    The sum of the two waves is equivalent to the product of two different waves. The second wave,
+                    the average, will have a higher spatial and temporal frequency than the first, prefactor wave.
+                    The low-frequency wave is known as the <em>envelope</em> and the high-frequency wave is known as the
+                    <em>carrier</em>.
+                    This simulation demonstrates such a combined waveform. The frequency of the envelope is
+                    frequency of the "beat" pattern between the two waves. We can see that the velocity of the envelope,
+                    the <em>group velocity</em>, is
+                    $$
+                    v_g = \frac{ \partial \omega }{ \partial k }.
+                    $$
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Simulator
+        </h4>
+        <div class="row" id="plots">
+            <div class="col-sm-12">
+                <div id="plt" class="plot"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="k1" class="slideLables">\( k_1 \): </label>
+                            <span id="k1SliderVal" class="sliderVal"></span>
+                            <input id="k1" data-slider-min="-2" data-slider-max="2" data-slider-step="0.1"
+                                   data-slider-value="1.1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="k2" class="slideLables">\( k_2 \)</label>
+                            <span id="k2SliderVal" class="sliderVal"></span>
+                            <input id="k2" data-slider-min="-2" data-slider-max="2" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="w1" class="slideLables">\( \omega_1 \): </label>
+                            <span id="w1SliderVal" class="sliderVal"></span>
+                            <input id="w1" data-slider-min="-2" data-slider-max="2" data-slider-step="0.1"
+                                   data-slider-value="1.1">
+                        </div>
+                        <div class="col slider-row">
+                            <label for="w2" class="slideLables">\( \omega_1 \): </label>
+                            <span id="w2SliderVal" class="sliderVal"></span>
+                            <input id="w2" data-slider-min="-2" data-slider-max="2" data-slider-step="0.1"
+                                   data-slider-value="1">
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" data-toggle="button" aria-pressed="false"
+                                    autocomplete="off" id="animate">On
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.15.1/numjs.js"></script>
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel2.js"></script>
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</body>
+</html>
