@@ -2,9 +2,273 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Drude Model</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/css/bootstrap-slider.min.css">
+    <!-- User css -->
+    <link rel="stylesheet" href="assets/css/panel4.css" type="text/css">
 </head>
 <body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panels"
+                    aria-expanded="false">
+                <!-- Used to hide information intended only for screen readers from the layout of the rendered page. -->
+                <span class="sr-only">Toggle navigation</span>
+                <!-- Used for responsive layouts to create a button that looks like ≡ on narrow browser screens. -->
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="panels">
+        <ul class="nav navbar-nav">
+            <li>
+                <a class="nav-link" href="../index.html">Home</a>
+            </li>
+            <li>
+                <a class="nav-link active" href="index.html">Main page</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel1.html">Panel 1</a>
+            </li>
+            <li>
+                <a class="nav-link" href="http://spin.ap.columbia.edu/bloch/">Panel 2</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel3.html">Panel 3</a>
+            </li>
+            <li>
+                <a class="nav-link" href="panel4.html">Panel 4</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
+
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- Heading text-->
+                <div class="page-header">
+                    <h1>
+                        Drude Model
+                    </h1>
+                </div>
+                <p>
+                    This simulation models 2D electron trajectories under the influence of electric and magnetic fields.
+                </p>
+                <p>
+                    A particle with charge \( q \) in an electric field, \( \mathbf{E} \), and magnetic field, \(
+                    \mathbf{B} \), will experience the Lorenz force, \( \mathbf{F} = q(\mathbf{E}+\mathbf{v}\times
+                    \mathbf{B}) \), where \( v \) is the velocity of the particle.
+                    For an electron, the charge is \( e = -1.602 \times 10^{-19} C \) and the mass is \( m_e =
+                    9.109 \times 10^{-31} kg \).
+                    If we consider first the case of only a magnetic field, we can see that the force acting a particle
+                    is
+                    $$
+                    \mathbf{F} = e \mathbf{v} \times \mathbf{B},
+                    $$
+                    which acts perpindicular to the motion of the particle and does no work.
+                    This causes the particle to have circular motion and, balancing the Lorenz force and the centrifugal
+                    force \( \mathbf{F}_\text{lor} = \mathbf{F}_\text{cent} \) we find
+                    $$
+                    \begin{align}
+                    m \frac{ v^2 }{ r } &= e v B, \\
+                    mv &= e r B, \\
+                    mr\omega &= e r B \quad \text{where } v = r \omega, \\
+                    \omega_c &= \frac{ eB }{ m^\ast }
+                    \end{align}
+                    $$
+                    This frequency \( \omega_c \) is known as the cyclotron frequency.
+                </p>
+                <p>
+                    The Drude model makes the assumption that a metal or semiconductor serves as a host for
+                    <em>free</em> electrons, and their net motion gives electrical current.
+                    We can introduce \( \tau' \) as the <em>mean scattering time</em>, the average time an electron
+                    travels between collisions in this medium.
+                    These collisions randomize the particle's momentum, a process which is known as <em>diffuse
+                    scattering</em>.
+                <p>
+                    Between one scattering event and the next, the electron is influenced by the Lorentz force of
+                    applied electric and magnetic fields.
+                    For example, consider a uniform electric field applied in the \( \hat{x} \) direction.
+                    The force on electrons within the field will be
+                    $$
+                    F_x \hat{x} = e E_x \hat{x},
+                    $$
+                    which can be used to solve for acceleration \( \mathbf{ a } \),
+                    $$
+                    a = F_x / m = e E_x/ m.
+                    $$
+                    At some time \( t = \tau \) after a collision (\( t = 0 \))
+                    before the next scattering event the electron will reach a velocity of
+                    $$
+                    v = \frac{ e E \tau }{ m^\ast },
+                    $$
+                    and an average velocity of electrons, or <em>drift velocity</em>,
+                    $$
+                    v_D = \frac{ eE\tau }{ 2m^\ast }.
+                    $$
+                    Now let us examine what happens when the electron is under the influence of both electric and
+                    magnetic fields.
+                </p>
+                <p>
+                    For example let us take examine the case of an electric field in the \( \hat{x} \) direction and a
+                    magnetic field in the \( \hat{z} \) direction. The Lorenz force law gives
+                    $$
+                    \begin{align}
+                    F_x &= eE_x + e v_y B, \\
+                    F_y &= -e v_x B.
+                    \end{align}
+                    $$
+                    Combined with \( \mathbf{F} = m \mathbf{a} \), this produces a system of two ordinary differential
+                    equations
+                    $$
+                    \begin{align}
+                    m \frac{d^2x}{dt^2} &= q E_x + q B \frac{dy}{dt}, \\
+                    m \frac{d^2y}{dt^2} &= q B\frac{dx}{dt},
+                    \end{align}
+                    $$
+                    which can be solved to show that the electron will travel in unifom circular motion combined with a
+                    uniform drift velocity \( v_d \) in the \( \hat{y} \) direction where
+                    $$
+                    v_d = E / B.
+                    $$
+                </p>
+                <p>
+                    To clearly see effects, use low \( E_F \) and the Step button and Zoom functionality of the
+                    simulator.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- The simulator -->
+    <div class="container" id="app-div">
+        <h4>
+            Drude Model Simulator
+        </h4>
+        <div class="row" id="plots">
+            <div class="col-sm-6">
+                <div id="plt0" class="plot"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="plt1" class="plot"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="control-panel">
+                <div id="sliders">
+                    <!-- Slide bars -->
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="N" class="slideLables">\( N \):</label>
+                            <span id="NSliderVal" class="sliderVal"></span>
+                            <input id="N" data-slider-min="1" data-slider-max="50" data-slider-value="25"
+                                   data-slider-step="1">
+                        </div>
+
+                        <div class="col slider-row">
+                            <label for="Ef" class="slideLables">\( E_f \) (eV):</label>
+                            <span id="EfSliderVal" class="sliderVal"></span>
+                            <input id="Ef" data-slider-min="0.1" data-slider-max="10" data-slider-value="5"
+                                   data-slider-step="0.1">
+                        </div>
+
+                        <div class="col slider-row">
+                            <label for="tau" class="slideLables">\( \tau \) (ps):</label>
+                            <span id="tauSliderVal" class="sliderVal"></span>
+                            <input id="tau" data-slider-min="0" data-slider-max="100" data-slider-value="10"
+                                   data-slider-step="1">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col slider-row">
+                            <label for="Ex" class="slideLables">\( E_x \) (10000 N/C):</label>
+                            <span id="ExSliderVal" class="sliderVal"></span>
+                            <input id="Ex" data-slider-min="-10" data-slider-max="10" data-slider-value="0"
+                                   data-slider-step="1">
+                        </div>
+
+                        <div class="col slider-row">
+                            <label for="Ey" class="slideLables">\( E_y \) (10000 N/C):</label>
+                            <span id="EySliderVal" class="sliderVal"></span>
+                            <input id="Ey" data-slider-min=-10 data-slider-max="10" data-slider-value="0"
+                                   data-slider-step="1">
+                        </div>
+
+                        <div class="col slider-row">
+                            <label for="Bz" class="slideLables">\( B_z \) (T):</label>
+                            <span id="BzSliderVal" class="sliderVal"></span>
+                            <input id="Bz" data-slider-min="-2" data-slider-max="2" data-slider-value="0"
+                                   data-slider-step="0.1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Questions</h3>
+                <ol>
+                    <li>
+                        After each scattering event, what happens to the speed of each electron when \( E = 0 \)?<br>
+                        <i>Hint: Track a single electron in both real-space and velocity-space graphs. Use cursor
+                            tooltip to trace correct particle between plots.</i>
+                    </li>
+                    <li>
+                        Following a single electron in real space, approximate its average distance traveled for \( \tau
+                        = 10, 20\) ps.<br>
+                        <i>Hint: This is easier to see for faster moving electrons. They will also come closer to
+                            the <strong>mean free path</strong>, which is calculated using the Fermi velocity.</i>
+                    </li>
+                    <li>
+                        For \( E_x = 10^5 \) N/C and \( B_z = -1 \) T, what is the drift velocity?
+                    </li>
+                    <li>
+                        Set \( B \) to \( -1 \) T. Determine the approximate cyclotron resonance frequency.<br>
+                        <i>Note: The time of a single step is \( 0.5 \) ps.</i>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.0/bootstrap-slider.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/numjs/0.13.1/numjs.js"></script>
+<!-- User script -->
+<script type="text/javascript" src="assets/js/panel4.js"></script>
+<!-- MathJax -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>
 </html>
