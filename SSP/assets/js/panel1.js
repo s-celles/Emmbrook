@@ -147,7 +147,7 @@ function createPlots() {
     };
 
     let layout1 = {
-        title: "<i>k</i> Space",
+        title: '<i>k</i> Space',
         titlefont: {
             size: 20
         },
@@ -203,7 +203,7 @@ function createPlots() {
                 symbol: 'circle-open',
                 size: 10,
             },
-            name: "k Values"
+            name: 'k Values'
         },
         {
             x: k_plt,
@@ -214,7 +214,7 @@ function createPlots() {
                 size: 8,
                 color: 'blue'
             },
-            name: "<i>k</i>"
+            name: '<i>k</i>'
         },
         {
             x: k_a,
@@ -224,7 +224,7 @@ function createPlots() {
             marker: {
                 size: 8,
             },
-            name: "<i>k Aliased</i>"
+            name: '<i>k Aliased</i>'
         },
         {
             x: bzp_x,
@@ -234,7 +234,7 @@ function createPlots() {
             line: {
                 color: 'red'
             },
-            name: "First Brillouin Zone"
+            name: 'First Brillouin Zone'
         },
         {
             x: bzm_x,
@@ -259,7 +259,7 @@ kSlider.on('change', function () {
     valsUpdate();
     createPlots();
 
-    $('#kSliderVal').text(k)
+    $('#kSliderVal').text(k);
 });
 
 // Adjust Plotly's plotRatios size responsively according to window motion
