@@ -134,14 +134,15 @@
                     Aliasing is easy to understand mathematically. Consider that we would like to represent a unit
                     waveform with frequency \( x_{k \pm N} \). We will then have
                     $$
-                    \begin{align} x_{k \pm N} &= e^{i\frac{2\pi}{N}j(k \pm N)}, \\
-                    x_{k \pm N} &= e^{i \frac{2\pi}{N}jk \pm i 2\pi j}.
-                    \end{align}
+                    x_{k \pm N} = e^{i\frac{2\pi}{N}j(k \pm N)} = e^{i \frac{2\pi}{N}jk \pm i 2\pi j}.
                     $$
                 </p>
                 <p>
-                    But since \( j \) is an integer, $$ \begin{align} x_{k \pm N} &= e^{i \frac{2\pi}{N}jk}, \\ x_{k \pm
-                    N} &= x_k, \end{align} $$ i.e., the waveform is exactly the same for frequency \( k \) and frequency
+                    But since \( j \) is an integer,
+                    $$
+                    x_{k \pm N} = e^{i \frac{2\pi}{N}jk} = x_k,
+                    $$
+                    i.e., the waveform is exactly the same for frequency \( k \) and frequency
                     \( k+N \). The same reasoning would hold if we try
                     to represent \( x_{k \pm 2N},x_{k \pm 3N} \), etc.
                 </p>
@@ -154,8 +155,8 @@
                         representation of the possible frequencies contained in the signal.
                     </li>
                     <li>
-                        Any signal with a higher frequency has a discrete waveform which is completely identical to a
-                        that of a frequency in the first BZ. We can then always shift these frequencies \( x_k \to
+                        Any signal with a higher frequency has a discrete waveform which is completely identical to
+                        a frequency in the first BZ. We can then always shift these frequencies \( x_k \to
                         x_{k+N} \) to those in the first BZ.
                     </li>
                 </ul>
