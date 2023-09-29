@@ -1,4 +1,4 @@
-# EMMBrook: Electromagnetic and Mechanical Materials Simulation
+# Emmbrook: Electromagnetic and Mechanical Materials Simulation
 
 EMMBrook is an interactive simulation project designed to enhance the learning experiences for the courses [MSAE E4206 - Electric & Magnetic Properties of Solids](https://www.coursicle.com/columbia/courses/MSAE/E4206/) and [MSAE E4215 - Mechanical Behavior of Materials](https://www.coursicle.com/columbia/courses/MSAE/E4215/) at Columbia University. This project combines aspects of Electromagnetism and Mechanical Behavior to provide a comprehensive learning tool.
 
